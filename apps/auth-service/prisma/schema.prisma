@@ -13,27 +13,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id  String  @id @default(uuid())
+model User {
+  id        String    @id @default(uuid())
   firstName String
   lastName  String
-  email String  @unique
+  email     String    @unique
   password  String
   imageUrl  String
+  isVerfied Boolean   @default(false)
   createdAt DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  tokens  Token[]
+  tokens            Token[]
+  VerificationToken VerificationToken[]
 }
 
-model Token{
-  id  String  @id @default(uuid())
-  refreshToken  String  @unique
-  ownerId String
-  owner User  @relation(fields: [ownerId],references: [id])
-  createdAt DateTime
-  expiresAt DateTime
+model Token {
+  id           String   @id @default(uuid())
+  refreshToken String   @unique
+  ownerId      String
+  owner        User     @relation(fields: [ownerId], references: [id])
+  createdAt    DateTime
+  expiresAt    DateTime
 
-  @@index([expiresAt,ownerId])
+  @@index([expiresAt, ownerId])
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([id, userId])
+  @@index([expiresAt])
 }
