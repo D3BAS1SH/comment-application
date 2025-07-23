@@ -26,7 +26,7 @@ model User {
   deletedAt DateTime?
 
   tokens            Token[]
-  VerificationToken VerificationToken[]
+  VerificationToken VerificationToken?
 }
 
 model Token {
@@ -43,7 +43,7 @@ model Token {
 model VerificationToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  userId    String
+  userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   createdAt DateTime @default(now())
