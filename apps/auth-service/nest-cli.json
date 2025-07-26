@@ -4,6 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": ["src/email/templates/*"]
+    "assets": ["**/*.hbs"]
   }
 }
