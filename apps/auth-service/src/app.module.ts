@@ -6,6 +6,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { UsersModule } from './users/users.module';
+import { TokenModule } from './token/token.module';
+import { EmailModule } from './email/email.module';
+import { CloudinaryUtilityModule } from './cloudinary-utility/cloudinary-utility.module';
 
 @Module({
   imports: [
@@ -20,15 +23,18 @@ import { UsersModule } from './users/users.module';
         useFactory: (config: ConfigService) => ({
           throttlers:[
             {
-              ttl: config.get<number>('THROTTLE_TTL',60),
-              limit: config.get<number>('THROTTLE_LIMIT',10)
+              limit: config.getOrThrow<number>('THROTTLE_LIMIT'),
+              ttl: config.getOrThrow<number>('THROTTLE_TTL')
             }
           ]
         })
       }
     ),
     PrismaModule,
-    UsersModule
+    UsersModule,
+    TokenModule,
+    EmailModule,
+    CloudinaryUtilityModule,
   ],
   controllers: [AppController],
   providers: [
