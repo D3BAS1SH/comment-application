@@ -20,7 +20,7 @@ model User {
   email     String    @unique
   password  String
   imageUrl  String
-  isVerfied Boolean   @default(false)
+  isVerified Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
