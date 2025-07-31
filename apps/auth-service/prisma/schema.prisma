@@ -35,9 +35,6 @@ model Token {
   ownerId      String
   owner        User     @relation(fields: [ownerId], references: [id])
   createdAt    DateTime @default(now())
-  expiresAt    DateTime
-
-  @@index([expiresAt, ownerId])
 }
 
 model VerificationToken {
