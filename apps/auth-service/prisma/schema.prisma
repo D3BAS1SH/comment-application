@@ -34,7 +34,7 @@ model Token {
   refreshToken String   @unique
   ownerId      String
   owner        User     @relation(fields: [ownerId], references: [id])
-  createdAt    DateTime
+  createdAt    DateTime @default(now())
   expiresAt    DateTime
 
   @@index([expiresAt, ownerId])
