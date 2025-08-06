@@ -18,6 +18,15 @@ export class TokenService {
     private configService: ConfigService
   ) {}
 
+  /**
+   * Generates access and refresh tokens for a user.
+   * This method checks the number of refresh tokens the user has, generates new tokens,
+   * and saves them to the database.
+   * @param user - The user for whom to generate tokens.
+   * @returns A promise that resolves to a CreateTokenDto containing the new access and refresh tokens.
+   * @throws BadRequestException - If the user exceeds the device limit.
+   * @throws InternalServerErrorException - If an error occurs during token generation.
+   */
   async generateTokens(user: User): Promise<CreateTokenDto> {
 
     try {
@@ -36,7 +45,8 @@ export class TokenService {
       }
   
       //Extracting informations as needed for payload
-      const payload:tokenPayload = { sub: user.id, email: user.email, isVerified: user.isVerified };
+      const uniqueSessionToken = uuidv4();
+      const payload:tokenPayload = { sub: user.id, email: user.email, isVerified: user.isVerified,sessionToken: uniqueSessionToken };
   
       //Generate the Access Token
       const accessToken = this.jwtService.sign(payload,{
@@ -55,6 +65,7 @@ export class TokenService {
         data:{
           refreshToken: refreshToken,
           ownerId: user.id,
+          sessionTokenId: uniqueSessionToken
         }
       })
   
@@ -133,6 +144,26 @@ export class TokenService {
       throw new InternalServerErrorException(error);
     } finally {
       console.log("revocation of refresh token completed.");
+    }
+  }
+
+  async invalidateRefreshTokenBySessionToken(sessionToken: string, userId: string):Promise<void>{
+    try {
+      if(!sessionToken){
+        throw new BadRequestException("session token is required.");
+      }
+      
+      await this.prisma.token.delete({
+        where:{
+          sessionTokenId: sessionToken,
+          ownerId: userId
+        }
+      });
+
+      console.log("Refresh Token Removed");
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error,"Something went wrong while deleting the refresh token");
     }
   }
 
