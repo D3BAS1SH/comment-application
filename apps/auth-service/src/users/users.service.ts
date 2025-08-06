@@ -231,7 +231,7 @@ export class UsersService {
    */
   async logout(validUserPayload: ValidUserDto,accessToken: string): Promise<string|void> {
     try {
-      console.log(validUserPayload);
+      // console.log(validUserPayload);
       const { exp,sessionToken,sub } = validUserPayload;
       if(!exp){
         throw new BadRequestException("exp field is not found or with in valid field value.");
