@@ -4,17 +4,21 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UsersModule } from './users/users.module';
 import { TokenModule } from './token/token.module';
 import { EmailModule } from './email/email.module';
 import { CloudinaryUtilityModule } from './cloudinary-utility/cloudinary-utility.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal:true,
       envFilePath: '.env'
+    }),
+    CacheModule.register({
+      isGlobal: true
     }),
     ThrottlerModule.forRootAsync(
       {
@@ -42,6 +46,10 @@ import { CloudinaryUtilityModule } from './cloudinary-utility/cloudinary-utility
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor
     }
   ],
 })
