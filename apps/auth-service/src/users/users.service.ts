@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,10 +9,14 @@ import { TokenService } from 'src/token/token.service';
 import { VerificationTokenResponse } from 'src/token/dto/verification-token-response.dto';
 import { LoginUser } from './dto/login-user.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { ValidUserDto } from './dto/valid-user-payload.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly prismaService: PrismaService, 
     private readonly tokenService: TokenService,
     private readonly emailService: EmailService,
@@ -219,6 +223,35 @@ export class UsersService {
   }
 
   /**
+   * Logs out a user by invalidating their access and refresh tokens.
+   * @param validUserPayload - The payload containing user information.
+   * @param accessToken - The access token to be invalidated.
+   * @returns A success message or void if the operation is successful. 
+   * Throws an error if the operation fails.
+   */
+  async logout(validUserPayload: ValidUserDto,accessToken: string): Promise<string|void> {
+    try {
+      console.log(validUserPayload);
+      const { exp,sessionToken,sub } = validUserPayload;
+      if(!exp){
+        throw new BadRequestException("exp field is not found or with in valid field value.");
+      }
+      const getTimeSpan = this.calculateTimeLeftToExpire(exp);
+      const tokenToBlacklist = `BL:${accessToken.trim()}`
+      console.log("Token to blacklist with proper convention.");
+      const timeInMilliseconds = getTimeSpan*1000;
+      console.log(`Token Time Span in seconds: ${getTimeSpan}, in milli seconds: ${timeInMilliseconds}`);
+      await this.cacheManager.set(tokenToBlacklist,'blacklist',timeInMilliseconds);
+      console.log(`Access Token added to blacklist for ${getTimeSpan} seconds`);
+      await this.tokenService.invalidateRefreshTokenBySessionToken(sessionToken,sub);
+      return "success";
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(error,"Something went wrong while caching or token removal");
+    }
+  }
+
+  /**
    * It will take the string and generate a hash string by salting
    * @param password as string
    * @returns a string of hashed password
@@ -235,6 +268,12 @@ export class UsersService {
     }
   }
 
+  /**
+   * This method verifies the provided password against the stored hashed password.
+   * @param password - The plain text password to verify.
+   * @param hashedPassword - The stored hashed password to compare against.
+   * @returns A boolean indicating whether the password is valid.
+   */
   private async verifyPassword(password: string,hashedPassword: string): Promise<boolean> {
     try {
       const isMatch = await bcrypt.compare(password,hashedPassword);
@@ -244,6 +283,22 @@ export class UsersService {
       console.error(error);
       throw new InternalServerErrorException(error);
     }
+  }
+
+  /**
+   * 
+   * @param exp as number
+   * @returns difference in seconds between the current time and the expiration time
+   * This method calculates the time left until a token expires.
+   * It takes the expiration timestamp (exp) and returns the difference in seconds
+   * between the current time and the expiration time.
+   * If the token has already expired, it will return a negative value.
+   */
+  private calculateTimeLeftToExpire(exp: number){
+    const nowTimeStamp = Math.floor(Date.now()/1000);
+    console.log(`exp: ${exp}, now: ${nowTimeStamp}`);
+    const difference = exp-nowTimeStamp;
+    return difference;
   }
 
   findAll() {
