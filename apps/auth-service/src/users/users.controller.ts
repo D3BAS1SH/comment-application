@@ -65,16 +65,16 @@ export class UsersController {
   ):Promise<{message: string}>{
     try {
       const userPayload = request.user as ValidUserDto;
-      console.log(userPayload);
+      // console.log(userPayload);
       if(!userPayload){
         throw new UnauthorizedException(`User is unauthenticated or lost validity or token is failed to verify`);
       }
-      console.log(request.cookies);
+      // console.log(request.cookies);
       const accessToken = request.headers.authorization?.replace('Bearer ', '');
       if(!accessToken){
         throw new BadRequestException('Authorization field incorrect or not sent at all');
       }
-      console.log(accessToken);
+      // console.log(accessToken);
       const Result = await this.usersService.logout(userPayload, accessToken);
       response.clearCookie('refreshToken')
       return {message:Result ?? "Logging Out Successful"};
