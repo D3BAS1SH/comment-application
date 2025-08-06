@@ -4,4 +4,5 @@ interface tokenPayload {
     isVerified: boolean;
     iat?: number;
     exp?: number;
+    sessionToken: string;
 }
