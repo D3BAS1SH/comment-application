@@ -7,6 +7,7 @@ import { TokenModule } from 'src/token/token.module';
 import { EmailModule } from 'src/email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   controllers: [UsersController],
   providers: [
     UsersService,
-    JwtStrategy
+    JwtStrategy,
+    RefreshStrategy
   ],
   exports: [UsersService]
 })
