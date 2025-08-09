@@ -32,26 +32,23 @@ export class RefreshStrategy extends PassportStrategy(Strategy,'jwt-refresh'){
     }
 
     async validate(req: Request, payload: tokenPayload): Promise<RefreshTokenResponse>{
-        try {
-            console.log("validated payload");
-            var refreshToken: string;
-            if(req.cookies){
-                refreshToken=req.cookies.refreshToken;
-            } else if(req.body){
-                refreshToken= req.body.refreshToken;
-            } else {
-                throw new BadRequestException("RefreshToken not found");
-            }
-            if(!refreshToken){
-                throw new BadRequestException("The refresh Token was not found");
-            }
 
-            return {
-                ...payload,
-                refreshToken:refreshToken
-            };
-        } catch (error) {
-            throw new InternalServerErrorException("Refresh Token is invalid or expired or not found.",error);
+        console.log("validated payload");
+        var refreshToken: string;
+        if(req.cookies){
+            refreshToken=req.cookies.refreshToken;
+        } else if(req.body){
+            refreshToken= req.body.refreshToken;
+        } else {
+            throw new BadRequestException("RefreshToken not found");
         }
+        if(!refreshToken){
+            throw new BadRequestException("The refresh Token was not found");
+        }
+
+        return {
+            ...payload,
+            refreshToken:refreshToken
+        };
     }
 }
