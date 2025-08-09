@@ -1,13 +1,14 @@
-import { BadRequestException, Injectable, UnauthorizedException, InternalServerErrorException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, InternalServerErrorException, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { VerificationTokenDto } from './dto/verification-token.dto';
 import { VerificationTokenResponse } from './dto/verification-token-response.dto';
 import { RefreshTokenDto } from './dto/create-refresh-token.dto';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class TokenService {
@@ -321,6 +322,64 @@ export class TokenService {
       email: updateUser.email,
       isVerified: updateUser.isVerified,
       message: `The user with the email id ${updateUser.isVerified} is verified`
+    }
+  }
+
+  async createPasswordResetToken(userId: string, tx?:Prisma.TransactionClient): Promise<string>{
+    const currentPrismaClient = tx || this.prisma;
+    const ExistenceOfPasswordResetToken = await currentPrismaClient.passwordResetToken.findUnique({
+      where:{
+        userId: userId
+      }
+    })
+    if(ExistenceOfPasswordResetToken && ExistenceOfPasswordResetToken.expiresAt > new Date()){
+      throw new ConflictException("An active password reset link is shared to your email. please check");
+    }
+
+    const resetToken = uuidv4();
+    const hashedResetToken = await this.generateHashedToken(resetToken);
+    const expirationMinutes = this.configService.get<number>('EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES',30);
+    const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000); 
+
+    //Save the hashed token with the UserID along with Expiration of the token.
+    await currentPrismaClient.passwordResetToken.upsert({
+      where:{
+        userId: userId,
+      },
+      update:{
+        token: hashedResetToken,
+        expiresAt: expiresAt
+      },
+      create:{
+        token: hashedResetToken,
+        expiresAt: expiresAt,
+        userId: userId
+      },
+    })
+
+    return resetToken;
+  }
+
+  private async generateHashedToken(token: string): Promise<string> {
+    try {
+      const SALTNUMBER = parseInt(this.configService.getOrThrow('BCRYPT_SALT_NUMBER'),10);
+      const currentSalt = await bcrypt.genSalt(SALTNUMBER);
+      const hashedSaltedPassword = await bcrypt.hash(token,currentSalt);
+      return hashedSaltedPassword;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(error,"Something went wrong at hashing the token");
+    }
+  }
+
+  private async verifyHashedToken(token: string,hashedToken: string): Promise<boolean> {
+    try {
+      const isMatch = await bcrypt.compare(token,hashedToken);
+      return isMatch;
+    } catch (error) {
+      console.warn("Some error occured.");
+      console.error(error);
+      throw new InternalServerErrorException(error,"Something went wrong at comparing hashed token");
     }
   }
 
