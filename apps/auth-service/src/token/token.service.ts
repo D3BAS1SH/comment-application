@@ -9,6 +9,7 @@ import { VerificationTokenDto } from './dto/verification-token.dto';
 import { VerificationTokenResponse } from './dto/verification-token-response.dto';
 import { RefreshTokenDto } from './dto/create-refresh-token.dto';
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 
 @Injectable()
 export class TokenService {
@@ -360,26 +361,29 @@ export class TokenService {
     return resetToken;
   }
 
+  async verifyPasswordResetToken(token: string){
+    const hashedToken = await this.generateHashedToken(token);
+    const ExistenceOfToken = await this.prisma.passwordResetToken.findUnique({
+      where:{
+        token: hashedToken
+      },
+      include: {
+        user: true
+      }
+    })
+    if(!ExistenceOfToken || ExistenceOfToken.expiresAt < new Date()){
+      throw new NotFoundException("Token not found or invalid token or the token is expired");
+    }
+    return ExistenceOfToken.user;
+  }
+
   private async generateHashedToken(token: string): Promise<string> {
     try {
-      const SALTNUMBER = parseInt(this.configService.getOrThrow('BCRYPT_SALT_NUMBER'),10);
-      const currentSalt = await bcrypt.genSalt(SALTNUMBER);
-      const hashedSaltedPassword = await bcrypt.hash(token,currentSalt);
+      const hashedSaltedPassword = crypto.createHash('sha256').update(token).digest('hex');
       return hashedSaltedPassword;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(error,"Something went wrong at hashing the token");
-    }
-  }
-
-  private async verifyHashedToken(token: string,hashedToken: string): Promise<boolean> {
-    try {
-      const isMatch = await bcrypt.compare(token,hashedToken);
-      return isMatch;
-    } catch (error) {
-      console.warn("Some error occured.");
-      console.error(error);
-      throw new InternalServerErrorException(error,"Something went wrong at comparing hashed token");
     }
   }
 
