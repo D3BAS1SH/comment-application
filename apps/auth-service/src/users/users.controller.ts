@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res, Req, UnauthorizedException, BadRequestException, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res, Req, UnauthorizedException, BadRequestException, UseInterceptors, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import * as ms from 'ms';
 import { ValidUserDto } from './dto/valid-user-payload.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { RefreshGuard } from './guards/refreh.guard';
+import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
 
 @Controller('users')
 @UseInterceptors(CacheInterceptor)
@@ -17,18 +19,7 @@ export class UsersController {
 
   @Post('register')
   async registerUser(@Body() createUserDto: CreateUserDto) {
-    try {
-      console.log(createUserDto);
-      return await this.usersService.create(createUserDto);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.usersService.findAll();
+    return await this.usersService.create(createUserDto);
   }
 
   @Get('verify-email')
@@ -39,22 +30,42 @@ export class UsersController {
 
   @Post('login')
   async login(@Body() loginUser:LoginUser,@Res({passthrough: true}) response: Response) {
-    try {
-      const loginResponse = await this.usersService.login(loginUser);
-      const expirationValue = this.configService.get('JWT_REFRESH_EXPIRATION');
-      const maxAgeMilisecondsRefreshToken = ms(expirationValue);
-      response.cookie('refreshToken', loginResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: maxAgeMilisecondsRefreshToken,
-        path: '/',
-      });
-      console.log("Cookie set with refresh Token");
-      return loginResponse;
-    } catch (error) {
-      throw error;
-    }
+    const loginResponse = await this.usersService.login(loginUser);
+    const expirationValue = this.configService.get('JWT_REFRESH_EXPIRATION');
+    const maxAgeMilisecondsRefreshToken = ms(expirationValue);
+    response.cookie('refreshToken', loginResponse.refreshToken, {
+      httpOnly: true,
+      secure: this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      maxAge: maxAgeMilisecondsRefreshToken,
+      path: '/',
+    });
+    console.log("Cookie set with refresh Token");
+    return loginResponse;
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshGuard)
+  async refreshToken(
+    @Req() request:Request,
+    @Res({passthrough: true}) response: Response,
+  ){
+    console.log("-----------At refresh Controller-------");
+    console.log(request.user);
+    //convert the request.user to RefreshTokenRespones
+    const validRefreshTokenPayload = request.user as RefreshTokenResponse;
+    //Making a call to user service to refresh the token
+    const refreshTokenResponse = await this.usersService.refreshMyToken(validRefreshTokenPayload);
+    const expirationValue = this.configService.get('JWT_REFRESH_EXPIRATION');
+    const maxAgeMilisecondsRefreshToken = ms(expirationValue);
+    response.cookie('refreshToken',refreshTokenResponse.refreshToken,{
+      httpOnly: true,
+      secure: this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      maxAge: maxAgeMilisecondsRefreshToken,
+      path: '/'
+    })
+    return refreshTokenResponse;
   }
 
   @Post('logout')
@@ -63,33 +74,21 @@ export class UsersController {
     @Req() request: Request,
     @Res({passthrough: true}) response: Response
   ):Promise<{message: string}>{
-    try {
-      const userPayload = request.user as ValidUserDto;
-      // console.log(userPayload);
-      if(!userPayload){
-        throw new UnauthorizedException(`User is unauthenticated or lost validity or token is failed to verify`);
-      }
-      // console.log(request.cookies);
-      const accessToken = request.headers.authorization?.replace('Bearer ', '');
-      if(!accessToken){
-        throw new BadRequestException('Authorization field incorrect or not sent at all');
-      }
-      // console.log(accessToken);
-      const Result = await this.usersService.logout(userPayload, accessToken);
-      response.clearCookie('refreshToken')
-      return {message:Result ?? "Logging Out Successful"};
-    } catch (error) {
-      throw error;
+
+    const userPayload = request.user as ValidUserDto;
+    // console.log(request.cookies);
+    const accessToken = request.headers.authorization?.replace('Bearer ', '');
+    if(!accessToken){
+      throw new BadRequestException('Authorization field incorrect or not sent at all');
     }
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    // console.log(accessToken);
+    const Result = await this.usersService.logout(userPayload, accessToken);
+    response.clearCookie('refreshToken',{
+      httpOnly: true,
+      secure: this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/'
+    })
+    return {message:Result ?? "Logging Out Successful"};
   }
 }
