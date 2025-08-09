@@ -15,6 +15,8 @@ import { ValidUserDto } from './dto/valid-user-payload.dto';
 import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
 import { CreateTokenDto } from 'src/token/dto/create-token.dto';
 import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
+import { ResetPasswordBodyDto } from './dto/reset-password.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -271,6 +273,38 @@ export class UsersService {
     await this.emailService.sendForgotPasswordEmail(ExistenceOfUser.email,ExistenceOfUser.firstName,resetToken);
 
     return "Verification Link sent";
+  }
+
+  async resetPassword(resetPasswordBody: ResetPasswordBodyDto): Promise<{message: string}>{
+    const { password, token } = resetPasswordBody;
+    const verificationResponse = await this.tokenService.verifyPasswordResetToken(token);
+
+    const newHashPassword = await this.generateHashedPassword(password);
+
+    const transactionResult = await this.prismaService.$transaction(async(tx: Prisma.TransactionClient)=>{
+      await tx.user.update({
+        where:{
+          id: verificationResponse.id,
+          email: verificationResponse.email
+        },
+        data: {
+          password: newHashPassword
+        }
+      })
+
+      await tx.passwordResetToken.deleteMany({
+        where:{
+          userId: verificationResponse.id
+        }
+      })
+
+      return "Password reset Successful. Login with new password"
+    })
+
+    console.log("The password reset complete");
+    return {
+      message: transactionResult || "Password Reset Successful"
+    }
   }
 
   /**

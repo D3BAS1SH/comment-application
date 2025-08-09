@@ -11,6 +11,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RefreshGuard } from './guards/refreh.guard';
 import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
 import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
+import { ResetPasswordBodyDto } from './dto/reset-password.dto';
 
 @Controller('users')
 @UseInterceptors(CacheInterceptor)
@@ -96,5 +97,11 @@ export class UsersController {
   async forgetPasswordInitiate(@Body() uniqueIdentifier:ForgetPasswordBodyDto){
     const forgotPasswordInitiatorResult = await this.usersService.forgotPasswordInit(uniqueIdentifier);
     return forgotPasswordInitiatorResult;
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordBody: ResetPasswordBodyDto){
+    const response = await this.usersService.resetPassword(resetPasswordBody);
+    return response;
   }
 }
