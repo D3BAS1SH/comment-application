@@ -14,6 +14,7 @@ import { Cache } from 'cache-manager';
 import { ValidUserDto } from './dto/valid-user-payload.dto';
 import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
 import { CreateTokenDto } from 'src/token/dto/create-token.dto';
+import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -241,6 +242,37 @@ export class UsersService {
     return "success";
   }
 
+  async forgotPasswordInit(forgotPasswordBody: ForgetPasswordBodyDto): Promise<string>{
+    const ExistenceOfUser = await this.prismaService.user.findUniqueOrThrow({
+      where:{
+        email: forgotPasswordBody.email
+      },
+      include: {
+        VerificationToken: true
+      }
+    })
+
+    if(!ExistenceOfUser.isVerified){
+      if(!ExistenceOfUser.VerificationToken){
+        throw new BadRequestException("Something has went wrong. Contact Admin");
+      } else if (ExistenceOfUser.VerificationToken.expiresAt < new Date()){
+        await this.prismaService.user.delete({
+          where:{
+            email: forgotPasswordBody.email
+          }
+        });
+        throw new BadRequestException("Your account verification time limit has expired. Please register again, as your account will be purged.");
+      } else {
+        throw new BadRequestException("An verification token has sent to your email. Please check and verify yourself before movnig further.");
+      }
+    }
+
+    const resetToken = await this.tokenService.createPasswordResetToken(ExistenceOfUser.id);
+    await this.emailService.sendForgotPasswordEmail(ExistenceOfUser.email,ExistenceOfUser.firstName,resetToken);
+
+    return "Verification Link sent";
+  }
+
   /**
    * It will take the string and generate a hash string by salting
    * @param password as string
@@ -289,21 +321,5 @@ export class UsersService {
     console.log(`exp: ${exp}, now: ${nowTimeStamp}`);
     const difference = exp-nowTimeStamp;
     return difference;
-  }
-
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

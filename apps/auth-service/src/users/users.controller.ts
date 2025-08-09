@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res, Req, UnauthorizedException, BadRequestException, UseInterceptors, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res, Req, BadRequestException, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { LoginUser } from './dto/login-user.dto';
@@ -11,6 +10,7 @@ import { ValidUserDto } from './dto/valid-user-payload.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RefreshGuard } from './guards/refreh.guard';
 import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
+import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
 
 @Controller('users')
 @UseInterceptors(CacheInterceptor)
@@ -90,5 +90,11 @@ export class UsersController {
       path: '/'
     })
     return {message:Result ?? "Logging Out Successful"};
+  }
+
+  @Post('forget-password')
+  async forgetPasswordInitiate(@Body() uniqueIdentifier:ForgetPasswordBodyDto){
+    const forgotPasswordInitiatorResult = await this.usersService.forgotPasswordInit(uniqueIdentifier);
+    return forgotPasswordInitiatorResult;
   }
 }
