@@ -1,103 +1,277 @@
-import Image from "next/image";
+"use client"
+
+import { motion } from "framer-motion"
+import { ArrowRight, CheckCircle2, CreditCard, LineChart, Lock, Wallet } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-black text-white">
+      {/* Navigation */}
+      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl">
+        <div className="container flex h-16 items-center justify-between px-4">
+          <Link className="flex items-center space-x-2 font-bold" href="/">
+            <Wallet className="h-6 w-6 text-cyan-400" />
+            <span>Ares</span>
+          </Link>
+          <div className="flex items-center space-x-4">
+            <Link className="hidden text-sm hover:text-cyan-400 sm:block" href="/login">
+              Iniciar Sesión
+            </Link>
+            <Button className="bg-gradient-to-r from-cyan-400 to-violet-500 text-black hover:from-cyan-500 hover:to-violet-600">
+              Comenzar
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
+        {/* Animated Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Curved Lines */}
+          <svg className="absolute h-full w-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="grad1" x1="1" y1="0" x2="0" y2="0">
+                <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
+                <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="grad2" x1="1" y1="0" x2="0" y2="0">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0" />
+                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {/* Top Curves */}
+            <motion.path
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+                repeatDelay: 1,
+              }}
+              d="M 100 100 Q 300 0 500 100 T 900 100"
+              fill="none"
+              stroke="url(#grad1)"
+              strokeWidth="1"
+            />
+            <motion.path
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+                repeatDelay: 1,
+                delay: 0.5,
+              }}
+              d="M 0 200 Q 200 100 400 200 T 800 200"
+              fill="none"
+              stroke="url(#grad2)"
+              strokeWidth="1"
+            />
+            {/* Bottom Curves */}
+            <motion.path
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+                repeatDelay: 1,
+                delay: 1,
+              }}
+              d="M 100 600 Q 300 500 500 600 T 900 600"
+              fill="none"
+              stroke="url(#grad1)"
+              strokeWidth="1"
+            />
+          </svg>
+
+          {/* Straight Lines */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="absolute inset-0"
+          >
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ x: "100%", opacity: 0 }}
+                animate={{
+                  x: "-100%",
+                  opacity: [0, 0.7, 0.7, 0],
+                }}
+                transition={{
+                  duration: 2.5,
+                  delay: i * 0.2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "loop",
+                  ease: "linear",
+                }}
+                className="absolute right-0"
+                style={{
+                  top: `${15 + i * 10}%`,
+                  height: "1px",
+                  width: "100%",
+                  background: `linear-gradient(90deg, transparent, ${i % 2 === 0 ? "#22d3ee" : "#8b5cf6"}60, transparent)`,
+                }}
+              />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Animated Background */}
+        <div className="absolute inset-0 z-[1]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2 }}
+            className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-cyan-500/30 blur-3xl"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 0.5 }}
+            className="absolute -right-1/4 top-1/2 h-96 w-96 rounded-full bg-violet-500/30 blur-3xl"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        </div>
+
+        {/* Content */}
+        <div className="container relative z-[3] px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="mx-auto max-w-3xl space-y-8"
+          >
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+              Dinero Global en Movimiento
+            </h1>
+            <p className="mx-auto max-w-2xl text-muted text-gray-400 sm:text-xl">
+              Nuestra plataforma le permite a tu negocio tener acceso a rieles de pagos internacionales en segundos en
+              vez de horas
+            </p>
+            <div className="flex justify-center space-x-4">
+              <Button className="bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600">
+                Comenzar
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button variant="outline" className="border-white/10 text-lg text-white hover:bg-white/10">
+                Saber Más
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="relative z-10 border-t border-white/10 bg-black py-24">
+        <div className="container px-4">
+          <div className="mb-16 text-center">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">¿Por Qué Elegirnos?</h2>
+            <p className="mt-4 text-gray-400">Experimenta la banca que funciona para ti</p>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
+            >
+              <CreditCard className="mb-4 h-12 w-12 text-cyan-400" />
+              <h3 className="mb-2 text-xl font-bold">Smart Cards</h3>
+              <p className="text-gray-400">
+                Tarjetas virtuales y físicas con controles avanzados y notificaciones en tiempo real.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-violet-400/50"
+            >
+              <LineChart className="mb-4 h-12 w-12 text-violet-400" />
+              <h3 className="mb-2 text-xl font-bold">Inversiones Inteligentes</h3>
+              <p className="text-gray-400">
+                Estrategias de inversión automatizadas adaptadas a tus objetivos financieros.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
+            >
+              <Lock className="mb-4 h-12 w-12 text-cyan-400" />
+              <h3 className="mb-2 text-xl font-bold">Seguridad Bancaria</h3>
+              <p className="text-gray-400">
+                Seguridad de nivel empresarial con encriptación de extremo a extremo y autenticación biométrica.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative z-10 border-t border-white/10 bg-black py-24">
+        <div className="container px-4">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-950/50 to-violet-950/50 p-8 text-center backdrop-blur-sm md:p-12 lg:p-16">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">¿Listo para Comenzar?</h2>
+            <p className="mx-auto mt-4 max-w-xl text-gray-400">
+              Únete a miles de clientes satisfechos que confían en nosotros para sus necesidades bancarias.
+            </p>
+            <ul className="mx-auto mt-8 flex max-w-xl flex-col gap-4 text-left">
+              <li className="flex items-center space-x-3">
+                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
+                <span>Sin comisiones ni cargos ocultos</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
+                <span>Soporte al cliente 24/7</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
+                <span>Plataforma segura y regulada</span>
+              </li>
+            </ul>
+            <Button className="mt-8 bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600">
+              Abre tu Cuenta
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-black py-8">
+        <div className="container flex flex-col items-center justify-between space-y-4 px-4 md:flex-row md:space-y-0">
+          <div className="flex items-center space-x-2">
+            <Wallet className="h-6 w-6 text-cyan-400" />
+            <span className="font-bold">Ares</span>
+          </div>
+          <p className="text-sm text-gray-400">© {new Date().getFullYear()} Ares. Todos los derechos reservados.</p>
+          <div className="flex space-x-6">
+            <Link className="text-sm text-gray-400 hover:text-cyan-400" href="#">
+              Privacidad
+            </Link>
+            <Link className="text-sm text-gray-400 hover:text-cyan-400" href="#">
+              Términos
+            </Link>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
