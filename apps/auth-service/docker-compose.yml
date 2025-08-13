@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "3033:3033"
+    env_file:
+      - .env
+
+    # Depending upon requirement add te field as their env variables otherwise the configuration will
+    # take the .env file but the environment fields have higher priority than the env_file configuration.
+    # environment:
+      # - NODE_ENV
+      # - PORT
+      # - APP_BASE_URL
+      # - CORS_ORIGINS
+      # - JWT_ACCESS_SECRET
+      # - JWT_ACCESS_EXPIRATION
+      # - JWT_REFRESH_SECRET
+      # - JWT_REFRESH_EXPIRATION
+      # - BCRYPT_SALT_NUMBER
+      # - DATABASE_URL
+      # - EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES
+      # - MAIL_HOST
+      # - MAIL_PORT
+      # - MAIL_SECURE
+      # - MAIL_USER
+      # - MAIL_PASSWORD
+      # - MAIL_FROM_EMAIL
+      # - THROTTLE_TTL
+      # - THROTTLE_LIMIT
+      # - CLOUDINARY_CLOUD_NAME
+      # - CLOUDINARY_API_KEY
+      # - CLOUDINARY_API_SECRET
+      # - CLOUDINARY_UPLOAD_PRESET
+      
+    # these are not something I'm depending upon for now atleast.
+    # depends_on:
+      # postgres:
+        # condition: service_healthy
+      # redis:
+        # condition: service_healthy
+    networks:
+      - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3033/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  auth-network:
+    driver: bridge

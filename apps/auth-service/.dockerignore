@@ -1,0 +1,52 @@
+# Dependencies
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+
+# Build outputs
+dist
+build
+.next
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage
+.nyc_output
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Test files
+test/
+src/**/*.spec.ts
+src/**/*.test.ts
+
+# Development files
+src/**/*.spec.ts
+src/**/*.test.ts
+jest.config.js
+.eslintrc.js
+# Keep tsconfig files for build
+# tsconfig.json
+# tsconfig.build.json
+
+# Prisma (keep schema and generated client, exclude dev files)
+prisma/migrations/
+.env.example
