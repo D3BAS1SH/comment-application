@@ -10,6 +10,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { CommentsModule } from './comments/comments.module';
     ),
     AuthModule,
     PostsModule,
-    CommentsModule
+    CommentsModule,
+    PrismaModule
   ],
   controllers: [AppController],
   providers: [
