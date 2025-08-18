@@ -46,7 +46,7 @@ COPY --from=builder --chown=nestjs:nestjs /app/prisma ./prisma
 USER nestjs
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3033
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

@@ -10,7 +10,7 @@ async function bootstrap() {
     logger: ["debug","error","fatal","log","warn","verbose"]
   });
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT');
+  const port = configService.get<number>('AUTH_PORT');
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist:true,

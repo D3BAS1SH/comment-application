@@ -17,7 +17,7 @@ services:
     # take the .env file but the environment fields have higher priority than the env_file configuration.
     # environment:
       # - NODE_ENV
-      # - PORT
+      # - AUTH_PORT
       # - APP_BASE_URL
       # - CORS_ORIGINS
       # - JWT_ACCESS_SECRET
