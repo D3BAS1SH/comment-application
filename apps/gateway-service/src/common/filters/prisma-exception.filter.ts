@@ -3,7 +3,13 @@ import { BaseExceptionFilter } from "@nestjs/core";
 import { Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import { CustomErrorResponseDto } from "../dto/error-response.dto";
+import { LoggerService } from "../log/logger.service";
 
+interface ServiceError extends Error {
+    statusCode?: number;
+    code?: string;
+    details?: unknown;
+}
 @Injectable()
 @Catch(Prisma.PrismaClientKnownRequestError)
 /** Handles Prisma Client known request errors
@@ -11,16 +17,33 @@ import { CustomErrorResponseDto } from "../dto/error-response.dto";
  *  This filter catches specific Prisma errors and formats them into a user-friendly JSON response.
  */
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
+    constructor(private readonly logger: LoggerService){
+        super()
+    }
+
+    private toServiceError(exception: Prisma.PrismaClientKnownRequestError, status: number): ServiceError {
+        return {
+            name: 'PrismaError',
+            message: exception.message,
+            statusCode: status,
+            code: exception.code,
+            details: {
+                meta: exception.meta,
+                target: exception.meta?.target
+            },
+            stack: exception.stack
+        };
+    }
+
     catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const request = ctx.getRequest<Request>();
         const message = exception.message.replace(/\n/g,'');
+        const correlationId = request.headers['x-correlation-id'] as string;
 
         let status = HttpStatus.INTERNAL_SERVER_ERROR;
         let errorMessage = "An unexpected database error occured.";
-
-        console.error(exception);
 
         /**
          * Handle specific Prisma error codes and map them to HTTP response statuses.
@@ -83,6 +106,8 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
                 break;
             }
         }
+
+        this.logger.logError('prisma',this.toServiceError(exception,status),correlationId);
 
         response.status(status).json(new CustomErrorResponseDto(status,request.url,errorMessage));
     }
