@@ -1,9 +1,18 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { Module} from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { AuthProxyMiddleware } from './auth-proxy.middleware';
+import { LoggerService } from 'src/common/log/logger.service';
 
 @Module({
-  controllers: [AuthController],
-  providers: [AuthService]
+  imports:[
+    HttpModule,
+    ConfigModule,
+  ],
+  providers: [
+    LoggerService,
+    AuthProxyMiddleware
+  ],
+  exports: [AuthProxyMiddleware]
 })
 export class AuthModule {}
