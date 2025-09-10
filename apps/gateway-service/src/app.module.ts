@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,6 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { PrismaModule } from './prisma/prisma.module';
+// import { RequestValidatorMiddleware } from './common/validators/request-validator.middleware';
+import { HealthModule } from './health/health.module';
+import { LoggerService } from './common/log/logger.service';
 
 @Module({
   imports: [
@@ -46,7 +49,8 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     PostsModule,
     CommentsModule,
-    PrismaModule
+    PrismaModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [
@@ -62,7 +66,11 @@ import { PrismaModule } from './prisma/prisma.module';
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter
-    }
+    },
+    LoggerService
   ],
+  exports: [
+    LoggerService
+  ]
 })
-export class AppModule {}
+export class AppModule{}
