@@ -56,7 +56,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     },
     {
       provide: APP_FILTER,
-      useClass: JwtExceptionFilter
+      useClass: GlobalExceptionFilter
     },
     {
       provide: APP_FILTER,
@@ -64,8 +64,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     },
     {
       provide: APP_FILTER,
-      useClass: GlobalExceptionFilter
-    }
+      useClass: JwtExceptionFilter
+    },
   ],
 })
 export class AppModule {}
