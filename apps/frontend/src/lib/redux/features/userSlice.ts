@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authClient from '@/lib/http/axios.auth';
 import type { AxiosError } from 'axios';
-import { UserState } from '@/types/userState.interface';
+import { UserLogin, UserState } from '@/types/user.interface';
 import { CustomErrorResponseDto } from '@/types/custom-error-response.interface';
 
 const initialState: UserState = {
@@ -20,7 +20,7 @@ const initialState: UserState = {
 // Async thunk for login
 export const loginUser = createAsyncThunk<
 	any, // replace 'any' with your success response type
-	{ email: string; password: string },
+	UserLogin,
 	{ rejectValue: string }
 >('user/login', async (credentials, { rejectWithValue }) => {
 	try {
@@ -69,8 +69,9 @@ const userSlice = createSlice({
 			state.refreshToken = null;
 			state.loading = false;
 			state.error = null;
-			localStorage.removeItem('accessToken');
-			localStorage.removeItem('refreshToken');
+		},
+		tokenRefreshed(state, action) {
+			state.accessToken = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -105,5 +106,5 @@ const userSlice = createSlice({
 	},
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, tokenRefreshed } = userSlice.actions;
 export default userSlice.reducer;

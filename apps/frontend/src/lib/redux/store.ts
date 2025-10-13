@@ -30,22 +30,28 @@ const persistedReducer = persistReducer(
 	combineReducers(rootReducer)
 );
 
-export const makeStore = () =>
-	configureStore({
-		reducer: persistedReducer,
-		devTools: process.env.NODE_ENV !== 'production',
-		middleware: (getDefaultMiddleware) =>
-			getDefaultMiddleware({
-				serializableCheck: {
-					ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-				},
-			}),
-	});
+// Create the store once as a singleton
+const store = configureStore({
+	reducer: persistedReducer,
+	devTools: process.env.NODE_ENV !== 'production',
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware({
+			serializableCheck: {
+				ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+			},
+		}),
+});
+
+// For backwards compatibility with existing code
+export const makeStore = () => store;
 
 // Required for PersistGate in your _app.tsx or root layout
-export const persistor = persistStore(makeStore());
+export const persistor = persistStore(store);
 
 // Type exports for hooks
-export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<ReturnType<typeof makeStore>['getState']>;
-export type AppDispatch = ReturnType<typeof makeStore>['dispatch'];
+export type AppStore = typeof store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+// Export the store as default for direct imports
+export default store;

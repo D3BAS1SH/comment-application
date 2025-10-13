@@ -4,35 +4,29 @@ import type {
 	InternalAxiosRequestConfig,
 	AxiosResponse,
 } from 'axios';
+import { getRefreshToken } from '@/lib/redux/hooks/user.hooks';
+import store from '@/lib/redux/store';
+import { logout } from '@/lib/redux/features/userSlice';
 
-const publicRoutes = ['/api/v1/auth/register', '/api/v1/auth/login'];
+// Import public routes function from client
+import { isPublicEndpoint } from './axios.client';
 
 let isRefreshing = false;
 let pendingRequests: ((token: string) => void)[] = [];
 
-function isPublicEndpoint(config: InternalAxiosRequestConfig): boolean {
-	return publicRoutes.some((endpoint) => config.url?.includes(endpoint));
-}
-
 async function refreshToken(): Promise<string> {
+	const refreshTokenValue = getRefreshToken();
 	const response: AxiosResponse<{ accessToken: string }> = await client.post(
 		'/auth/refresh',
 		{
-			refreshToken: localStorage.getItem('refreshToken'),
+			refreshToken: refreshTokenValue,
 		}
 	);
 	return response.data.accessToken;
 }
 
-client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-	if (isPublicEndpoint(config)) return config;
-
-	const token = localStorage.getItem('accessToken');
-	if (token) {
-		config.headers['Authorization'] = `Bearer ${token}`;
-	}
-	return config;
-});
+// Note: We removed the duplicate request interceptor
+// The token injection is already handled in axios.client.ts
 
 client.interceptors.response.use(
 	(response) => response,
@@ -55,7 +49,8 @@ client.interceptors.response.use(
 				isRefreshing = true;
 				try {
 					const newToken = await refreshToken();
-					localStorage.setItem('accessToken', newToken);
+					// Update token in Redux instead of localStorage
+					store.dispatch({ type: 'user/tokenRefreshed', payload: newToken });
 					pendingRequests.forEach((cb) => cb(newToken));
 					pendingRequests = [];
 					originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
@@ -63,8 +58,8 @@ client.interceptors.response.use(
 				} catch (refreshError) {
 					pendingRequests.forEach((cb) => cb(''));
 					pendingRequests = [];
-					localStorage.removeItem('accessToken');
-					localStorage.removeItem('refreshToken');
+					// Dispatch logout action to clear tokens in Redux
+					store.dispatch(logout());
 					window.location.href = '/login';
 					return Promise.reject(refreshError);
 				} finally {
