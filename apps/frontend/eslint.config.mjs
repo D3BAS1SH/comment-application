@@ -11,6 +11,14 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
 	...compat.extends('next/core-web-vitals', 'next/typescript'),
+	{
+		// Ignore third-party components
+		files: ['src/components/SplashCursor.tsx'],
+		rules: {
+			'prefer-const': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+		},
+	},
 ];
 
 export default eslintConfig;
