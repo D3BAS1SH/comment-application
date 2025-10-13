@@ -5,16 +5,29 @@ import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { FormInput } from '@/components/form-input';
 import TextType from '@/components/TextType';
+import { useUser } from '@/lib/redux/hooks/user.hooks';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 // Main Login Page Component
 const LoginPage: FC = () => {
 	const [emailState, setEmailState] = useState<string>('');
 	const [passwordState, setPasswordState] = useState<string>('');
+	const router = useRouter();
+	const {login} = useUser();
 
 	// Strongly type the form event
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
 		e.preventDefault();
 		// Handle login logic here
+		try {
+			await login({email: emailState, password: passwordState});
+			toast.success('Login Successful');
+			router.push('/dashboard');
+		} catch (error) {
+			toast.error('Login failed due to some unknown reason');
+			console.error(error);
+		}
 		console.log(`email: ${emailState}, password: ${passwordState}`);
 		console.log('Login form submitted');
 	};
