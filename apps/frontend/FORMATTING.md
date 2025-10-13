@@ -19,6 +19,7 @@ The Prettier configuration is defined in `.prettierrc` with the following key se
 ## File-specific Overrides
 
 Special formatting rules apply to:
+
 - JSON, YAML, and Markdown files (2 space indentation)
 - CSS/SCSS files (double quotes instead of single)
 

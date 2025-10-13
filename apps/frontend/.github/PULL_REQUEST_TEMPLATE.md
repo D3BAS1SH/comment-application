@@ -30,9 +30,9 @@
 
 <!-- Provide steps to test these changes -->
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Checklist
 
