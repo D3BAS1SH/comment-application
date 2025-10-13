@@ -7,7 +7,13 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(js|jsx|ts|tsx|json|css|scss|md|mdx)$')",
+		"lint-staged": "lint-staged",
+		"test:ci": "jest --ci --coverage --passWithNoTests",
+		"prepare": "cd ../.. && husky install apps/frontend/.husky",
+		"branch:check": "node scripts/branch-check.js"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",
@@ -38,6 +44,17 @@
 		"eslint": "^9",
 		"eslint-config-next": "15.3.5",
 		"tailwindcss": "^4",
-		"typescript": "^5"
+		"typescript": "^5",
+		"lint-staged": "^15.2.0",
+		"husky": "^9.0.1"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx}": [
+			"prettier --write",
+			"eslint --fix"
+		],
+		"*.{json,css,scss,md,mdx}": [
+			"prettier --write"
+		]
 	}
 }
