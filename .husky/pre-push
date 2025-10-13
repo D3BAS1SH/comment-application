@@ -1,0 +1,4 @@
+# Run tests and linting before push
+cd apps/frontend && npm run lint
+cd apps/frontend && npm run format:check
+cd apps/frontend && npm run test:ci || (echo "❌ Tests must pass before pushing!" && exit 1)

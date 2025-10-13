@@ -1,0 +1,16 @@
+# Check commit message format
+commit_msg=$(cat "$1")
+required_pattern="^(\[.+\] )?(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\(.+\))?: .+"
+
+if ! echo "$commit_msg" | grep -E "$required_pattern" > /dev/null; then
+  echo "❌ ERROR: Invalid commit message format."
+  echo "Commit message must follow the conventional commit format:"
+  echo "type(scope): message"
+  echo ""
+  echo "Example: feat(auth): add login functionality"
+  echo ""
+  echo "Types: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert"
+  echo ""
+  echo "Your commit: $commit_msg"
+  exit 1
+fi
