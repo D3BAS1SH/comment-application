@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Extract branch name
+branch_name=$(git symbolic-ref --short HEAD)
+commit_msg_file=$1
+
+# Check branch naming convention (feature/, bugfix/, hotfix/, release/)
+if ! echo "$branch_name" | grep -E "^(feature|bugfix|hotfix|release)/" > /dev/null; then
+  echo "❌ ERROR: Branch name should start with feature/, bugfix/, hotfix/, or release/"
+  echo "Your branch name: $branch_name"
+  exit 1
+fi
+
+# Add branch name to commit message if not already included
+if ! grep -q "$branch_name" "$commit_msg_file"; then
+  sed -i.bak -e "1s/^/[$branch_name] /" "$commit_msg_file"
+fi
