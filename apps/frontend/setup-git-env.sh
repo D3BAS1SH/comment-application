@@ -16,16 +16,17 @@ echo -e "${BLUE}Setting up Git environment for the frontend project...${NC}"
 echo -e "${YELLOW}Installing Node dependencies...${NC}"
 npm install || { echo -e "${RED}Failed to install dependencies${NC}"; exit 1; }
 
-# Setup Husky
-echo -e "${YELLOW}Setting up Husky git hooks...${NC}"
-npx husky install || { echo -e "${RED}Failed to install Husky${NC}"; exit 1; }
+# Setup Husky at the root level
+echo -e "${YELLOW}Setting up Husky git hooks at the root level...${NC}"
+cd ../.. && npm run prepare || { echo -e "${RED}Failed to install Husky${NC}"; exit 1; }
+cd - > /dev/null
 
 # Make hook files executable
 echo -e "${YELLOW}Making hook files executable...${NC}"
-chmod +x .husky/pre-commit
-chmod +x .husky/commit-msg
-chmod +x .husky/prepare-commit-msg
-chmod +x .husky/pre-push
+chmod +x ../../.husky/pre-commit
+chmod +x ../../.husky/commit-msg
+chmod +x ../../.husky/prepare-commit-msg
+chmod +x ../../.husky/pre-push
 
 # Configure local Git settings
 echo -e "${YELLOW}Configuring Git settings for this repository...${NC}"
