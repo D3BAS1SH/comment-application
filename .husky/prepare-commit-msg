@@ -2,14 +2,26 @@
 branch_name=$(git symbolic-ref --short HEAD)
 commit_msg_file=$1
 
-# Check branch naming convention (feature/, bugfix/, hotfix/, release/)
-if ! echo "$branch_name" | grep -E "^(feature|bugfix|hotfix|release)/" > /dev/null; then
+# Define allowed branch patterns
+special_branches="main|master|dev|develop|staging|production"
+feature_branches="feature|bugfix|hotfix|release"
+
+# Check if it's a special branch (no prefix required)
+if echo "$branch_name" | grep -E "^($special_branches)$" > /dev/null; then
+  # For special branches, don't add branch prefix to commit message
+  echo "✅ Special branch detected: $branch_name"
+  exit 0
+fi
+
+# Check branch naming convention for feature branches
+if ! echo "$branch_name" | grep -E "^($feature_branches)/" > /dev/null; then
   echo "❌ ERROR: Branch name should start with feature/, bugfix/, hotfix/, or release/"
   echo "Your branch name: $branch_name"
+  echo "Special branches (main, dev, staging, etc.) are allowed without prefix"
   exit 1
 fi
 
-# Add branch name to commit message if not already included
+# Add branch name to commit message if not already included (only for feature branches)
 if ! grep -q "$branch_name" "$commit_msg_file"; then
   # Windows-compatible version of sed
   temp_file=$(mktemp)
