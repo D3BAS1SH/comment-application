@@ -18,9 +18,9 @@
     "turbo": "^2.5.4",
     "typescript": "5.8.2"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.17.0",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=20.x"
   },
   "lint-staged": {
     "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
