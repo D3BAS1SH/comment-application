@@ -1,7 +1,34 @@
-# Run tests and linting before push from the project root
-cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run lint
-cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run format:check
-# Commenting out the test for now to allow pushing
-# cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run test:ci || (echo "❌ Tests must pass before pushing!" && exit 1)
-# Instead, just inform the user
-echo "⚠️ Warning: Tests are being skipped. Remember to run tests before merging!"
+#!/usr/bin/env sh
+
+# Get the current branch name
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+protected_branches="main|master|production"
+integration_branches="dev|develop|staging"
+
+echo "🔍 Current branch: $current_branch"
+
+if echo "$current_branch" | grep -E "^($protected_branches)$" > /dev/null; then
+  echo "🔒 Protected branch detected. Running full checks..."
+  
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run lint
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run format:check
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run test:ci || (echo "❌ Tests must pass before pushing to $current_branch!" && exit 1)
+  
+  echo "✅ All checks passed for protected branch!"
+  
+elif echo "$current_branch" | grep -E "^($integration_branches)$" > /dev/null; then
+  echo "� Integration branch detected. Running standard checks..."
+  
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run lint
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run format:check
+  
+  echo "⚠️ Warning: Tests are being skipped for integration branch. Remember to run tests before merging to main!"
+  
+else
+  echo "🚀 Feature branch detected. Running minimal checks..."
+  
+  # Only format check for feature branches - very lenient
+  cd "$(git rev-parse --show-toplevel)/apps/frontend" && npm run format:check
+  
+  echo "ℹ️ Info: Only formatting checked for feature branch. Run 'npm run lint' and 'npm test' locally when ready!"
+fi

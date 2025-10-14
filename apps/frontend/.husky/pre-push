@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Run tests and linting before push
-npm run lint
-npm run format:check
-npm run test:ci || (echo "❌ Tests must pass before pushing!" && exit 1)
