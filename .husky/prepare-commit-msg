@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Extract branch name
 branch_name=$(git symbolic-ref --short HEAD)
 commit_msg_file=$1
@@ -14,5 +11,9 @@ fi
 
 # Add branch name to commit message if not already included
 if ! grep -q "$branch_name" "$commit_msg_file"; then
-  sed -i.bak -e "1s/^/[$branch_name] /" "$commit_msg_file"
+  # Windows-compatible version of sed
+  temp_file=$(mktemp)
+  echo "[$branch_name] $(cat $commit_msg_file)" > "$temp_file"
+  cat "$temp_file" > "$commit_msg_file"
+  rm "$temp_file"
 fi

@@ -6,12 +6,8 @@ import { HealthService } from './health.service';
 import { HealthController } from './health.controller';
 
 @Module({
-  imports: [
-    TerminusModule,
-    HttpModule,
-    PrometheusModule.register()
-  ],
+  imports: [TerminusModule, HttpModule, PrometheusModule.register()],
   providers: [HealthService],
-  controllers: [HealthController]
+  controllers: [HealthController],
 })
 export class HealthModule {}

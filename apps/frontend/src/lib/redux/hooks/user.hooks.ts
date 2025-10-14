@@ -13,7 +13,7 @@ import { loginUser } from '../features/userSlice';
  * @returns The current auth state
  */
 export const getAuthState = (): UserState => {
-    return store.getState().auth;
+  return store.getState().auth;
 };
 
 /**
@@ -21,7 +21,7 @@ export const getAuthState = (): UserState => {
  * @returns The current access token or null
  */
 export const getAccessToken = (): string | null => {
-    return getAuthState().accessToken;
+  return getAuthState().accessToken;
 };
 
 /**
@@ -29,7 +29,7 @@ export const getAccessToken = (): string | null => {
  * @returns The current refresh token or null
  */
 export const getRefreshToken = (): string | null => {
-    return getAuthState().refreshToken;
+  return getAuthState().refreshToken;
 };
 
 /**
@@ -37,8 +37,8 @@ export const getRefreshToken = (): string | null => {
  * @returns True if the user is authenticated
  */
 export const isAuthenticated = (): boolean => {
-    const { id, accessToken } = getAuthState();
-    return Boolean(id && accessToken);
+  const { id, accessToken } = getAuthState();
+  return Boolean(id && accessToken);
 };
 
 /**
@@ -46,7 +46,7 @@ export const isAuthenticated = (): boolean => {
  * @returns The current user ID or null
  */
 export const getUserId = (): string | null => {
-    return getAuthState().id;
+  return getAuthState().id;
 };
 
 /**
@@ -54,24 +54,23 @@ export const getUserId = (): string | null => {
  * @returns The user's full name or empty string
  */
 export const getUserFullName = (): string => {
-    const { firstName, lastName } = getAuthState();
-    if (firstName && lastName) {
-        return `${firstName} ${lastName}`;
-    } else if (firstName) {
-        return firstName;
-    } else if (lastName) {
-        return lastName;
-    }
-    return '';
+  const { firstName, lastName } = getAuthState();
+  if (firstName && lastName) {
+    return `${firstName} ${lastName}`;
+  } else if (firstName) {
+    return firstName;
+  } else if (lastName) {
+    return lastName;
+  }
+  return '';
 };
 
 export const useUser = () => {
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
+  const login = (credentials: UserLogin) => dispatch(loginUser(credentials));
 
-    const login = (credentials:UserLogin) => dispatch(loginUser(credentials))
-
-    return {
-        login
-    }
-}
+  return {
+    login,
+  };
+};

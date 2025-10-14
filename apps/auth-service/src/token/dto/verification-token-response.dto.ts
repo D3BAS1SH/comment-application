@@ -1,16 +1,21 @@
-import { IsBoolean, IsEmail, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class VerificationTokenResponse {
+  @IsBoolean()
+  isVerified: boolean;
 
-    @IsBoolean()
-    isVerified: boolean;
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
-    @IsEmail()
-    @IsNotEmpty()
-    email: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(150)
-    message: string;
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(150)
+  message: string;
 }

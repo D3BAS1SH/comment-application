@@ -4,10 +4,10 @@ import { SignedUploadURLDto } from './dto/signed-uploard-url.dto';
 
 @Controller('cloudinary-utility')
 export class CloudinaryUtilityController {
-    constructor(private readonly cloudinaryService: CloudinaryUtilityService) {}
+  constructor(private readonly cloudinaryService: CloudinaryUtilityService) {}
 
-    @Get('upload-url')
-    async getUploadSignature(): Promise<SignedUploadURLDto>{
-        return this.cloudinaryService.generateSignedUploadUrl()
-    }
+  @Get('upload-url')
+  getUploadSignature(): SignedUploadURLDto {
+    return this.cloudinaryService.generateSignedUploadUrl();
+  }
 }

@@ -3,7 +3,7 @@
  * Validates that branch names follow the team's conventions
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 // Get current branch name
 function getCurrentBranch() {
@@ -24,7 +24,7 @@ function validateBranchName(branchName) {
     hotfix: /^hotfix\/[a-z0-9-]+$/,
     release: /^release\/v\d+\.\d+(\.\d+)?$/,
     main: /^main$/,
-    develop: /^develop$/
+    develop: /^develop$/,
   };
 
   // Check if branch name matches any of the patterns
@@ -51,14 +51,14 @@ function validateBranchName(branchName) {
   console.error('  ✗ feat/new-feature');
   console.error('  ✗ feature_user_profile');
   console.error('  ✗ fix-bug\n');
-  
+
   return false;
 }
 
 // Main function
 function main() {
   const branchName = getCurrentBranch();
-  
+
   if (!validateBranchName(branchName)) {
     process.exit(1);
   }

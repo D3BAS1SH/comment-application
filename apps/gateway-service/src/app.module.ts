@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -19,58 +19,54 @@ import { LoggerService } from './common/log/logger.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
-    ThrottlerModule.forRootAsync(
-      {
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => ({
-          throttlers: [
-            {
-              name: 'auth',
-              limit: config.getOrThrow<number>('THROTTLE_AUTH_LIMIT'),
-              ttl: config.getOrThrow<number>('THROTTLE_AUTH_TTL')
-            },
-            {
-              name: 'posts',
-              limit: config.getOrThrow<number>('THROTTLE_POST_LIMIT'),
-              ttl: config.getOrThrow<number>('THROTTLE_POST_TTL')
-            },
-            {
-              name: 'comments',
-              limit: config.getOrThrow<number>('THROTTLE_COMMENT_LIMIT'),
-              ttl: config.getOrThrow<number>('THROTTLE_COMMENT_TTL')
-            }
-          ]
-        })
-      }
-    ),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'auth',
+            limit: config.getOrThrow<number>('THROTTLE_AUTH_LIMIT'),
+            ttl: config.getOrThrow<number>('THROTTLE_AUTH_TTL'),
+          },
+          {
+            name: 'posts',
+            limit: config.getOrThrow<number>('THROTTLE_POST_LIMIT'),
+            ttl: config.getOrThrow<number>('THROTTLE_POST_TTL'),
+          },
+          {
+            name: 'comments',
+            limit: config.getOrThrow<number>('THROTTLE_COMMENT_LIMIT'),
+            ttl: config.getOrThrow<number>('THROTTLE_COMMENT_TTL'),
+          },
+        ],
+      }),
+    }),
     AuthModule,
     PostsModule,
     CommentsModule,
     PrismaModule,
-    HealthModule
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_FILTER,
-      useClass: JwtExceptionFilter
+      useClass: JwtExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: PrismaClientExceptionFilter
+      useClass: PrismaClientExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: GlobalExceptionFilter
+      useClass: GlobalExceptionFilter,
     },
-    LoggerService
+    LoggerService,
   ],
-  exports: [
-    LoggerService
-  ]
+  exports: [LoggerService],
 })
-export class AppModule{}
+export class AppModule {}

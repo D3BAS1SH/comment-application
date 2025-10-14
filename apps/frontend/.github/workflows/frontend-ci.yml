@@ -2,11 +2,11 @@ name: Frontend CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'apps/frontend/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'apps/frontend/**'
 
@@ -17,72 +17,72 @@ jobs:
     defaults:
       run:
         working-directory: ./apps/frontend
-        
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Check formatting
         run: pnpm run format:check
-        
+
       - name: Lint
         run: pnpm run lint
-  
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./apps/frontend
-        
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Run tests
         run: pnpm run test:ci
-        
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./apps/frontend/coverage
           flags: frontend
-  
+
   build:
     name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./apps/frontend
-        
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Build
         run: pnpm run build
