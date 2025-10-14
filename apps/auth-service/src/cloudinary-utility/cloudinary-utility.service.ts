@@ -8,11 +8,11 @@ export class CloudinaryUtilityService {
   constructor(private configService: ConfigService) {
     cloudinary.config({
       cloud_name: this.configService.getOrThrow<string>(
-        'CLOUDINARY_CLOUD_NAME',
+        'CLOUDINARY_CLOUD_NAME'
       ),
       api_key: this.configService.getOrThrow<string>('CLOUDINARY_API_KEY'),
       api_secret: this.configService.getOrThrow<string>(
-        'CLOUDINARY_API_SECRET',
+        'CLOUDINARY_API_SECRET'
       ),
       // secure: true
     });
@@ -21,22 +21,22 @@ export class CloudinaryUtilityService {
   generateSignedUploadUrl(): SignedUploadURLDto {
     try {
       const uploadPreset = this.configService.getOrThrow<string>(
-        'CLOUDINARY_UPLOAD_PRESET',
+        'CLOUDINARY_UPLOAD_PRESET'
       );
 
       if (!uploadPreset) {
         throw new InternalServerErrorException(
-          'Cloudinary upload preset not found in the environment variables',
+          'Cloudinary upload preset not found in the environment variables'
         );
       }
 
       const cloudname = this.configService.getOrThrow<string>(
-        'CLOUDINARY_CLOUD_NAME',
+        'CLOUDINARY_CLOUD_NAME'
       );
       const apikey =
         this.configService.getOrThrow<string>('CLOUDINARY_API_KEY');
       const secretKey = this.configService.getOrThrow<string>(
-        'CLOUDINARY_API_SECRET',
+        'CLOUDINARY_API_SECRET'
       );
       const timestamp = Math.round(Date.now() / 1000);
       // const expires_at = timestamp + 600;
@@ -47,7 +47,7 @@ export class CloudinaryUtilityService {
           folder: 'authService',
           upload_preset: uploadPreset,
         },
-        secretKey,
+        secretKey
       );
 
       return {
@@ -61,7 +61,7 @@ export class CloudinaryUtilityService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(
-        'Failed to generate Cloudinary signed Url',
+        'Failed to generate Cloudinary signed Url'
       );
     }
   }

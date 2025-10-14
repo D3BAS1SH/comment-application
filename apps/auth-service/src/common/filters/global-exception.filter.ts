@@ -83,7 +83,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status,
       request.url,
       message,
-      errorCode,
+      errorCode
     );
 
     response.status(status).json(errorDto);

@@ -15,11 +15,11 @@ import { CustomErrorResponseDto } from '../dto/error-response.dto';
 export class JwtExceptionFilter implements ExceptionFilter {
   constructor(
     private readonly tokenService: TokenService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
   async catch(
     exception: TokenExpiredError | JsonWebTokenError,
-    host: ArgumentsHost,
+    host: ArgumentsHost
   ) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
@@ -56,22 +56,22 @@ export class JwtExceptionFilter implements ExceptionFilter {
     }
 
     console.log(
-      '--------------------Error at JWT Exception--------------------',
+      '--------------------Error at JWT Exception--------------------'
     );
     console.log(`${exception.name}: ${exception.message}`);
     console.log(message);
     console.log(
-      '--------------------Error at JWT Exception--------------------',
+      '--------------------Error at JWT Exception--------------------'
     );
     console.error(exception);
     console.log(
-      '----------------END OF Error at JWT Exception-----------------',
+      '----------------END OF Error at JWT Exception-----------------'
     );
 
     response
       .status(status)
       .json(
-        new CustomErrorResponseDto(status, request.url, message, errorCode),
+        new CustomErrorResponseDto(status, request.url, message, errorCode)
       );
   }
 }

@@ -6,19 +6,19 @@ import { ConfigService } from '@nestjs/config';
 export class EmailService {
   constructor(
     private mailerService: MailerService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   async sendVerificationEmail(
     to: string,
     userName: string,
-    token: string,
+    token: string
   ): Promise<void> {
     try {
       console.log('Sending Verification Mail initiated.');
       const appBaseUrl = this.configService.get<string>(
         'APP_BASE_URL',
-        'http://localhost:3033',
+        'http://localhost:3033'
       );
       const verificationLink = `${appBaseUrl}/api/v1/users/verify-email?token=${token}`;
       console.log('Sending Verification Mail Link Generation.');
@@ -44,18 +44,18 @@ export class EmailService {
   async sendForgotPasswordEmail(
     to: string,
     userName: string,
-    token: string,
+    token: string
   ): Promise<void> {
     try {
       console.log('Sending Forgot Passwor Email Initiated');
       const appBaseUrl = this.configService.get<string>(
         'APP_BASE_URL',
-        'http://localhost:3033',
+        'http://localhost:3033'
       );
       const verificationLink = `${appBaseUrl}/api/v1/users/reset-password-verify?token=${token}`;
       const expirationMinutes = this.configService.get<number>(
         'EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES',
-        30,
+        30
       );
       console.log('Sending Verification Mail Link Generation.');
 
@@ -78,7 +78,7 @@ export class EmailService {
       console.error(error);
       throw new InternalServerErrorException(
         error,
-        'Something went wrong while sending email.',
+        'Something went wrong while sending email.'
       );
     }
   }

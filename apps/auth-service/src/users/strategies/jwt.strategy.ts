@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     console.log('🔍 JwtStrategy - CacheManager injected:', !!this.cacheManager);
     console.log(
       '🔍 JwtStrategy - CacheManager type:',
-      typeof this.cacheManager,
+      typeof this.cacheManager
     );
   }
 
@@ -48,7 +48,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     console.log(isBlacklisted);
     if (isBlacklisted) {
       throw new UnauthorizedException(
-        'You are unauthorized to access as the token is revoked and you have been logged out',
+        'You are unauthorized to access as the token is revoked and you have been logged out'
       );
     }
     console.log(`Is blacklited? : ${!!isBlacklisted}`);
@@ -66,7 +66,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     if (!user.isVerified) {
       throw new UnauthorizedException(
-        'User is not verified. Please Check your inbox or verify yourself.',
+        'User is not verified. Please Check your inbox or verify yourself.'
       );
     }
 
@@ -78,7 +78,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       { ...user, ...payload },
       {
         excludeExtraneousValues: true,
-      },
+      }
     );
   }
 }

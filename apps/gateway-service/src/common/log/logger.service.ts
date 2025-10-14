@@ -19,7 +19,7 @@ export class LoggerService {
         winston.format.json(),
         winston.format.colorize(),
         winston.format.ms(),
-        winston.format.label(),
+        winston.format.label()
       ),
       defaultMeta: {
         service: 'api-gateway',
@@ -40,9 +40,9 @@ export class LoggerService {
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.colorize(),
-            winston.format.simple(),
+            winston.format.simple()
           ),
-        }),
+        })
       );
     }
   }

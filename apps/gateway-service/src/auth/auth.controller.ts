@@ -23,7 +23,7 @@ export class AuthController {
   proxyAuthRequests(
     @Req() req: Request,
     @Res() res: Response,
-    @Next() next: NextFunction,
+    @Next() next: NextFunction
   ) {
     next();
   }

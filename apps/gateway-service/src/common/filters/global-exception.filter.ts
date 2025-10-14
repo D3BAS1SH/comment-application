@@ -62,7 +62,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.logger.logError(
         'Unhandled error: ',
         this.toServiceError(exception),
-        correlationId as string,
+        correlationId as string
       );
       console.error('Unhandled error: ', exception);
     }

@@ -14,14 +14,14 @@ export class HealthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly health: HealthIndicatorService,
+    private readonly health: HealthIndicatorService
   ) {}
 
   async checkAuthService(): Promise<HealthIndicatorResult> {
     try {
       const authServiceUrl = this.configService.get<string>('AUTH_SERVICE_URL');
       const response = await firstValueFrom(
-        this.httpService.get(`${authServiceUrl}/health`),
+        this.httpService.get(`${authServiceUrl}/health`)
       );
       return {
         auth_service: {
@@ -121,7 +121,7 @@ export class HealthService {
     ]);
 
     const status = results.every(
-      (result) => Object.values(result)[0].status === 'up',
+      (result) => Object.values(result)[0].status === 'up'
     );
 
     const details = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});

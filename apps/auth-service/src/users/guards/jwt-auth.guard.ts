@@ -14,7 +14,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     user: TUser,
     info: any,
     _context: ExecutionContext,
-    _status?: any,
+    _status?: any
   ): TUser {
     if (info instanceof TokenExpiredError) {
       throw info; // Will be caught by your JwtExceptionFilter

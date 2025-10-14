@@ -24,7 +24,7 @@ export class TokenService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   /**
@@ -98,7 +98,7 @@ export class TokenService {
    */
   async refreshToken(
     refreshToken: string,
-    payload: tokenPayload,
+    payload: tokenPayload
   ): Promise<CreateTokenDto> {
     console.log('----------------Token Service Refresh Debug-------------');
     console.log(payload);
@@ -121,7 +121,7 @@ export class TokenService {
     const newRefreshToken = await this.jwtService.signAsync(newPayload, {
       secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       expiresIn: this.configService.getOrThrow<string>(
-        'JWT_REFRESH_EXPIRATION',
+        'JWT_REFRESH_EXPIRATION'
       ),
     });
 
@@ -172,7 +172,7 @@ export class TokenService {
    * @throws InternalServerErrorException - If an error occurs during the operation.
    */
   async invalidateRefreshToken(
-    refreshTokendto: RefreshTokenDto,
+    refreshTokendto: RefreshTokenDto
   ): Promise<void> {
     try {
       //Remove the specific token
@@ -193,7 +193,7 @@ export class TokenService {
 
   async invalidateRefreshTokenBySessionToken(
     sessionToken: string,
-    userId: string,
+    userId: string
   ): Promise<void> {
     if (!sessionToken) {
       throw new BadRequestException('session token is required.');
@@ -237,12 +237,12 @@ export class TokenService {
    */
   async createVerificationToken(
     userId: string,
-    tx?: Prisma.TransactionClient,
+    tx?: Prisma.TransactionClient
   ): Promise<VerificationTokenDto> {
     const token = uuidv4();
     const expirationMinutes = this.configService.get<number>(
       'EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES',
-      30,
+      30
     );
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
 
@@ -291,7 +291,7 @@ export class TokenService {
    * @throws InternalServerErrorException - For any unexpected error during the process.
    */
   async verifyVerificationToken(
-    token: string,
+    token: string
   ): Promise<VerificationTokenResponse> {
     const verificationRecord = await this.prisma.verificationToken.findUnique({
       where: {
@@ -354,7 +354,7 @@ export class TokenService {
 
   async createPasswordResetToken(
     userId: string,
-    tx?: Prisma.TransactionClient,
+    tx?: Prisma.TransactionClient
   ): Promise<string> {
     const currentPrismaClient = tx || this.prisma;
     const ExistenceOfPasswordResetToken =
@@ -368,7 +368,7 @@ export class TokenService {
       ExistenceOfPasswordResetToken.expiresAt > new Date()
     ) {
       throw new ConflictException(
-        'An active password reset link is shared to your email. please check',
+        'An active password reset link is shared to your email. please check'
       );
     }
 
@@ -376,7 +376,7 @@ export class TokenService {
     const hashedResetToken = this.generateHashedToken(resetToken);
     const expirationMinutes = this.configService.get<number>(
       'EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES',
-      30,
+      30
     );
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
 
@@ -411,7 +411,7 @@ export class TokenService {
     });
     if (!ExistenceOfToken || ExistenceOfToken.expiresAt < new Date()) {
       throw new NotFoundException(
-        'Token not found or invalid token or the token is expired',
+        'Token not found or invalid token or the token is expired'
       );
     }
     return ExistenceOfToken.user;
@@ -428,7 +428,7 @@ export class TokenService {
       console.log(error);
       throw new InternalServerErrorException(
         error,
-        'Something went wrong at hashing the token',
+        'Something went wrong at hashing the token'
       );
     }
   }

@@ -18,7 +18,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-    }),
+    })
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.use(cookieParser());
@@ -47,7 +47,7 @@ async function bootstrap() {
       noSniff: true,
       referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
       xssFilter: true,
-    }),
+    })
   );
 
   const authProxyMiddleware = app.get(AuthProxyMiddleware);
@@ -79,7 +79,7 @@ async function bootstrap() {
 
   await app.listen(port ?? 3001, () => {
     console.log(
-      `--------------------------GATE WAY LISTENING ON PORT: ${port}--------------------------`,
+      `--------------------------GATE WAY LISTENING ON PORT: ${port}--------------------------`
     );
   });
 }

@@ -11,7 +11,7 @@ import { LoggerService } from 'src/common/log/logger.service';
 type RequestHandler = (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => Promise<unknown>;
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
   >;
   constructor(
     private readonly configService: ConfigService,
-    private readonly logger: LoggerService,
+    private readonly logger: LoggerService
   ) {
     const authServiceUrl =
       this.configService.getOrThrow<string>('AUTH_SERVICE_URL');
@@ -63,7 +63,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
         error: (
           err: Error & { code?: string },
           req: Request,
-          res: Response | http.ServerResponse,
+          res: Response | http.ServerResponse
         ) => {
           console.error('Auth Proxy Error:', {
             message: err?.message || 'Unknown error',
@@ -82,7 +82,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
 
     // Type-safe binding of the makeRequest method
     const boundMakeRequest: RequestHandler = this.makeRequest.bind(
-      this,
+      this
     ) as RequestHandler;
     this.circuitBreaker = new CircuitBreaker(boundMakeRequest, {
       timeout: 10000, // 10 seconds
@@ -102,7 +102,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
           statusCode: 503,
           code: 'CIRCUIT_OPEN',
         },
-        'CIRCUIT',
+        'CIRCUIT'
       );
     });
 
@@ -115,7 +115,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
           statusCode: 503,
           code: 'CIRCUIT_HALF_OPEN',
         },
-        'CIRCUIT',
+        'CIRCUIT'
       );
     });
 
@@ -128,13 +128,13 @@ export class AuthProxyMiddleware implements NestMiddleware {
           statusCode: 200,
           code: 'CIRCUIT_CLOSED',
         },
-        'CIRCUIT',
+        'CIRCUIT'
       );
     });
 
     // Type-safe binding of the fallback handler
     const boundFallback: RequestHandler = this.handleFallback.bind(
-      this,
+      this
     ) as RequestHandler;
     this.circuitBreaker.fallback(boundFallback);
   }
@@ -162,7 +162,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
    */
   private sendErrorResponse(
     res: Response | http.ServerResponse,
-    err: Error & { code?: string },
+    err: Error & { code?: string }
   ): void {
     try {
       // Check if this is an HTTP response object (not a socket)
@@ -179,7 +179,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
               error: message,
               code: errorCode,
               timestamp: new Date().toISOString(),
-            }),
+            })
           );
         }
       }
@@ -241,7 +241,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
     req: Request,
     res: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: NextFunction,
+    next: NextFunction
   ): Promise<boolean> {
     // Mark promise as handled with await to address floating promise warning
     const result = await new Promise<boolean>((resolve, reject) => {
@@ -266,7 +266,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
     req: Request,
     res: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: NextFunction,
+    next: NextFunction
   ): Response {
     return res.status(503).json({
       error: 'Service Temporarily Unavailable',
@@ -302,7 +302,7 @@ export class AuthProxyMiddleware implements NestMiddleware {
           code: error.code || 'UNKNOWN_ERROR',
           details: error,
         },
-        correlationId,
+        correlationId
       );
 
       this.sendErrorResponse(res, error);

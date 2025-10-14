@@ -29,7 +29,7 @@ import { ResetPasswordBodyDto } from './dto/reset-password.dto';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   @Post('register')
@@ -46,11 +46,11 @@ export class UsersController {
   @Post('login')
   async login(
     @Body() loginUser: LoginUser,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true }) response: Response
   ) {
     const loginResponse = await this.usersService.login(loginUser);
     const expirationValue = this.configService.getOrThrow<StringValue>(
-      'JWT_REFRESH_EXPIRATION',
+      'JWT_REFRESH_EXPIRATION'
     );
     const maxAgeMilisecondsRefreshToken = ms(expirationValue);
     response.cookie('refreshToken', loginResponse.refreshToken, {
@@ -69,7 +69,7 @@ export class UsersController {
   @UseGuards(RefreshGuard)
   async refreshToken(
     @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true }) response: Response
   ) {
     console.log('-----------At refresh Controller-------');
     console.log(request.user);
@@ -77,10 +77,10 @@ export class UsersController {
     const validRefreshTokenPayload = request.user as RefreshTokenResponse;
     //Making a call to user service to refresh the token
     const refreshTokenResponse = await this.usersService.refreshMyToken(
-      validRefreshTokenPayload,
+      validRefreshTokenPayload
     );
     const expirationValue = this.configService.getOrThrow<StringValue>(
-      'JWT_REFRESH_EXPIRATION',
+      'JWT_REFRESH_EXPIRATION'
     );
     const maxAgeMilisecondsRefreshToken = ms(expirationValue);
     response.cookie('refreshToken', refreshTokenResponse.refreshToken, {
@@ -98,14 +98,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async logoutUser(
     @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true }) response: Response
   ): Promise<{ message: string }> {
     const userPayload = request.user as ValidUserDto;
     // console.log(request.cookies);
     const accessToken = request.headers.authorization?.replace('Bearer ', '');
     if (!accessToken) {
       throw new BadRequestException(
-        'Authorization field incorrect or not sent at all',
+        'Authorization field incorrect or not sent at all'
       );
     }
     // console.log(accessToken);
@@ -122,7 +122,7 @@ export class UsersController {
 
   @Post('forget-password')
   async forgetPasswordInitiate(
-    @Body() uniqueIdentifier: ForgetPasswordBodyDto,
+    @Body() uniqueIdentifier: ForgetPasswordBodyDto
   ) {
     const forgotPasswordInitiatorResult =
       await this.usersService.forgotPasswordInit(uniqueIdentifier);

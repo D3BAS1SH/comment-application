@@ -29,7 +29,7 @@ export class CustomErrorResponseDto {
     statusCode: number,
     path: string,
     message: string,
-    errorCode?: string,
+    errorCode?: string
   ) {
     this.message = message;
     this.path = path;

@@ -23,7 +23,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
   private toServiceError(
     exception: Prisma.PrismaClientKnownRequestError,
-    status: number,
+    status: number
   ): ServiceError {
     return {
       name: 'PrismaError',
@@ -40,7 +40,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
   catch(
     exception: Prisma.PrismaClientKnownRequestError,
-    host: ArgumentsHost,
+    host: ArgumentsHost
   ): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -115,16 +115,16 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
       default: {
         console.log(
-          '--------------------Error at Prisma Exception--------------------',
+          '--------------------Error at Prisma Exception--------------------'
         );
         console.log(`${exception.code}: ${exception.message}`);
         console.log(message);
         console.log(
-          '--------------------Error at Prisma Exception--------------------',
+          '--------------------Error at Prisma Exception--------------------'
         );
         console.error(exception);
         console.log(
-          '----------------END OF Error at Prisma Exception-----------------',
+          '----------------END OF Error at Prisma Exception-----------------'
         );
         break;
       }
@@ -133,7 +133,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     this.logger.logError(
       'prisma',
       this.toServiceError(exception, status),
-      correlationId,
+      correlationId
     );
 
     response

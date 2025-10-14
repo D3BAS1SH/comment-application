@@ -31,7 +31,7 @@ export class UsersService {
     private readonly prismaService: PrismaService,
     private readonly tokenService: TokenService,
     private readonly emailService: EmailService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   /**
@@ -61,7 +61,7 @@ export class UsersService {
         existenceAndVerificationOfUser.VerificationToken.expiresAt > new Date()
       ) {
         throw new ConflictException(
-          'Check In the email, we have sent you the verification mail. Or Try again after 15 minutes.',
+          'Check In the email, we have sent you the verification mail. Or Try again after 15 minutes.'
         );
       }
       throw new ConflictException(`User already exists with ${email}.`);
@@ -87,7 +87,7 @@ export class UsersService {
 
         if (!userDocument) {
           throw new InternalServerErrorException(
-            'User creation Failed for some reason.',
+            'User creation Failed for some reason.'
           );
         } else {
           console.log(`User created successfully with email: ${email}`);
@@ -101,7 +101,7 @@ export class UsersService {
         await this.emailService.sendVerificationEmail(
           email,
           firstName,
-          currentVerificationToken.token,
+          currentVerificationToken.token
         );
         console.log('Successfully Email sent');
 
@@ -113,7 +113,7 @@ export class UsersService {
       {
         maxWait: 5000,
         timeout: 15000,
-      },
+      }
     );
 
     return transactionResult;
@@ -168,7 +168,7 @@ export class UsersService {
 
     if (!ExistenceOfUser) {
       throw new UnauthorizedException(
-        `User with the email: ${loginUser.email} doesn't exists`,
+        `User with the email: ${loginUser.email} doesn't exists`
       );
     }
 
@@ -184,11 +184,11 @@ export class UsersService {
         });
         if (!cleanUp) {
           throw new InternalServerErrorException(
-            'Clean up failed for the user',
+            'Clean up failed for the user'
           );
         }
         throw new InternalServerErrorException(
-          'Something went while registering! Register again.',
+          'Something went while registering! Register again.'
         );
       } else {
         //User is Unverified but have the verification token but Token has exipred So clean up and register again
@@ -201,16 +201,16 @@ export class UsersService {
           });
           if (!cleanUp) {
             throw new InternalServerErrorException(
-              'Clean up failed for the user',
+              'Clean up failed for the user'
             );
           }
           throw new ConflictException(
-            'Your verification Token has expired! Register again.',
+            'Your verification Token has expired! Register again.'
           );
         } else {
           //User is Unverified but have the verification token but Token has is active
           throw new ConflictException(
-            `A Verification Token was sent to the email: ${loginUser.email}, Check and verify the account before proceeding`,
+            `A Verification Token was sent to the email: ${loginUser.email}, Check and verify the account before proceeding`
           );
         }
       }
@@ -219,13 +219,13 @@ export class UsersService {
     if (ExistenceOfUser.tokens.length === 3) {
       //TODO: redirect to a page for invalidating the tokens.
       throw new ConflictException(
-        'You have already logged in 3 times. Please logout and try again.',
+        'You have already logged in 3 times. Please logout and try again.'
       );
     }
 
     const verifyThePasswordResponse = await this.verifyPassword(
       loginUser.password,
-      ExistenceOfUser.password,
+      ExistenceOfUser.password
     );
     if (!verifyThePasswordResponse) {
       throw new UnauthorizedException('Incorrect Password');
@@ -251,12 +251,12 @@ export class UsersService {
   }
 
   async refreshMyToken(
-    validatePayload: RefreshTokenResponse,
+    validatePayload: RefreshTokenResponse
   ): Promise<CreateTokenDto> {
     //Making call to token service to generate new access and refresh token.
     const result = await this.tokenService.refreshToken(
       validatePayload.refreshToken,
-      validatePayload,
+      validatePayload
     );
     if (!result) {
       throw new InternalServerErrorException('Token Refreshing gone wrong');
@@ -273,13 +273,13 @@ export class UsersService {
    */
   async logout(
     validUserPayload: ValidUserDto,
-    accessToken: string,
+    accessToken: string
   ): Promise<string | void> {
     // console.log(validUserPayload);
     const { exp, sessionToken, sub } = validUserPayload;
     if (!exp) {
       throw new BadRequestException(
-        'exp field is not found or with in valid field value.',
+        'exp field is not found or with in valid field value.'
       );
     }
     const getTimeSpan = this.calculateTimeLeftToExpire(exp);
@@ -288,25 +288,25 @@ export class UsersService {
 
     const timeInMilliseconds = getTimeSpan * 1000;
     console.log(
-      `Token Time Span in seconds: ${getTimeSpan}, in milli seconds: ${timeInMilliseconds}`,
+      `Token Time Span in seconds: ${getTimeSpan}, in milli seconds: ${timeInMilliseconds}`
     );
 
     await this.cacheManager.set(
       tokenToBlacklist,
       'blacklist',
-      timeInMilliseconds,
+      timeInMilliseconds
     );
     console.log(`Access Token added to blacklist for ${getTimeSpan} seconds`);
 
     await this.tokenService.invalidateRefreshTokenBySessionToken(
       sessionToken,
-      sub,
+      sub
     );
     return 'success';
   }
 
   async forgotPasswordInit(
-    forgotPasswordBody: ForgetPasswordBodyDto,
+    forgotPasswordBody: ForgetPasswordBodyDto
   ): Promise<string> {
     const ExistenceOfUser = await this.prismaService.user.findUniqueOrThrow({
       where: {
@@ -320,7 +320,7 @@ export class UsersService {
     if (!ExistenceOfUser.isVerified) {
       if (!ExistenceOfUser.VerificationToken) {
         throw new BadRequestException(
-          'Something has went wrong. Contact Admin',
+          'Something has went wrong. Contact Admin'
         );
       } else if (ExistenceOfUser.VerificationToken.expiresAt < new Date()) {
         await this.prismaService.user.delete({
@@ -329,29 +329,29 @@ export class UsersService {
           },
         });
         throw new BadRequestException(
-          'Your account verification time limit has expired. Please register again, as your account will be purged.',
+          'Your account verification time limit has expired. Please register again, as your account will be purged.'
         );
       } else {
         throw new BadRequestException(
-          'An verification token has sent to your email. Please check and verify yourself before movnig further.',
+          'An verification token has sent to your email. Please check and verify yourself before movnig further.'
         );
       }
     }
 
     const resetToken = await this.tokenService.createPasswordResetToken(
-      ExistenceOfUser.id,
+      ExistenceOfUser.id
     );
     await this.emailService.sendForgotPasswordEmail(
       ExistenceOfUser.email,
       ExistenceOfUser.firstName,
-      resetToken,
+      resetToken
     );
 
     return 'Verification Link sent';
   }
 
   async resetPassword(
-    resetPasswordBody: ResetPasswordBodyDto,
+    resetPasswordBody: ResetPasswordBodyDto
   ): Promise<{ message: string }> {
     const { password, token } = resetPasswordBody;
     const verificationResponse =
@@ -378,7 +378,7 @@ export class UsersService {
         });
 
         return 'Password reset Successful. Login with new password';
-      },
+      }
     );
 
     console.log('The password reset complete');
@@ -396,7 +396,7 @@ export class UsersService {
     try {
       const SALTNUMBER = parseInt(
         this.configService.getOrThrow('BCRYPT_SALT_NUMBER'),
-        10,
+        10
       );
       const currentSalt = await bcrypt.genSalt(SALTNUMBER);
       const hashedSaltedPassword = await bcrypt.hash(password, currentSalt);
@@ -417,7 +417,7 @@ export class UsersService {
    */
   private async verifyPassword(
     password: string,
-    hashedPassword: string,
+    hashedPassword: string
   ): Promise<boolean> {
     try {
       const isMatch = await bcrypt.compare(password, hashedPassword);

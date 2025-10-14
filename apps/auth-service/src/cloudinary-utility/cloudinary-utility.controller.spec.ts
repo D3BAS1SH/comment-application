@@ -10,7 +10,7 @@ describe('CloudinaryUtilityController', () => {
     }).compile();
 
     controller = module.get<CloudinaryUtilityController>(
-      CloudinaryUtilityController,
+      CloudinaryUtilityController
     );
   });
 

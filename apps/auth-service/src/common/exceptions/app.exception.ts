@@ -16,7 +16,7 @@ export class AppException extends HttpException {
     public readonly message: string,
     public readonly statusCode: number,
     public readonly errorCode: string,
-    public readonly details?: object, // Optional details for server-side logging
+    public readonly details?: object // Optional details for server-side logging
   ) {
     // The first argument to the parent HttpException is the JSON response body.
     // The second argument is the HTTP status code.

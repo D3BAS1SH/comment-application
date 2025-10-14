@@ -68,13 +68,13 @@ export class JwtExceptionFilter implements ExceptionFilter {
     this.logger.logError(
       'API JWT error',
       this.toServiceError(exception),
-      correlationId as string,
+      correlationId as string
     );
 
     response
       .status(status)
       .json(
-        new CustomErrorResponseDto(status, request.url, message, errorCode),
+        new CustomErrorResponseDto(status, request.url, message, errorCode)
       );
   }
 }
