@@ -7,9 +7,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('comments')
 export class CommentsController {
-    constructor(private readonly commentsService: CommentsService){}
+  constructor(private readonly commentsService: CommentsService) {}
 
-    @Throttle({ comments: {} })
-    @All('*')
-    proxyCommentRequest(){}
+  @Throttle({ comments: {} })
+  @All('*')
+  proxyCommentRequest() {}
 }

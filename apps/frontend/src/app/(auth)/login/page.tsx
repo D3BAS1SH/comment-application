@@ -64,7 +64,12 @@ const LoginPage: FC = () => {
           Enter your credentials to continue.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+          className="flex flex-col space-y-6"
+        >
           <div>
             <label
               htmlFor="email"

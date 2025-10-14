@@ -6,7 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
-  console.log(`post-service is running on the port: ${port}`)
+  console.log(`post-service is running on the port: ${port}`);
   await app.listen(port ?? 3000);
 }
-bootstrap();
+bootstrap().catch((err: Error) => {
+  console.error('Application failed due to:\n', err);
+  process.exit(1);
+});

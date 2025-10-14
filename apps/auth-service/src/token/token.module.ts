@@ -14,13 +14,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_ACCESS_SECRET'),
         signOptions: {
-          expiresIn: config.get<string>('JWT_ACCESS_EXPIRATION','15m')
-        }
-      })
-    })
+          expiresIn: config.get<string>('JWT_ACCESS_EXPIRATION', '15m'),
+        },
+      }),
+    }),
   ],
   controllers: [TokenController],
   providers: [TokenService],
-  exports: [TokenService,JwtModule]
+  exports: [TokenService, JwtModule],
 })
 export class TokenModule {}

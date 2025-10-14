@@ -9,7 +9,9 @@ describe('CloudinaryUtilityController', () => {
       controllers: [CloudinaryUtilityController],
     }).compile();
 
-    controller = module.get<CloudinaryUtilityController>(CloudinaryUtilityController);
+    controller = module.get<CloudinaryUtilityController>(
+      CloudinaryUtilityController,
+    );
   });
 
   it('should be defined', () => {

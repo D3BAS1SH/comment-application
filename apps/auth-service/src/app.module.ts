@@ -17,26 +17,24 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true,
-      envFilePath: '.env'
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     CacheModule.register({
-      isGlobal: true
+      isGlobal: true,
     }),
-    ThrottlerModule.forRootAsync(
-      {
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => ({
-          throttlers:[
-            {
-              limit: config.getOrThrow<number>('THROTTLE_LIMIT'),
-              ttl: config.getOrThrow<number>('THROTTLE_TTL')
-            }
-          ]
-        })
-      }
-    ),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            limit: config.getOrThrow<number>('THROTTLE_LIMIT'),
+            ttl: config.getOrThrow<number>('THROTTLE_TTL'),
+          },
+        ],
+      }),
+    }),
     PrismaModule,
     UsersModule,
     TokenModule,
@@ -48,23 +46,23 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: ThrottlerGuard,
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor
+      useClass: CacheInterceptor,
     },
     {
       provide: APP_FILTER,
-      useClass: GlobalExceptionFilter
+      useClass: JwtExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: PrismaClientExceptionFilter
+      useClass: PrismaClientExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: JwtExceptionFilter
+      useClass: GlobalExceptionFilter,
     },
   ],
 })

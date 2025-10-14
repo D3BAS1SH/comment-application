@@ -9,4 +9,7 @@ async function bootstrap() {
   console.log(`Comment-service is running on the port: ${port}`);
   await app.listen(port ?? 3000);
 }
-bootstrap();
+bootstrap().catch((err: Error) => {
+  console.error('Application failed due to:\n', err);
+  process.exit(1);
+});

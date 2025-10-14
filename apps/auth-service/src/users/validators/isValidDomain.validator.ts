@@ -1,25 +1,33 @@
-import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from "class-validator";
-import * as dispoanleDomains from "disposable-email-domains";
+import {
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
+import disposableDomains from 'disposable-email-domains';
 
-const dispoanleDomainSet = new Set(dispoanleDomains);
+const disposableDomainSet = new Set(disposableDomains);
 
-@ValidatorConstraint({name: 'isValidDomain',async: false})
+@ValidatorConstraint({ name: 'isValidDomain', async: false })
 export class IsValidDomainConstraint implements ValidatorConstraintInterface {
-    validate(email: string, validationArguments?: ValidationArguments): Promise<boolean> | boolean {
-        if(!email){
-            return true;
-        }
+  validate(email: string): Promise<boolean> | boolean {
+    if (!email) {
+      return true; // Let @IsNotEmpty() handle empty values
+    }
+    const domain = email.split('@')[1];
+    if (!domain) {
+      return false; // Invalid email format
+    }
+    return !disposableDomainSet.has(domain);
+  }
 
-        const domain = email.split('@')[1];
-        
-        if(!domain){
-            return false;
-        }
-
-        return !dispoanleDomainSet.has(domain);
+  // ✅ Using ValidationArguments to create a better error message
+  defaultMessage(args?: ValidationArguments): string {
+    if (!args?.value) {
+      // Return a safe, generic message if the value isn't available.
+      return 'Email address from such a domain is not allowed.';
     }
 
-    defaultMessage(validationArguments?: ValidationArguments): string {
-        return "Email address from such domain are not allowed."
-    }
+    const domain = (args.value as string).split('@')[1];
+    return `The email domain '${domain}' is not allowed. Please use a permanent email address.`;
+  }
 }

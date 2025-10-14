@@ -26,7 +26,7 @@ export class HealthController {
   @Get('gateway')
   @HealthCheck()
   @ApiOperation({ summary: 'Get gateway health status' })
-  async checkGateway() {
+  checkGateway() {
     return this.healthService.checkGatewayHealth();
   }
 
@@ -40,14 +40,14 @@ export class HealthController {
   @Get('system')
   @HealthCheck()
   @ApiOperation({ summary: 'Get system resources health status' })
-  async checkSystem() {
+  checkSystem() {
     return this.healthService.checkSystemResources();
   }
 
   @Get('security')
   @HealthCheck()
   @ApiOperation({ summary: 'Get security health status' })
-  async checkSecurity() {
+  checkSecurity() {
     return this.healthService.checkSecurityHealth();
   }
 }

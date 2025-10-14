@@ -7,9 +7,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postService: PostsService){}
+  constructor(private readonly postService: PostsService) {}
 
-    @Throttle({ posts: {} })
-    @All('*')
-    proxyPostRequst(){}
+  @Throttle({ posts: {} })
+  @All('*')
+  proxyPostRequst() {}
 }

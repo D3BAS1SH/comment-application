@@ -1,40 +1,47 @@
-import { IsBoolean, IsDate, IsEmail, IsOptional, IsString, IsUrl } from "class-validator";
-import { Exclude, Expose } from "class-transformer";
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
-export class UserResponse{
-    @IsString()
-    @Expose()
-    id: string;
+export class UserResponse {
+  @IsString()
+  @Expose()
+  id: string;
 
-    @IsString()
-    @Expose()
-    firstName: string;
+  @IsString()
+  @Expose()
+  firstName: string;
 
-    @IsString()
-    @Expose()
-    lastName: string;
+  @IsString()
+  @Expose()
+  lastName: string;
 
-    @IsEmail()
-    @Expose()
-    email: string;
-    
-    @IsOptional()
-    @IsUrl()
-    @Expose()
-    imageUrl?: string;
+  @IsEmail()
+  @Expose()
+  email: string;
 
-    @IsDate()
-    @IsOptional()
-    @Expose()
-    createdAt?: Date;
+  @IsOptional()
+  @IsUrl()
+  @Expose()
+  imageUrl?: string;
 
-    @IsBoolean()
-    @Expose()
-    isVerfied: boolean;
+  @IsDate()
+  @IsOptional()
+  @Expose()
+  createdAt?: Date;
 
-    @Exclude()
-    password: string;
+  @IsBoolean()
+  @Expose()
+  isVerfied: boolean;
 
-    @Exclude()
-    deletedAt: string;
+  @Exclude()
+  password: string;
+
+  @Exclude()
+  deletedAt: string;
 }

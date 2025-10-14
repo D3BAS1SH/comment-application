@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
+    "globals": "^16.0.0",
     "husky": "^9.0.1",
     "lint-staged": "^15.2.0",
     "prettier": "^3.6.0",
@@ -22,9 +23,25 @@
     "node": ">=18"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint --fix"
+      "eslint -c apps/auth-service/eslint.config.mjs --fix"
+    ],
+    "apps/comment-service/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint -c apps/comment-service/eslint.config.mjs --fix"
+    ],
+    "apps/frontend/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint -c apps/frontend/eslint.config.mjs --fix"
+    ],
+    "apps/gateway-service/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint -c apps/gateway-service/eslint.config.mjs --fix"
+    ],
+    "apps/post-service/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint -c apps/post-service/eslint.config.mjs --fix"
     ],
     "*.{json,css,scss,md,mdx}": [
       "prettier --write"

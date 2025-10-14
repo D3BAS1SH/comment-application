@@ -13,18 +13,14 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
   imports: [
     PrismaModule,
     PassportModule.register({
-      defaultStrategy: 'jwt'
+      defaultStrategy: 'jwt',
     }),
     TokenModule,
     EmailModule,
-    ConfigModule
+    ConfigModule,
   ],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    JwtStrategy,
-    RefreshStrategy
-  ],
-  exports: [UsersService]
+  providers: [UsersService, JwtStrategy, RefreshStrategy],
+  exports: [UsersService],
 })
 export class UsersModule {}
