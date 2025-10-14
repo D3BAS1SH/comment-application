@@ -20,7 +20,7 @@
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.14.0"
   },
   "lint-staged": {
     "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
