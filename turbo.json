@@ -3,9 +3,14 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "dependsOn": ["^build", "^db:generate"],
+      "inputs": ["$TURBO_DEFAULT$"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "dependsOn": ["^db:generate"],
+      "cache": false,
+      "persistent": true
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -13,9 +18,40 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
-    "dev": {
+    "db:generate": {
       "cache": false,
-      "persistent": true
+      "inputs": ["prisma/schema.prisma"]
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:deploy": {
+      "cache": false
+    },
+    "auth-service#build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "env": ["DATABASE_URL", "JWT_SECRET", "EMAIL_HOST"],
+      "outputs": ["dist/**"]
+    },
+    "comment-service#build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "env": ["DATABASE_URL", "REDIS_URL"],
+      "outputs": ["dist/**"]
+    },
+    "post-service#build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "env": ["DATABASE_URL", "S3_BUCKET"],
+      "outputs": ["dist/**"]
+    },
+    "gateway-service#build": {
+      "dependsOn": ["^build"],
+      "env": ["AUTH_SERVICE_URL", "COMMENT_SERVICE_URL", "POST_SERVICE_URL"],
+      "outputs": ["dist/**"]
+    },
+    "frontend#build": {
+      "dependsOn": ["^build"],
+      "env": ["NEXT_PUBLIC_API_URL"],
+      "outputs": [".next/**", "!.next/cache/**"]
     }
   }
 }

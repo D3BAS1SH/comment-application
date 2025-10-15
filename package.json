@@ -1,13 +1,20 @@
 {
   "name": "comment-application",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:deploy": "turbo run db:deploy"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -18,9 +25,9 @@
     "turbo": "^2.5.4",
     "typescript": "5.8.2"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "npm@10.0.0",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=20.x"
   },
   "lint-staged": {
     "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
@@ -46,5 +53,9 @@
     "*.{json,css,scss,md,mdx}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "prisma": "^6.11.1"
   }
 }
