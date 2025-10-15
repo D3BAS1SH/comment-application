@@ -18,6 +18,7 @@ import { VerificationTokenResponse } from './dto/verification-token-response.dto
 import { RefreshTokenDto } from './dto/create-refresh-token.dto';
 import * as crypto from 'crypto';
 import { tokenPayload } from './interfaces/token-payload.interface';
+import { StringValue } from 'ms';
 
 @Injectable()
 export class TokenService {
@@ -63,13 +64,13 @@ export class TokenService {
     //Generate the Access Token
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION'),
+      expiresIn: this.configService.get<StringValue>('JWT_ACCESS_EXPIRATION'),
     });
 
     //Generate the Refresh Token
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION'),
+      expiresIn: this.configService.get<StringValue>('JWT_REFRESH_EXPIRATION'),
     });
 
     //Saving Token for the user
@@ -115,12 +116,14 @@ export class TokenService {
 
     const newAccessToken = await this.jwtService.signAsync(newPayload, {
       secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
-      expiresIn: this.configService.getOrThrow<string>('JWT_ACCESS_EXPIRATION'),
+      expiresIn: this.configService.getOrThrow<StringValue>(
+        'JWT_ACCESS_EXPIRATION'
+      ),
     });
 
     const newRefreshToken = await this.jwtService.signAsync(newPayload, {
       secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
-      expiresIn: this.configService.getOrThrow<string>(
+      expiresIn: this.configService.getOrThrow<StringValue>(
         'JWT_REFRESH_EXPIRATION'
       ),
     });

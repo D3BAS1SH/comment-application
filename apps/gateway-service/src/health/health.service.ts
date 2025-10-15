@@ -112,13 +112,13 @@ export class HealthService {
   }
 
   async checkAllHealth(): Promise<HealthCheckResult> {
-    const results = await Promise.all([
+    const results = await Promise.all([this.checkAuthService()]);
+    results.push(
       this.checkGatewayHealth(),
-      this.checkAuthService(),
       this.checkSystemResources(),
       this.checkSecurityHealth(),
-      this.checkContainerHealth(),
-    ]);
+      this.checkContainerHealth()
+    );
 
     const status = results.every(
       (result) => Object.values(result)[0].status === 'up'
