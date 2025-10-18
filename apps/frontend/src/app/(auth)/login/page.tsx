@@ -41,10 +41,10 @@ const LoginPage: FC = () => {
         <div>
           <h1 className="text-4xl font-bold leading-tight">
             <TextType
-              text={'Connect with your world, instantly.'}
+              text={'Connect with your world, instantly'}
               cursorCharacter="●"
               typingSpeed={75}
-              pauseDuration={1500}
+              pauseDuration={20}
               deletingSpeed={40}
               cursorBlinkDuration={0.5}
               loop

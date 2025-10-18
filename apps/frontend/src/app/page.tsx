@@ -8,12 +8,14 @@ import {
   LineChart,
   Lock,
   Navigation,
-  Wallet,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
@@ -30,7 +32,10 @@ export default function Home() {
             >
               Login
             </Link>
-            <Button className="bg-gradient-to-r from-cyan-400 to-violet-500 text-black hover:from-cyan-500 hover:to-violet-600">
+            <Button
+              onClick={() => router.push('/login')}
+              className="bg-gradient-to-r from-cyan-400 to-violet-500 text-black hover:from-cyan-500 hover:to-violet-600"
+            >
               Begin
             </Button>
           </div>
@@ -168,22 +173,26 @@ export default function Home() {
             className="mx-auto max-w-3xl space-y-8"
           >
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Dinero Global en Movimiento
+              Horizon Comms
             </h1>
             <p className="mx-auto max-w-2xl text-muted text-gray-400 sm:text-xl">
-              Nuestra plataforma le permite a tu negocio tener acceso a rieles
-              de pagos internacionales en segundos en vez de horas
+              It brings together chat, posts, comments, authentication, and
+              interactive canvases — enabling teams and communities to connect,
+              create, and share effortlessly.
             </p>
             <div className="flex justify-center space-x-4">
-              <Button className="bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600">
-                Comenzar
+              <Button
+                onClick={() => router.push('/login')}
+                className="bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600"
+              >
+                Begin
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 variant="outline"
                 className="border-white/10 text-lg text-white hover:bg-white/10"
               >
-                Saber Más
+                Know More
               </Button>
             </div>
           </motion.div>
@@ -198,10 +207,10 @@ export default function Home() {
         <div className="container px-4">
           <div className="mb-16 text-center">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              ¿Por Qué Elegirnos?
+              Why Choose Us?
             </h2>
             <p className="mt-4 text-gray-400">
-              Experimenta la banca que funciona para ti
+              Experience communication that truly connects people.
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -213,10 +222,11 @@ export default function Home() {
               className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
             >
               <CreditCard className="mb-4 h-12 w-12 text-cyan-400" />
-              <h3 className="mb-2 text-xl font-bold">Smart Cards</h3>
+              <h3 className="mb-2 text-xl font-bold">Real-Time Chat</h3>
               <p className="text-gray-400">
-                Tarjetas virtuales y físicas con controles avanzados y
-                notificaciones en tiempo real.
+                Communicate instantly with peers through our low-latency,
+                real-time chat built with WebSockets. Messages sync seamlessly
+                across devices.
               </p>
             </motion.div>
             <motion.div
@@ -227,12 +237,10 @@ export default function Home() {
               className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-violet-400/50"
             >
               <LineChart className="mb-4 h-12 w-12 text-violet-400" />
-              <h3 className="mb-2 text-xl font-bold">
-                Inversiones Inteligentes
-              </h3>
+              <h3 className="mb-2 text-xl font-bold">Collaborative Canvas</h3>
               <p className="text-gray-400">
-                Estrategias de inversión automatizadas adaptadas a tus objetivos
-                financieros.
+                Draw, brainstorm, and visualize ideas together in an interactive
+                canvas — perfect for remote teamwork and creative sessions.
               </p>
             </motion.div>
             <motion.div
@@ -243,10 +251,11 @@ export default function Home() {
               className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
             >
               <Lock className="mb-4 h-12 w-12 text-cyan-400" />
-              <h3 className="mb-2 text-xl font-bold">Seguridad Bancaria</h3>
+              <h3 className="mb-2 text-xl font-bold">Post & Comment System</h3>
               <p className="text-gray-400">
-                Seguridad de nivel empresarial con encriptación de extremo a
-                extremo y autenticación biométrica.
+                Share thoughts, updates, or announcements, and let others engage
+                through threaded comments — all handled via scalable
+                microservices.
               </p>
             </motion.div>
           </div>
@@ -258,28 +267,30 @@ export default function Home() {
         <div className="container px-4">
           <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-950/50 to-violet-950/50 p-8 text-center backdrop-blur-sm md:p-12 lg:p-16">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              ¿Listo para Comenzar?
+              Ready to Get Started?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-gray-400">
-              Únete a miles de clientes satisfechos que confían en nosotros para
-              sus necesidades bancarias.
+              Join creators and teams who trust Horizon Comms to stay connected,
+              share ideas, and collaborate in real-time.
             </p>
             <ul className="mx-auto mt-8 flex max-w-xl flex-col gap-4 text-left">
               <li className="flex items-center space-x-3">
                 <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>Sin comisiones ni cargos ocultos</span>
+                <span>Built with transparency — no unnecessary complexity</span>
               </li>
               <li className="flex items-center space-x-3">
                 <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>Soporte al cliente 24/7</span>
+                <span>
+                  Always active — reliable uptime and continuous support
+                </span>
               </li>
               <li className="flex items-center space-x-3">
                 <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>Plataforma segura y regulada</span>
+                <span>Secure, scalable, and powered by microservices</span>
               </li>
             </ul>
             <Button className="mt-8 bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600">
-              Abre tu Cuenta
+              Join Now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -290,24 +301,24 @@ export default function Home() {
       <footer className="border-t border-white/10 bg-black py-8">
         <div className="container flex flex-col items-center justify-between space-y-4 px-4 md:flex-row md:space-y-0">
           <div className="flex items-center space-x-2">
-            <Wallet className="h-6 w-6 text-cyan-400" />
-            <span className="font-bold">Ares</span>
+            <Navigation className="h-6 w-6 text-cyan-400" />
+            <span className="font-bold">Horizon Comms</span>
           </div>
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Ares. Todos los derechos reservados.
+            © {new Date().getFullYear()} Horizon Comms. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link
               className="text-sm text-gray-400 hover:text-cyan-400"
               href="#"
             >
-              Privacidad
+              Privacy Policy
             </Link>
             <Link
               className="text-sm text-gray-400 hover:text-cyan-400"
               href="#"
             >
-              Términos
+              Terms of Use
             </Link>
           </div>
         </div>
