@@ -75,7 +75,7 @@ const RegisterPage: FC = () => {
         <div>
           <h1 className="text-4xl font-bold leading-tight">
             <TextType
-              text={'Join the Horizon Community.'}
+              text={'Join the Horizon Community'}
               cursorCharacter="●"
               typingSpeed={75}
               pauseDuration={1500}
