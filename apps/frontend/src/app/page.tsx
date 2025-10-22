@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { AppNavbar } from '@/components/app-navbar';
 
 export default function Home() {
   const router = useRouter();
@@ -19,28 +20,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
-      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <Link className="flex items-center space-x-2 font-bold" href="/">
-            <Navigation className="h-6 w-6 text-cyan-400" />
-            <span>Horizon Comms</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link
-              className="hidden text-sm hover:text-cyan-400 sm:block"
-              href="/login"
-            >
-              Login
-            </Link>
-            <Button
-              onClick={() => router.push('/login')}
-              className="bg-gradient-to-r from-cyan-400 to-violet-500 text-black hover:from-cyan-500 hover:to-violet-600"
-            >
-              Begin
-            </Button>
-          </div>
-        </div>
-      </header>
+      <AppNavbar onMenuToggle={() => {}} showBrand={false} />
 
       {/* Hero Section */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
