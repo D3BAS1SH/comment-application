@@ -13,6 +13,7 @@ import {
   Settings,
 } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 interface SidebarItem {
@@ -36,6 +37,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isCollapsed }: SidebarProps) {
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -73,9 +75,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         {/* Menu Items */}
         <nav className="flex flex-col gap-2">
           {menuItems.map((item) => {
-            const isActive =
-              window.location.pathname === item.href ||
-              window.location.pathname.startsWith(item.href + '/');
+            const isActive = pathname === item.href;
 
             return (
               <Link key={item.href} href={item.href}>
