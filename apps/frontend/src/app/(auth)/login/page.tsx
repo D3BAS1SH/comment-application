@@ -25,7 +25,7 @@ const LoginPage: FC = () => {
     try {
       await login({ email: emailState, password: passwordState });
       toast.success('Login Successful');
-      router.push('/dashboard');
+      router.push('/home');
     } catch (error) {
       toast.error('Login failed due to some unknown reason');
       console.error(error);

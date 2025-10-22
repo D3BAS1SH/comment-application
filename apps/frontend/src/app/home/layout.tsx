@@ -54,11 +54,7 @@ export default function HomeLayout({
       {/* Main Layout */}
       <div className="flex pt-16">
         {/* Sidebar - z-index lower than navbar */}
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          isCollapsed={isCollapsed}
-        />
+        <Sidebar isCollapsed={isCollapsed} />
 
         {/* Main Content */}
         <motion.main
