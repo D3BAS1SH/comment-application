@@ -17,7 +17,7 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], // persist the "auth" slice only (call it 'user' if that's the state key)
+  whitelist: ['user'], // persist the "auth" slice only (call it 'user' if that's the state key)
 };
 
 // Combine your reducers, and wrap with persistReducer

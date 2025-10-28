@@ -24,6 +24,15 @@ export interface UserRegister {
   imageUrl?: string;
 }
 
+export interface UploadUrlResponse {
+  timestamp: number;
+  folder: string;
+  api_key: string;
+  signature: string;
+  uploadUrl: string;
+  upload_preset: string;
+}
+
 export interface UserLoginResponse {
   id: string;
   firstName: string;
@@ -34,4 +43,8 @@ export interface UserLoginResponse {
   isVerified: boolean;
   accessToken: string;
   refreshToken: string;
+}
+
+export interface UserRegisterResponse {
+  message: string;
 }

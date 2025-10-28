@@ -5,7 +5,7 @@ import type { InternalAxiosRequestConfig } from 'axios';
 
 // Base axios client for core config and retry logic
 const client = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL_LOCAL, // configurable per environment
+  baseURL: process.env.NEXT_PUBLIC_API_URL_LOCAL, // Just the base URL without /api/v1
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -14,7 +14,11 @@ const client = axios.create({
 });
 
 // Define public routes that don't need authentication
-export const publicRoutes = ['/api/v1/auth/register', '/api/v1/auth/login'];
+export const publicRoutes = [
+  '/api/v1/auth/register',
+  '/api/v1/auth/login',
+  '/api/v1/auth/upload-url',
+];
 
 export function isPublicEndpoint(config: InternalAxiosRequestConfig): boolean {
   return publicRoutes.some((endpoint: string) =>

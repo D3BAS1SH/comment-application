@@ -1,7 +1,11 @@
 import { useDispatch } from 'react-redux';
 import store, { AppDispatch } from '../store';
-import type { UserLogin, UserState } from '@/types/user.interface';
-import { loginUser } from '../features/userSlice';
+import type {
+  UserLogin,
+  UserRegister,
+  UserState,
+} from '@/types/user.interface';
+import { loginUser, registerUser } from '../features/userSlice';
 
 /**
  * Utility functions to access user-related Redux state outside of React components
@@ -42,6 +46,24 @@ export const isAuthenticated = (): boolean => {
 };
 
 /**
+ * Get the current loading state
+ * @returns The current loading state as true of false
+ */
+export const useIsloading = (): boolean => {
+  const { loading } = getAuthState();
+  return loading;
+};
+
+/**
+ * Get the current error message
+ * @returns The current error state as string
+ */
+export const useError = (): string | null => {
+  const { error } = getAuthState();
+  return error;
+};
+
+/**
  * Get the current user ID from Redux
  * @returns The current user ID or null
  */
@@ -69,8 +91,11 @@ export const useUser = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const login = (credentials: UserLogin) => dispatch(loginUser(credentials));
+  const register = (Rcredentials: UserRegister) =>
+    dispatch(registerUser(Rcredentials));
 
   return {
     login,
+    register,
   };
 };
