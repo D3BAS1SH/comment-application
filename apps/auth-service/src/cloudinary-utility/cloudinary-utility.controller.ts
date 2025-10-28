@@ -8,6 +8,7 @@ export class CloudinaryUtilityController {
 
   @Get('upload-url')
   getUploadSignature(): SignedUploadURLDto {
-    return this.cloudinaryService.generateSignedUploadUrl();
+    const result = this.cloudinaryService.generateSignedUploadUrl();
+    return result;
   }
 }

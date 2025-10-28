@@ -25,7 +25,7 @@ import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
 import { ResetPasswordBodyDto } from './dto/reset-password.dto';
 
 @Controller('users')
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor) // Cache applied only to users endpoints
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
