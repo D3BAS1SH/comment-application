@@ -20,7 +20,7 @@ export class EmailService {
         'APP_BASE_URL',
         'http://localhost:3033'
       );
-      const verificationLink = `${appBaseUrl}/api/v1/users/verify-email?token=${token}`;
+      const verificationLink = `${appBaseUrl}/verify-user?token=${token}`;
       console.log('Sending Verification Mail Link Generation.');
 
       console.log('Sending Verification Mail Sending');
