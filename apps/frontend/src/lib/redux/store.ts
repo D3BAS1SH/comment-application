@@ -10,19 +10,55 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  WebStorage,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+
+// Define the interface for the storage
+interface NoopStorage {
+  getItem: (_key: string) => Promise<null>;
+  setItem: (_key: string, value: unknown) => Promise<unknown>;
+  removeItem: (_key: string) => Promise<void>;
+}
+
+// Conditional storage for SSR/SSG
+const createNoopStorage = (): NoopStorage => {
+  return {
+    // getItem(key)
+
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    // setItem(key, value)
+
+    setItem(_key: string, value: unknown) {
+      return Promise.resolve(value);
+    },
+    // removeItem(key)
+
+    removeItem(_key: string) {
+      return Promise.resolve();
+    },
+  };
+};
+
+// Prefer localStorage if available, else use noop
+const storage: WebStorage | NoopStorage =
+  typeof window !== 'undefined'
+    ? createWebStorage('local')
+    : createNoopStorage();
 
 // Persist config – you can whitelist only the "auth" slice
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user'], // persist the "auth" slice only (call it 'user' if that's the state key)
+  whitelist: ['user'], // persist the "user" slice only
 };
 
 // Combine your reducers, and wrap with persistReducer
 const rootReducer = {
-  auth: userReducer, // add more slices as needed, e.g. post: postReducer
+  user: userReducer, // slice name is 'user' in userSlice.ts
+  // add more slices as needed, e.g. post: postReducer
 };
 
 const persistedReducer = persistReducer(

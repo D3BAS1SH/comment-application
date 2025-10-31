@@ -17,7 +17,7 @@ import { loginUser, registerUser } from '../features/userSlice';
  * @returns The current auth state
  */
 export const getAuthState = (): UserState => {
-  return store.getState().auth;
+  return store.getState().user;
 };
 
 /**
