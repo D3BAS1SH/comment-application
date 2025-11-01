@@ -1,0 +1,22 @@
+{
+  "jobRole": "Software Trainee",
+  "companyName": "SUTHERLAND",
+  "jobDescription": "Applying for the 'Software Trainee' (Role ID: 12) position advertised in a recent LinkedIn hiring post by Sutherland. The post mentions hiring for multiple roles including freshers.",
+  "techStack": [
+    "NestJS",
+    "Docker",
+    "Git",
+    "NoSQL",
+    "TypeScript",
+    "JavaScript",
+    "Python",
+    "Java",
+    "SQL",
+    "ExpressJS",
+    "NextJS",
+    "React",
+    "Tailwind"
+  ],
+  "resumeContent": "Paste the full text of your resume here. For example: \n\nYour Name\nYour Contact Info\n\nSummary\nEager and motivated computer science graduate...\n\nEducation\nB.Tech in Computer Science, XYZ University (2021-2025)\n\nProjects\n...\n\nSkills\n...",
+  "additionalInstructions": "Please make the subject line very clear, like 'Application for Software Trainee - [Your Name]'. Since there's no job description, please highlight skills from my resume that make me a good candidate for a general trainee role (like 'quick learner', 'strong fundamentals in [Backend]', '3 Hackathon Runners up')."
+}
