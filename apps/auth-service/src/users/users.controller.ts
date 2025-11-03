@@ -49,10 +49,24 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response
   ) {
     const loginResponse = await this.usersService.login(loginUser);
-    const expirationValue = this.configService.getOrThrow<StringValue>(
+    const expirationValueRefresh = this.configService.getOrThrow<StringValue>(
       'JWT_REFRESH_EXPIRATION'
     );
-    const maxAgeMilisecondsRefreshToken = ms(expirationValue);
+    const expirationValueAccess = this.configService.getOrThrow<StringValue>(
+      'JWT_ACCESS_EXPIRATION'
+    );
+    const maxAgeMilisecondsRefreshToken = ms(expirationValueRefresh);
+    const maxAgeMilisecondsAccessToken = ms(expirationValueAccess);
+
+    response.cookie('accessToken', loginResponse.accessToken, {
+      httpOnly: true,
+      secure:
+        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      maxAge: maxAgeMilisecondsAccessToken,
+      path: '/',
+    });
+
     response.cookie('refreshToken', loginResponse.refreshToken, {
       httpOnly: true,
       secure:
@@ -79,10 +93,24 @@ export class UsersController {
     const refreshTokenResponse = await this.usersService.refreshMyToken(
       validRefreshTokenPayload
     );
-    const expirationValue = this.configService.getOrThrow<StringValue>(
+    const expirationValueRefresh = this.configService.getOrThrow<StringValue>(
       'JWT_REFRESH_EXPIRATION'
     );
-    const maxAgeMilisecondsRefreshToken = ms(expirationValue);
+    const expirationValueAccess = this.configService.getOrThrow<StringValue>(
+      'JWT_ACCESS_EXPIRATION'
+    );
+    const maxAgeMilisecondsRefreshToken = ms(expirationValueRefresh);
+    const maxAgeMilisecondsAccessToken = ms(expirationValueAccess);
+
+    response.cookie('accessToken', refreshTokenResponse.accessToken, {
+      httpOnly: true,
+      secure:
+        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      maxAge: maxAgeMilisecondsAccessToken,
+      path: '/',
+    });
+
     response.cookie('refreshToken', refreshTokenResponse.refreshToken, {
       httpOnly: true,
       secure:
@@ -110,6 +138,17 @@ export class UsersController {
     }
     // console.log(accessToken);
     const Result = await this.usersService.logout(userPayload, accessToken);
+
+    // clear access token
+    response.clearCookie('accessToken', {
+      httpOnly: true,
+      secure:
+        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+
+    // clear refresh token
     response.clearCookie('refreshToken', {
       httpOnly: true,
       secure:

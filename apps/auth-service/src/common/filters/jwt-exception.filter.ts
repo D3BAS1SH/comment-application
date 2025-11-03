@@ -42,6 +42,13 @@ export class JwtExceptionFilter implements ExceptionFilter {
       }
       errorCode = 'SESSION_EXPIRED';
       message = 'Your session has expired. Please login again.';
+      response.clearCookie('accessToken', {
+        httpOnly: true,
+        secure:
+          this.configService.getOrThrow<string>('NODE_ENV') === 'production',
+        sameSite: 'strict',
+        path: '/',
+      });
       response.clearCookie('refreshToken', {
         httpOnly: true,
         secure:
