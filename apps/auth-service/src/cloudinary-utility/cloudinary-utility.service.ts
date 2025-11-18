@@ -20,11 +20,11 @@ export class CloudinaryUtilityService {
 
   generateSignedUploadUrl(): SignedUploadURLDto {
     try {
-      const uploadPreset = this.configService.getOrThrow<string>(
+      const upload_preset = this.configService.getOrThrow<string>(
         'CLOUDINARY_UPLOAD_PRESET'
       );
 
-      if (!uploadPreset) {
+      if (!upload_preset) {
         throw new InternalServerErrorException(
           'Cloudinary upload preset not found in the environment variables'
         );
@@ -38,28 +38,25 @@ export class CloudinaryUtilityService {
       const secretKey = this.configService.getOrThrow<string>(
         'CLOUDINARY_API_SECRET'
       );
-      const timestamp = Math.round(Date.now() / 1000);
-      // const expires_at = timestamp + 600;
+      const timestamp = Math.round(new Date().getTime() / 1000);
 
       const signature = cloudinary.utils.api_sign_request(
         {
           timestamp: timestamp,
-          folder: 'authService',
-          upload_preset: uploadPreset,
+          upload_preset: upload_preset,
         },
         secretKey
       );
 
       return {
         timestamp: timestamp,
-        folder: 'auth-service',
         api_key: apikey,
         signature: signature,
         uploadUrl: `https://api.cloudinary.com/v1_1/${cloudname}/image/upload`,
-        upload_preset: uploadPreset,
+        upload_preset: upload_preset,
       };
     } catch (error) {
-      console.error(error);
+      console.error('CloudinaryUtilityService: Error:', error);
       throw new InternalServerErrorException(
         'Failed to generate Cloudinary signed Url'
       );

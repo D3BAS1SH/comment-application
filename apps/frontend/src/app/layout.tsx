@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <SplashCursor />
         <StoreProvider>{children}</StoreProvider>
-        <Toaster position="top-center" expand />
+        <Toaster richColors position="top-center" expand />
       </body>
     </html>
   );

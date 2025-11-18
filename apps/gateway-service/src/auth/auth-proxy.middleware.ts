@@ -3,24 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import { ServerResponse } from 'http';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import * as CircuitBreaker from 'opossum';
 import * as http from 'http';
 import { LoggerService } from 'src/common/log/logger.service';
-
-// Define a proper type for our circuit breaker
-type RequestHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<unknown>;
 
 @Injectable()
 export class AuthProxyMiddleware implements NestMiddleware {
   private proxy: ReturnType<typeof createProxyMiddleware>;
-  private circuitBreaker: CircuitBreaker<
-    [Request, Response, NextFunction],
-    unknown
-  >;
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: LoggerService
@@ -43,6 +31,11 @@ export class AuthProxyMiddleware implements NestMiddleware {
         '^/upload-url': '/api/v1/cloudinary-utility/upload-url',
       },
       selfHandleResponse: false,
+      // Fix connection issues
+      agent: undefined, // Don't reuse connections
+      headers: {
+        Connection: 'close', // Close connection after each request
+      },
       on: {
         proxyReq: (proxyReq: http.ClientRequest, req: Request) => {
           // Safely get client IP
@@ -58,6 +51,21 @@ export class AuthProxyMiddleware implements NestMiddleware {
           proxyReq.setHeader('X-Gateway', 'nestjs-api-gateway');
           proxyReq.setHeader('X-Service-Target', 'auth-service');
           proxyReq.setHeader('X-Request-Time', new Date().toISOString());
+
+          // Force close connection to prevent reuse issues
+          proxyReq.setHeader('Connection', 'close');
+        },
+
+        proxyRes: (
+          proxyRes: http.IncomingMessage,
+          req: Request,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          res: Response
+        ) => {
+          // Log successful responses
+          console.log(
+            `Proxy response: ${req.method} ${req.url} -> ${proxyRes.statusCode}`
+          );
         },
 
         error: (
@@ -70,73 +78,27 @@ export class AuthProxyMiddleware implements NestMiddleware {
             code: err?.code || 'UNKNOWN',
             url: req?.url || 'unknown',
             method: req?.method || 'unknown',
+            timestamp: new Date().toISOString(),
+            headersSent: res.headersSent,
           });
 
-          // Use helper method for safe error response
-          this.sendErrorResponse(res, err);
+          // Only handle error if response hasn't been sent
+          if (!res.headersSent) {
+            console.log('Proxy error handler: Sending error response');
+            this.sendErrorResponse(res, err);
+          } else {
+            console.log(
+              'Proxy error handler: Headers already sent, skipping error response'
+            );
+          }
         },
       },
-      timeout: 15000, //Millisecond value,
-      proxyTimeout: 30000,
+      timeout: 10000, // Reduced timeout
+      proxyTimeout: 15000, // Reduced proxy timeout
     });
 
-    // Type-safe binding of the makeRequest method
-    const boundMakeRequest: RequestHandler = this.makeRequest.bind(
-      this
-    ) as RequestHandler;
-    this.circuitBreaker = new CircuitBreaker(boundMakeRequest, {
-      timeout: 10000, // 10 seconds
-      errorThresholdPercentage: 50, // Open after 50% failures
-      resetTimeout: 30000, // Wait 30 seconds before half-open
-      volumeThreshold: 10, // Need 10 requests before tripping
-      rollingCountTimeout: 10000, // 10 second window
-      name: 'auth-service',
-    });
-
-    this.circuitBreaker.on('open', () => {
-      this.logger.logError(
-        'auth',
-        {
-          name: 'CircuitBreaker',
-          message: 'Circuit Breaker opened',
-          statusCode: 503,
-          code: 'CIRCUIT_OPEN',
-        },
-        'CIRCUIT'
-      );
-    });
-
-    this.circuitBreaker.on('halfOpen', () => {
-      this.logger.logError(
-        'auth',
-        {
-          name: 'CircuitBreaker',
-          message: 'Circuit Breaker half-open',
-          statusCode: 503,
-          code: 'CIRCUIT_HALF_OPEN',
-        },
-        'CIRCUIT'
-      );
-    });
-
-    this.circuitBreaker.on('close', () => {
-      this.logger.logError(
-        'auth',
-        {
-          name: 'CircuitBreaker',
-          message: 'Circuit Breaker closed',
-          statusCode: 200,
-          code: 'CIRCUIT_CLOSED',
-        },
-        'CIRCUIT'
-      );
-    });
-
-    // Type-safe binding of the fallback handler
-    const boundFallback: RequestHandler = this.handleFallback.bind(
-      this
-    ) as RequestHandler;
-    this.circuitBreaker.fallback(boundFallback);
+    // Circuit breaker removed - using proxy's built-in error handling instead
+    console.log('Auth proxy middleware initialized successfully');
   }
 
   private getClientIP(req: Request): string {
@@ -237,75 +199,42 @@ export class AuthProxyMiddleware implements NestMiddleware {
     }
   }
 
-  private async makeRequest(
-    req: Request,
-    res: Response,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: NextFunction
-  ): Promise<boolean> {
-    // Mark promise as handled with await to address floating promise warning
-    const result = await new Promise<boolean>((resolve, reject) => {
-      // Explicitly handle the promise and callback
-      try {
-        // Use void to mark that we're intentionally not awaiting this
-        void this.proxy(req, res, (err?: Error) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(true);
-          }
-        });
-      } catch (err) {
-        reject(err instanceof Error ? err : new Error('Unknown proxy error'));
-      }
-    });
-    return result;
-  }
-
-  private handleFallback(
-    req: Request,
-    res: Response,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: NextFunction
-  ): Response {
-    return res.status(503).json({
-      error: 'Service Temporarily Unavailable',
-      message: 'Auth service is currently unavailable. Please try again later.',
-      code: 'CIRCUIT_OPEN',
-      timestamp: new Date().toISOString(),
-    });
-  }
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const correlationId = req.headers['x-correlation-id'] as string;
+    const correlationId =
+      (req.headers['x-correlation-id'] as string) || `req-${Date.now()}`;
     this.logger.logRequest('auth', req, correlationId);
 
-    console.log(`Req.path at use method of proxy: ${req.path}`);
+    console.log(`[${correlationId}] Proxying: ${req.method} ${req.path}`);
 
     try {
-      // Using await to properly fulfill the async/await pattern
-      await this.circuitBreaker.fire(req, res, next);
-    } catch (errorUnknown) {
-      // Type-safe error handling
-      const error = errorUnknown as Error & {
-        code?: string;
-        name: string;
-        message: string;
-      };
+      // Use the proxy directly instead of wrapping in circuit breaker
+      await new Promise<void>((resolve, reject) => {
+        this.proxy(req, res, (err?: Error) => {
+          if (err) {
+            console.log(`[${correlationId}] Proxy error:`, err.message);
+            reject(err);
+          } else {
+            console.log(`[${correlationId}] Proxy success`);
+            resolve();
+          }
+        });
+      });
+    } catch (error) {
+      console.log(`[${correlationId}] Caught proxy error:`, error);
 
-      this.logger.logError(
-        'auth',
-        {
-          name: error.name,
-          message: error.message,
-          statusCode: this.getStatusCodeFromError(error.code || ''),
-          code: error.code || 'UNKNOWN_ERROR',
-          details: error,
-        },
-        correlationId
-      );
-
-      this.sendErrorResponse(res, error);
+      // The proxy error handler should have already sent the response
+      // Only log here, don't try to send another response
+      if (!res.headersSent) {
+        console.log(
+          `[${correlationId}] Headers not sent, sending fallback error`
+        );
+        this.sendErrorResponse(res, error as Error);
+      } else {
+        console.log(
+          `[${correlationId}] Headers already sent by proxy error handler`
+        );
+      }
     }
   }
 }

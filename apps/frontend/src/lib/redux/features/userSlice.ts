@@ -4,6 +4,8 @@ import type { AxiosError } from 'axios';
 import {
   UserLogin,
   UserLoginResponse,
+  UserRegister,
+  UserRegisterResponse,
   UserState,
 } from '@/types/user.interface';
 import { CustomErrorResponseDto } from '@/types/custom-error-response.interface';
@@ -28,7 +30,7 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >('user/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await authClient.post('/auth/login', credentials);
+    const response = await authClient.post('/api/v1/auth/login', credentials);
     return response.data; // your success response containing tokens and user info
   } catch (error) {
     let message = 'Login failed';
@@ -42,6 +44,25 @@ export const loginUser = createAsyncThunk<
     }
 
     return rejectWithValue(message);
+  }
+});
+
+/**
+ *
+ */
+export const registerUser = createAsyncThunk<
+  UserRegisterResponse,
+  UserRegister,
+  { rejectValue: string }
+>('user/register', async (Rcredentials, { rejectWithValue }) => {
+  try {
+    const registerResponse = await authClient.post(
+      '/api/v1/auth/register',
+      Rcredentials
+    );
+    return registerResponse.data;
+  } catch {
+    return rejectWithValue('Failed while registering');
   }
 });
 

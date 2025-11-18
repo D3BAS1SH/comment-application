@@ -50,13 +50,12 @@ async function bootstrap() {
     })
   );
 
-  const authProxyMiddleware = app.get(AuthProxyMiddleware);
-  app.use('/api/v1/auth', authProxyMiddleware.use.bind(authProxyMiddleware));
-
   const allowedOrigins = currentConfigService
-    .getOrThrow<string>('CORS_ORIGINS')
+    .getOrThrow<string>('FRONTEND_CORS_ORIGINS')
     .split(',')
     .map((origin) => origin.trim());
+
+  console.log(allowedOrigins);
   app.enableCors({
     origin: allowedOrigins,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
@@ -64,6 +63,9 @@ async function bootstrap() {
     maxAge: 3600,
     credentials: true,
   });
+
+  const authProxyMiddleware = app.get(AuthProxyMiddleware);
+  app.use('/api/v1/auth', authProxyMiddleware.use.bind(authProxyMiddleware));
   app.enableShutdownHooks();
   app.setGlobalPrefix('api/v1');
 

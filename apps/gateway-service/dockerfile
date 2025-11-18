@@ -1,0 +1,65 @@
+ARG NODE_VERSION=22
+
+FROM node:${NODE_VERSION}-alpine AS pruner
+
+RUN apk update && apk add --no-cache libc6-compat
+
+# Install Turbo globally
+RUN npm install -g turbo
+
+WORKDIR /app
+
+# Copy everything first (we need the full monorepo to prune)
+COPY . .
+
+# Prune to get ONLY gateway-service and its dependencies
+RUN turbo prune gateway-service --docker
+
+FROM node:${NODE_VERSION}-alpine AS installer
+
+RUN apk update && apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+COPY --from=pruner /app/out/json/ .
+
+RUN npm ci --omit=dev --ignore=scripts
+
+FROM node:${NODE_VERSION}-alpine AS builder
+
+RUN apk update && apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+COPY --from=installer /app/ .
+
+COPY --from=pruner /app/out/full/ .
+
+RUN npm ci
+
+RUN cd apps/gateway-service && npx prisma generate
+
+RUN npm run build
+
+FROM node:${NODE_VERSION}-alpine AS runner
+
+RUN apk update && apk add --no-cache libc6-compat curl
+
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nestjs
+
+COPY --from=installer --chown=nestjs:nodejs /app/node_modules ./node_modules
+
+COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/dist ./dist
+
+COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+
+USER nestjs
+
+EXPOSE 3036
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:${GATEWAY_PORT:-3036}/api/v1/health || exit 1
+
+CMD ["node", "dist/main.js"]
