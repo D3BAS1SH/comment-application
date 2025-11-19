@@ -14,12 +14,12 @@ console.log(path.join(__dirname, 'templates'));
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         transport: {
-          host: config.get<string>('MAIL_HOST'),
+          host: `email-smtp.${config.getOrThrow<string>('AWS_REGION')}.amazonaws.com`,
           port: parseInt(config.getOrThrow<string>('MAIL_PORT'), 10),
           secure: config.getOrThrow<string>('MAIL_SECURE') === 'true',
           auth: {
-            user: config.get<string>('MAIL_USER'),
-            pass: config.get<string>('MAIL_PASSWORD'),
+            user: config.get<string>('AWS_SMTP_USERNAME'),
+            pass: config.get<string>('AWS_SMTP_PASSWORD'),
           },
         },
         defaults: {
