@@ -13,6 +13,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { JwtExceptionFilter } from './common/filters/jwt-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     TokenModule,
     EmailModule,
     CloudinaryUtilityModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
