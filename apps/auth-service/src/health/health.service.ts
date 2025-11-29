@@ -6,9 +6,8 @@ import {
   HealthIndicatorResult,
 } from '@nestjs/terminus';
 import { PrismaService } from '../prisma/prisma.service';
-// import { MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from '@nestjs-modules/mailer';
 import { v2 as cloudinary } from 'cloudinary';
-import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import fs from 'fs';
 
@@ -18,7 +17,8 @@ export class HealthService {
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly healthCheckService: HealthCheckService
+    private readonly healthCheckService: HealthCheckService,
+    private readonly mailService: MailerService
   ) {
     cloudinary.config({
       cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
@@ -33,12 +33,30 @@ export class HealthService {
   async checkAllHealth(): Promise<HealthCheckResult> {
     return this.healthCheckService.check([
       () => this.checkDatabase(),
-      // () => this.checkEmail(),
+      () => this.checkEmail(),
       () => this.checkStorage(),
-      () => this.checkCrypto(),
       () => this.checkSystemResources(),
       () => this.checkSecurityHealth(),
+      () => this.checkContainerHealth(),
+      () => this.checkServiceHealth(),
     ]);
+  }
+
+  async checkEmail(): Promise<HealthIndicatorResult> {
+    const key = 'email';
+    try {
+      await this.mailService.verifyAllTransporters();
+      return {
+        [key]: {
+          status: 'up',
+          message: 'SMTP Server is healthy',
+        },
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown SMTP failure';
+      throw new Error(`${key} check failed: ${errorMessage}`);
+    }
   }
 
   /**
@@ -93,45 +111,6 @@ export class HealthService {
         error instanceof Error
           ? error.message
           : 'Unknown storage service error';
-      throw new Error(`${key} check failed: ${errorMessage}`);
-    }
-  }
-
-  /**
-   * Check JWT and Bcrypt functionality
-   */
-  async checkCrypto(): Promise<HealthIndicatorResult> {
-    const key = 'crypto';
-    try {
-      // Test JWT signing and verification
-      const testPayload = { test: true, timestamp: Date.now() };
-      const token = this.jwtService.sign(testPayload);
-      const decoded: typeof testPayload = this.jwtService.verify(token);
-
-      const jwtStatus = decoded.test === true ? 'operational' : 'failed';
-
-      // Test Bcrypt hashing and comparison
-      const testPassword = 'healthcheck';
-      const hashedPassword = await bcrypt.hash(testPassword, 10);
-      const isMatch = await bcrypt.compare(testPassword, hashedPassword);
-
-      const bcryptStatus = isMatch ? 'operational' : 'failed';
-
-      // If either fails, return down
-      if (jwtStatus === 'failed' || bcryptStatus === 'failed') {
-        throw new Error(`JWT: ${jwtStatus}, Bcrypt: ${bcryptStatus}`);
-      }
-
-      return {
-        [key]: {
-          status: 'up',
-          jwt: jwtStatus,
-          bcrypt: bcryptStatus,
-        },
-      };
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown crypto error';
       throw new Error(`${key} check failed: ${errorMessage}`);
     }
   }
