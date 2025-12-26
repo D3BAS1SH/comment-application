@@ -7,16 +7,20 @@ import type { HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, forwardRef } from 'react';
 
+type CardVariant = 'default' | 'gradient' | 'glass' | 'hover-glow';
+
 interface FintechCardProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
-  variant?: 'default' | 'gradient' | 'glass' | 'hover-glow';
+  variant?: CardVariant;
   children: React.ReactNode;
 }
 
 const FintechCard = forwardRef<HTMLDivElement, FintechCardProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
+    const cardVariant: CardVariant = variant;
+
     const baseClasses = 'rounded-2xl border transition-all duration-300';
 
-    const variants = {
+    const variants: Record<CardVariant, string> = {
       default: 'border-white/10 bg-white/5 backdrop-blur-sm',
       gradient:
         'border-white/10 bg-gradient-to-br from-cyan-950/30 to-violet-950/30 backdrop-blur-sm',
@@ -33,10 +37,10 @@ const FintechCard = forwardRef<HTMLDivElement, FintechCardProps>(
         transition={{ duration: 0.5 }}
         viewport={{ once: true }}
         whileHover={{ y: -2 }}
-        className={cn(baseClasses, variants[variant], className)}
+        className={cn(baseClasses, variants[cardVariant], className)}
         {...props}
       >
-        {variant === 'hover-glow' && (
+        {cardVariant === 'hover-glow' && (
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/5 to-violet-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         )}
         <div className="relative z-10">{children}</div>

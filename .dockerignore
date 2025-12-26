@@ -1,39 +1,91 @@
+# Dependencies
 node_modules
-dist
-.next
-.turbo
-build
-coverage
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Git
-.git
-.gitignore
+# Build outputs
+dist
+**/dist
+.next
+**/.next
+build
+**/build
+out
+**/out
+
+# Testing
+coverage
+**/.coverage
+.nyc_output
+
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
 
 # IDE
 .vscode
 .idea
 *.swp
 *.swo
+*~
+.DS_Store
+
+# Git hooks and Husky
+.git
+.gitignore
+.gitattributes
+.husky
+**/.husky
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Documentation
+README.md
+**/README.md
+*.md
+docs
+**/docs
 
 # Logs
 logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+**/*.log
 
-# Environment
-.env
-.env.local
-.env.*.local
+# Temporary files
+tmp
+temp
+*.tmp
 
-# OS
-.DS_Store
+# OS files
 Thumbs.db
+.DS_Store
 
-# Testing
-coverage
-.nyc_output
+# Cache directories
+.turbo
+**/.turbo
+.cache
+**/.cache
+.eslintcache
 
-# Build artifacts
-*.tsbuildinfo
+# Prisma migrations (optional - include if you run migrations in container)
+# **/prisma/migrations
+
+# Lock files (we copy these explicitly)
+# Uncomment if you want to exclude them from initial COPY
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

@@ -1,65 +1,109 @@
+# Use Node.js 22 Alpine for smaller image size
 ARG NODE_VERSION=22
 
-FROM node:${NODE_VERSION}-alpine AS pruner
+# ============================================
+# BASE STAGE - Setup pnpm and environment
+# ============================================
+FROM node:${NODE_VERSION}-alpine AS base
 
-RUN apk update && apk add --no-cache libc6-compat
+# Install system dependencies required for Prisma and health checks
+RUN apk update && apk add --no-cache libc6-compat openssl curl
 
-# Install Turbo globally
-RUN npm install -g turbo
+# Enable Corepack for pnpm (built into Node.js 16+)
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
 WORKDIR /app
 
-# Copy everything first (we need the full monorepo to prune)
+# ============================================
+# PRUNER STAGE - Use Turbo to prune monorepo
+# ============================================
+FROM base AS pruner
+
+# Install turbo globally
+RUN pnpm add -g turbo
+
+# Copy entire monorepo
 COPY . .
 
-# Prune to get ONLY gateway-service and its dependencies
+# Prune the monorepo for gateway-service with Docker optimization
+# This creates:
+#   - out/json/     (package.json files + pruned pnpm-lock.yaml)
+#   - out/full/     (full source code)
+#   - out/pnpm-lock.yaml (pruned lockfile)
 RUN turbo prune gateway-service --docker
 
-FROM node:${NODE_VERSION}-alpine AS installer
-
-RUN apk update && apk add --no-cache libc6-compat
+# ============================================
+# BUILDER STAGE - Install deps, generate Prisma, and build
+# ============================================
+FROM base AS builder
 
 WORKDIR /app
 
+# Copy pruned lockfile and package.json files
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/json/ .
 
-RUN npm ci --omit=dev --ignore-scripts
+# Install ALL dependencies (including devDependencies needed for build)
+# --ignore-scripts prevents husky prepare hook from running
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --ignore-scripts
 
-FROM node:${NODE_VERSION}-alpine AS builder
-
-RUN apk update && apk add --no-cache libc6-compat
-
-WORKDIR /app
-
-COPY --from=installer /app/ .
-
+# Copy full source code
 COPY --from=pruner /app/out/full/ .
 
-RUN npm ci
+# Generate Prisma Client (using the installed prisma CLI from devDependencies)
+RUN cd apps/gateway-service && pnpm exec prisma generate
 
-RUN cd apps/gateway-service && npx prisma generate
+# Build the application using Turbo
+RUN pnpm turbo build --filter=gateway-service
 
-RUN npm run build
+# Prune dev dependencies after build to reduce image size
+# This removes devDependencies while keeping production deps + Prisma client
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    CI=true pnpm prune --prod --ignore-scripts
 
+# ============================================
+# RUNNER STAGE - Production runtime (minimal)
+# ============================================
 FROM node:${NODE_VERSION}-alpine AS runner
 
-RUN apk update && apk add --no-cache libc6-compat curl
+# Install only essential runtime dependencies
+RUN apk update && apk add --no-cache libc6-compat curl openssl \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nestjs
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
 
-COPY --from=installer --chown=nestjs:nodejs /app/node_modules ./node_modules
+# Set production environment
+ENV NODE_ENV=production
 
-COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/dist ./dist
+# Copy node_modules from builder (includes generated Prisma client)
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 
-COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+# Copy built application from builder stage
+COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/dist ./apps/gateway-service/dist
 
+# Copy package.json files (needed for running the app)
+COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/package.json ./apps/gateway-service/package.json
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
+
+# Copy Prisma schema for potential migrations at runtime
+COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/prisma ./apps/gateway-service/prisma
+
+# Switch to non-root user
 USER nestjs
 
-EXPOSE 3036
+# Expose application port
+EXPOSE 3033
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:${GATEWAY_PORT:-3036}/api/v1/health || exit 1
+# Health check for the gateway service
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:${GATEWAY_PORT:-3033}/api/v1/health || exit 1
 
-CMD ["node", "dist/main.js"]
+# Start the application
+CMD ["node", "apps/gateway-service/dist/main.js"]

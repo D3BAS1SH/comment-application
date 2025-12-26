@@ -8,11 +8,13 @@ import { cn } from '@/lib/utils';
 import { forwardRef, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
+type InputVariant = 'default' | 'floating' | 'minimal';
+
 interface FintechInputProps extends Omit<HTMLMotionProps<'input'>, 'ref'> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
-  variant?: 'default' | 'floating' | 'minimal';
+  variant?: InputVariant;
 }
 
 const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
@@ -24,13 +26,15 @@ const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
     const [isFocused, setIsFocused] = useState(false);
     const [hasValue, setHasValue] = useState(false);
 
+    const inputVariant: InputVariant = variant;
+
     const isPassword = type === 'password';
     const inputType = isPassword && showPassword ? 'text' : type;
 
     const baseInputClasses =
       'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50';
 
-    const variants = {
+    const variants: Record<InputVariant, string> = {
       default: baseInputClasses,
       floating:
         'w-full bg-transparent border-b-2 border-white/10 px-0 py-3 text-white placeholder-transparent backdrop-blur-sm transition-all duration-200 focus:outline-none focus:border-cyan-400 rounded-none',
@@ -40,7 +44,7 @@ const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
 
     return (
       <div className="relative">
-        {variant === 'floating' && label && (
+        {inputVariant === 'floating' && label && (
           <motion.label
             initial={false}
             animate={{
@@ -54,7 +58,7 @@ const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
           </motion.label>
         )}
 
-        {variant !== 'floating' && label && (
+        {inputVariant !== 'floating' && label && (
           <label className="block text-sm font-medium text-white mb-2">
             {label}
           </label>
@@ -71,7 +75,7 @@ const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
             ref={ref}
             type={inputType}
             className={cn(
-              variants[variant],
+              variants[inputVariant],
               icon && 'pl-10',
               isPassword && 'pr-10',
               error &&
@@ -79,11 +83,11 @@ const FintechInput = forwardRef<HTMLInputElement, FintechInputProps>(
               className
             )}
             onFocus={() => setIsFocused(true)}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               setIsFocused(false);
               setHasValue(e.target.value !== '');
             }}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setHasValue(e.target.value !== '');
               props.onChange?.(e);
             }}

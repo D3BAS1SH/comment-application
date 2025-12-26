@@ -158,7 +158,7 @@ export function ImageCropperModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/90 p-6 shadow-2xl"
           >
             {/* Header */}
@@ -176,6 +176,7 @@ export function ImageCropperModal({
 
             {/* Crop Area */}
             <div className="relative w-full h-80 mb-6 rounded-xl overflow-hidden bg-black/50">
+              {/* @ts-expect-error - react-easy-crop has JSX type compatibility issues with React 19 */}
               <Cropper
                 image={initialImage}
                 crop={crop}
