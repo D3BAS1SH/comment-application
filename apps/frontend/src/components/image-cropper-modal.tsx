@@ -176,7 +176,6 @@ export function ImageCropperModal({
 
             {/* Crop Area */}
             <div className="relative w-full h-80 mb-6 rounded-xl overflow-hidden bg-black/50">
-              {/* @ts-expect-error - react-easy-crop has JSX type compatibility issues with React 19 */}
               <Cropper
                 image={initialImage}
                 crop={crop}
