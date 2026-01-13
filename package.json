@@ -29,6 +29,19 @@
   "engines": {
     "node": ">=20.x"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "@scarf/scarf",
+      "@swc/core",
+      "bcrypt",
+      "prisma",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
   "lint-staged": {
     "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
       "prettier --write",
