@@ -112,6 +112,8 @@ COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/package.json
 # Copy Prisma Binaries from Builder
 COPY --from=builder --chown=nestjs:nodejs /app/apps/gateway-service/src/prisma/generated ./dist/prisma/generated
 
+RUN mkdir -p logs && chown nestjs:nodejs logs
+
 # Switch to non-root user
 USER nestjs
 
