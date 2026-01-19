@@ -2,71 +2,115 @@
 ARG NODE_VERSION=22
 
 # Install dependencies only when needed
-FROM node:${NODE_VERSION}-alpine AS pruner
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk update && apk add --no-cache libc6-compat
+FROM node:${NODE_VERSION}-slim AS base
 
-RUN npm install -g turbo
+RUN apt-get update -y && \
+    apt-get install -y openssl ca-certificates procps curl && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
 WORKDIR /app
 
-# Copy Everything
+FROM base AS pruner
+# Install turbo globally
+RUN pnpm add -g turbo
+
+# Copy entire monorepo
 COPY . .
 
-# Install pnpm and dependencies
+# Prune the monorepo for auth-service with Docker optimization
+# This creates:
+#   - out/json/     (package.json files + pruned pnpm-lock.yaml)
+#   - out/full/     (full source code)
+#   - out/pnpm-lock.yaml (pruned lockfile)
 RUN turbo prune auth-service --docker
 
-# Rebuild the source code only when needed
-FROM node:${NODE_VERSION}-alpine AS installer
+# ============================================
+# 2. DEV-DEPS STAGE (Dependencies)
+# ============================================
+FROM base AS dev-deps
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/json/.npmrc .
 
-RUN apk update && apk add --no-cache libc6-compat openssl
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ============================================
+# 3. PROD-DEPS STAGE (Production Only)
+# ============================================
+FROM base AS prod-deps
+
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/json/.npmrc .
+
+RUN npm pkg delete scripts.prepare
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --frozen-lockfile
+
+# ============================================
+# BUILDER STAGE - Install deps, generate Prisma, and build
+# ============================================
+FROM base AS builder
 
 WORKDIR /app
 
-COPY --from=pruner /app/out/json .
-
-RUN npm ci --omit=dev --ignore-scripts
-
-COPY --from=pruner /app/out/full/apps/auth-service/prisma ./apps/auth-service/prisma
-
-RUN cd apps/auth-service && npx prisma generate
-
-FROM node:${NODE_VERSION}-alpine AS builder
-
-RUN apk update && apk add --no-cache libc6-compat openssl
-
-WORKDIR /app
-
-COPY --from=installer /app/ .
-
+# Copy pruned lockfile and package.json files and node modules from dev-deps
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/full/ .
+COPY --from=dev-deps /app/node_modules ./node_modules
 
-RUN npm ci
+# Generate Prisma Client (using the installed prisma CLI from devDependencies)
+RUN cd apps/auth-service && pnpm exec prisma generate
 
-RUN cd apps/auth-service && npx prisma generate
+# Build the application using Turbo
+RUN pnpm turbo build --filter=auth-service
 
-RUN npm run build
+# ============================================
+# RUNNER STAGE - Production runtime (minimal)
+# ============================================
+FROM node:${NODE_VERSION}-slim AS runner
 
-# Production image, copy all the files and run nest
-FROM node:${NODE_VERSION}-alpine AS runner
-
-RUN apk update && apk add --no-cache libc6-compat curl openssl
+# Install only essential runtime dependencies
+RUN apt-get update -y && apt-get install -y openssl ca-certificates procps curl \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nestjs
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
 
-COPY --from=installer --chown=nestjs:nodejs /app/node_modules ./node_modules
+# Set production environment
+ENV NODE_ENV=production
 
+# Copy node_modules from builder (includes generated Prisma client)
+COPY --from=prod-deps --chown=nestjs:nodejs /app/node_modules ./node_modules
+
+# Copy built application from builder stage
 COPY --from=builder --chown=nestjs:nodejs /app/apps/auth-service/dist ./dist
 
-COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+# Copy package.json files (needed for running the app)
+COPY --from=builder --chown=nestjs:nodejs /app/apps/auth-service/package.json ./package.json
+# COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
 
+# Copy Prisma Binaries from Builder
+COPY --from=builder --chown=nestjs:nodejs /app/apps/auth-service/src/prisma/generated ./dist/prisma/generated
+
+RUN mkdir -p logs && chown nestjs:nodejs logs
+
+# Switch to non-root user
 USER nestjs
 
+# Expose application port
 EXPOSE 3033
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+# Health check for the gateway service
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:${AUTH_PORT:-3033}/api/v1/health || exit 1
 
+# Start the application
 CMD ["node", "dist/main.js"]
