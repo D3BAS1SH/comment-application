@@ -21,7 +21,7 @@ export class HealthService {
     try {
       const authServiceUrl = this.configService.get<string>('AUTH_SERVICE_URL');
       const response = await firstValueFrom(
-        this.httpService.get(`${authServiceUrl}/health`)
+        this.httpService.get(`${authServiceUrl}/api/v1/health`)
       );
       return {
         auth_service: {
