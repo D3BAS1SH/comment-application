@@ -3,8 +3,6 @@ import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
 import { TerminusModule } from '@nestjs/terminus';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 
@@ -12,11 +10,10 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     TerminusModule,
     PrometheusModule.register(),
-    PrismaModule,
     ConfigModule,
     JwtModule,
   ],
   controllers: [HealthController],
-  providers: [HealthService, PrismaService, JwtService],
+  providers: [HealthService, JwtService],
 })
 export class HealthModule {}
