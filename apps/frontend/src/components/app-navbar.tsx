@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { FintechButton } from './fintech-button';
 
 interface AppNavbarProps {
   onMenuToggle: () => void;
@@ -81,9 +82,9 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
 
           <div className="flex items-center gap-4">
             {showBrand && (
-              <button className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
+              <FintechButton className="text-black hover:text-cyan-400 transition-colors text-sm">
                 Sign Out
-              </button>
+              </FintechButton>
             )}
           </div>
         </div>
