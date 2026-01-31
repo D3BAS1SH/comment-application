@@ -12,27 +12,37 @@ console.log(path.join(__dirname, 'templates'));
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transport: {
-          host: config.get<string>('MAIL_HOST'),
-          port: parseInt(config.getOrThrow<string>('MAIL_PORT'), 10),
-          secure: config.getOrThrow<string>('MAIL_SECURE') === 'true',
-          auth: {
-            user: config.get<string>('MAIL_USER'),
-            pass: config.get<string>('MAIL_PASSWORD'),
+      useFactory: (config: ConfigService) => {
+        const configHost = config.getOrThrow<string>('MAIL_HOST');
+        const configPort = parseInt(config.getOrThrow<string>('MAIL_PORT'), 10);
+        const configSecure = config
+          .getOrThrow<string>('MAIL_SECURE')
+          .includes('true');
+        const configUser = config.getOrThrow<string>('MAIL_USER');
+        const configPassword = config.getOrThrow<string>('MAIL_PASSWORD');
+
+        return {
+          transport: {
+            host: configHost,
+            port: configPort,
+            secure: configSecure,
+            auth: {
+              user: configUser,
+              pass: configPassword,
+            },
           },
-        },
-        defaults: {
-          from: `"No Reply" <${config.get<string>('MAIL_FROM_EMAIL')}>`,
-        },
-        template: {
-          dir: path.join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
+          defaults: {
+            from: `"No Reply" <${config.get<string>('MAIL_FROM_EMAIL')}>`,
           },
-        },
-      }),
+          template: {
+            dir: path.join(__dirname, 'templates'),
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        };
+      },
     }),
   ],
   providers: [EmailService],

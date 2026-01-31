@@ -4,6 +4,12 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": ["**/*.hbs"]
+    "assets": [
+      "**/*.hbs",
+      {
+        "include": "prisma/generated/**/*",
+        "watchAssets": false
+      }
+    ]
   }
 }

@@ -11,7 +11,7 @@ import { CreateTokenDto } from './dto/create-token.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User } from '../prisma/generated';
 import { v4 as uuidv4 } from 'uuid';
 import { VerificationTokenDto } from './dto/verification-token.dto';
 import { VerificationTokenResponse } from './dto/verification-token-response.dto';

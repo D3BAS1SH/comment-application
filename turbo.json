@@ -44,7 +44,7 @@
       "outputs": ["dist/**"]
     },
     "gateway-service#build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^db:generate"],
       "env": ["AUTH_SERVICE_URL", "COMMENT_SERVICE_URL", "POST_SERVICE_URL"],
       "outputs": ["dist/**"]
     },

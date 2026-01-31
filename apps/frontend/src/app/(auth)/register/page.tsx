@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import { type FC, useState } from 'react';
+import Image from 'next/image';
 import { Mail, Lock, User, UploadCloud } from 'lucide-react';
 import { FormInput } from '@/components/form-input';
 import Link from 'next/link';
@@ -266,12 +267,13 @@ const RegisterPage: FC = () => {
               <div className="w-28 h-28 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center hover:border-cyan-400 transition-all duration-300 bg-white/5 group-hover:bg-white/10 relative overflow-hidden">
                 {imagePreview ? (
                   <>
-                    <img
+                    <Image
                       src={imagePreview || '/placeholder.svg'}
                       alt="Profile preview"
-                      className="w-full h-full rounded-full object-cover"
+                      fill
+                      className="rounded-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
                       <UploadCloud className="text-white" size={24} />
                     </div>
                   </>

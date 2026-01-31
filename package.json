@@ -25,9 +25,22 @@
     "turbo": "^2.5.4",
     "typescript": "5.8.2"
   },
-  "packageManager": "npm@10.0.0",
+  "packageManager": "pnpm@10.24.0",
   "engines": {
     "node": ">=20.x"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "@scarf/scarf",
+      "@swc/core",
+      "bcrypt",
+      "prisma",
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "lint-staged": {
     "apps/auth-service/**/*.{js,jsx,ts,tsx}": [
@@ -53,9 +66,5 @@
     "*.{json,css,scss,md,mdx}": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "@prisma/client": "^6.11.1",
-    "prisma": "^6.11.1"
   }
 }

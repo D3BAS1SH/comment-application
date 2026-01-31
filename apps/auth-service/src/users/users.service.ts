@@ -22,7 +22,7 @@ import { RefreshTokenResponse } from './dto/refresh-token-reponse.dto';
 import { CreateTokenDto } from 'src/token/dto/create-token.dto';
 import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
 import { ResetPasswordBodyDto } from './dto/reset-password.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../prisma/generated';
 
 @Injectable()
 export class UsersService {

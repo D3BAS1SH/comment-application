@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, HttpStatus, Injectable } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../prisma/generated';
 import { Request, Response } from 'express';
 import { CustomErrorResponseDto } from '../dto/error-response.dto';
 import { LoggerService } from '../log/logger.service';

@@ -17,6 +17,15 @@ export default function HomeLayout({
   const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
 
+  // Derived state: Close sidebar when route changes on mobile
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
@@ -30,13 +39,6 @@ export default function HomeLayout({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Close sidebar when route changes on mobile
-  useEffect(() => {
-    if (isMobile) {
-      setIsSidebarOpen(false);
-    }
-  }, [pathname, isMobile]);
 
   const toggleSidebar = () => {
     if (!isMobile) {
