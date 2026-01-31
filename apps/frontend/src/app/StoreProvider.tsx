@@ -1,5 +1,5 @@
 'use client';
-import { useRef } from 'react';
+import { useState } from 'react';
 import { Provider } from 'react-redux';
 import { makeStore, AppStore, persistor } from '../lib/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -9,14 +9,11 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storeRef = useRef<AppStore | null>(null);
-  if (!storeRef.current) {
-    // Create the store instance the first time this renders
-    storeRef.current = makeStore();
-  }
+  // Use useState with a lazy initializer to ensure the store is created exactly once
+  const [store] = useState<AppStore>(() => makeStore());
 
   return (
-    <Provider store={storeRef.current}>
+    <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         {children}
       </PersistGate>

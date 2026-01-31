@@ -29,32 +29,28 @@ interface BackendError {
 export default function VerifyUserPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [state, setState] = useState<VerifyState>('loading');
-  const [error, setError] = useState<VerifyErrorData | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+
+  const tokenParam = searchParams.get('token');
+
+  // Initialize state based on presence of token to avoid setState in Effect
+  const [state, setState] = useState<VerifyState>(
+    tokenParam ? 'loading' : 'error'
+  );
+  const [error, setError] = useState<VerifyErrorData | null>(
+    tokenParam
+      ? null
+      : {
+          title: 'Verification Failed',
+          message: 'Verification token missing or invalid.',
+          errorCode: 'MISSING_TOKEN',
+        }
+  );
+  const [token] = useState<string | null>(tokenParam);
   const [retryCount, setRetryCount] = useState(0);
   const [exhausted, setExhausted] = useState(false);
 
-  // Extract token from URL on mount
-  useEffect(() => {
-    const tokenParam = searchParams.get('token');
-    if (!tokenParam) {
-      setState('error');
-      setError({
-        title: 'Verification Failed',
-        message: 'Verification token missing or invalid.',
-        errorCode: 'MISSING_TOKEN',
-      });
-    } else {
-      setToken(tokenParam);
-    }
-  }, [searchParams]);
-
   // Verify email with token
   const verifyEmail = useCallback(async (verifyToken: string) => {
-    setState('loading');
-    setError(null);
-
     // Use AbortController with axios via the `signal` option
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
@@ -214,7 +210,11 @@ export default function VerifyUserPage() {
   // Auto-verify when token is available
   useEffect(() => {
     if (token && state === 'loading') {
-      verifyEmail(token);
+      // Use setTimeout to avoid synchronous setState in effect (React 19 / Next 16 linting)
+      const timer = setTimeout(() => {
+        verifyEmail(token);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [token, state, verifyEmail]);
 
@@ -239,6 +239,8 @@ export default function VerifyUserPage() {
 
     // Otherwise perform another verification attempt
     setRetryCount((prev) => prev + 1);
+    setState('loading');
+    setError(null);
     verifyEmail(token);
   };
 
