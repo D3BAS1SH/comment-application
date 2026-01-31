@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "format": "prettier --write . --ignore-path ../../.prettierignore",
     "format:check": "prettier --check . --ignore-path ../../.prettierignore",
     "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(js|jsx|ts|tsx|json|css|scss|md|mdx)$')",
@@ -46,11 +46,12 @@
     "@types/react-dom": "^19",
     "@types/react-easy-crop": "^1.16.0",
     "eslint": "^9",
-    "eslint-config-next": "15.3.5",
+    "eslint-config-next": "16.1.4",
     "husky": "^9.0.1",
     "lint-staged": "^15.2.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.50.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
