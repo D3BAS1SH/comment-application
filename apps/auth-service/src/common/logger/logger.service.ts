@@ -73,16 +73,14 @@ export class LoggerService implements LoggerService {
         }),
       ],
       rejectionHandlers: [
-        new winston.transports.File(
-          new winston.transports.DailyRotateFile({
-            filename: 'rejections-%DATE%.log',
-            dirname: 'logs',
-            datePattern: 'YYYY-MM-DD',
-            zippedArchive: true,
-            maxFiles: '14d',
-            maxSize: '20m',
-          })
-        ),
+        new winston.transports.DailyRotateFile({
+          filename: 'rejections-%DATE%.log',
+          dirname: 'logs',
+          datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
+          maxFiles: '14d',
+          maxSize: '20m',
+        }),
       ],
     });
   }
