@@ -1,0 +1,69 @@
+version: '3.8'
+
+services: 
+  auth-service:
+    image: d3ba110/auth-service:1.1
+    restart: unless-stopped
+    container_name: auth-service
+    env_file:
+      - ../.env.auth-service
+    ports:
+      - "3033:3033"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3033/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s  # Give service time to start before health checks
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  gateway-service:
+    image: d3ba110/gateway-service:1.1
+    restart: unless-stopped
+    container_name: gateway-service
+    env_file:
+      - ../.env.gateway-service
+    ports:
+      - "3036:3036"
+    networks:
+      - app_network
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3036/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  app_network:
+    driver: bridge
