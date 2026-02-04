@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 
@@ -36,6 +37,17 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   app.enableShutdownHooks();
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('AUTH-SERIVCE')
+    .setDescription('This is the Auth service handle the authentications')
+    .setVersion('1.2')
+    .addTag('Authentication')
+    .build();
+
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api-docs', app, documentFactory);
 
   console.log(`Auth-service running on PORT: ${port}`);
   await app.listen(port ?? 3000);
