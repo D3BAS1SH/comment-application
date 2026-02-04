@@ -20,7 +20,7 @@ export class HealthController {
     description: 'Health check failed',
   })
   async check() {
-    return this.healthService.checkAllHealth();
+    return await this.healthService.checkAllHealth();
   }
 
   @Get('system')
@@ -35,5 +35,40 @@ export class HealthController {
   @ApiOperation({ summary: 'Get security health status' })
   checkSecurity() {
     return this.healthService.checkSecurityHealth();
+  }
+
+  @Get('email')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Get Email Health checks' })
+  async checkEmailHealth() {
+    return await this.healthService.checkEmail();
+  }
+
+  @Get('database')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Get Database Health checks' })
+  async checkDatabaseHealth() {
+    return await this.healthService.checkDatabase();
+  }
+
+  @Get('storage')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Get Cloudinary Storage health check' })
+  async checkCloudinaryStorage() {
+    return await this.healthService.checkStorage();
+  }
+
+  @Get('service')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Get Service health check' })
+  checkServiceHeath() {
+    return this.healthService.checkServiceHealth();
+  }
+
+  @Get('container')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Get container health check' })
+  checkContainerHealth() {
+    return this.healthService.checkContainerHealth();
   }
 }
