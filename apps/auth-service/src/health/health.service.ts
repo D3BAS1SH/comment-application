@@ -6,9 +6,8 @@ import {
   HealthIndicatorResult,
 } from '@nestjs/terminus';
 import { PrismaService } from '../prisma/prisma.service';
-import { MailerService } from '@nestjs-modules/mailer';
+// import { MailerService } from '@nestjs-modules/mailer';
 import { v2 as cloudinary } from 'cloudinary';
-import { JwtService } from '@nestjs/jwt';
 import fs from 'fs';
 
 @Injectable()
@@ -16,9 +15,8 @@ export class HealthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly healthCheckService: HealthCheckService,
-    private readonly mailService: MailerService
+    private readonly healthCheckService: HealthCheckService
+    // private readonly mailService: MailerService
   ) {
     cloudinary.config({
       cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
@@ -42,10 +40,17 @@ export class HealthService {
     ]);
   }
 
-  async checkEmail(): Promise<HealthIndicatorResult> {
+  checkEmail(): HealthIndicatorResult {
     const key = 'email';
     try {
-      await this.mailService.verifyAllTransporters();
+      // TODO: We will not use this
+      // await this.mailService.verifyAllTransporters();
+      this.configService.getOrThrow<string>('MAIL_HOST');
+      this.configService.getOrThrow<string>('MAIL_PORT');
+      const apiKey = this.configService.getOrThrow<string>('MAIL_PASSWORD');
+      if (!apiKey.startsWith('re_')) {
+        throw new Error('Invalid Resend API key format');
+      }
       return {
         [key]: {
           status: 'up',
