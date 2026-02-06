@@ -5,7 +5,10 @@ import type { InternalAxiosRequestConfig } from 'axios';
 
 // Base axios client for core config and retry logic
 const client = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL_LOCAL, // Just the base URL without /api/v1
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.NEXT_PUBLIC_API_URL_LOCAL,
   timeout: 10000,
   withCredentials: true,
   headers: {
