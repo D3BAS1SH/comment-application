@@ -23,17 +23,17 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.use(cookieParser());
 
-  const allowedOrigins = configService
-    .getOrThrow<string>('CORS_ORIGINS')
-    .split(',')
-    .map((orig) => orig.trim());
-  app.enableCors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    maxAge: 3600,
-    credentials: true,
-  });
+  // const allowedOrigins = configService
+  //   .getOrThrow<string>('CORS_ORIGINS')
+  //   .split(',')
+  //   .map((orig) => orig.trim());
+  // app.enableCors({
+  //   origin: allowedOrigins,
+  //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  //   maxAge: 3600,
+  //   credentials: true,
+  // });
 
   app.setGlobalPrefix('api/v1');
   app.enableShutdownHooks();
