@@ -50,19 +50,19 @@ async function bootstrap() {
     })
   );
 
-  const allowedOrigins = currentConfigService
-    .getOrThrow<string>('FRONTEND_CORS_ORIGINS')
-    .split(',')
-    .map((origin) => origin.trim());
+  // const allowedOrigins = currentConfigService
+  //   .getOrThrow<string>('FRONTEND_CORS_ORIGINS')
+  //   .split(',')
+  //   .map((origin) => origin.trim());
 
-  console.log(allowedOrigins);
-  app.enableCors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    maxAge: 3600,
-    credentials: true,
-  });
+  // console.log(allowedOrigins);
+  // app.enableCors({
+  //   origin: allowedOrigins,
+  //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  //   maxAge: 3600,
+  //   credentials: true,
+  // });
 
   const authProxyMiddleware = app.get(AuthProxyMiddleware);
   app.use('/api/v1/auth', authProxyMiddleware.use.bind(authProxyMiddleware));
