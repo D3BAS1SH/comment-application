@@ -40,8 +40,8 @@ export class HealthController {
   @Get('email')
   @HealthCheck()
   @ApiOperation({ summary: 'Get Email Health checks' })
-  async checkEmailHealth() {
-    return await this.healthService.checkEmail();
+  checkEmailHealth() {
+    return this.healthService.checkEmail();
   }
 
   @Get('database')
