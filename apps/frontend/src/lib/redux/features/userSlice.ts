@@ -30,7 +30,10 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >('user/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await authClient.post('/api/v1/auth/login', credentials);
+    const response = await authClient.post(
+      '/api/v1/auth/users/login',
+      credentials
+    );
     return response.data; // your success response containing tokens and user info
   } catch (error) {
     let message = 'Login failed';
@@ -57,7 +60,7 @@ export const registerUser = createAsyncThunk<
 >('user/register', async (Rcredentials, { rejectWithValue }) => {
   try {
     const registerResponse = await authClient.post(
-      '/api/v1/auth/register',
+      '/api/v1/auth/users/register',
       Rcredentials
     );
     return registerResponse.data;
@@ -71,7 +74,9 @@ export const refreshAccessToken = createAsyncThunk(
   'user/refreshToken',
   async (refreshToken: string, { rejectWithValue }) => {
     try {
-      const response = await authClient.post('/auth/refresh', { refreshToken });
+      const response = await authClient.post('/auth/users/refresh', {
+        refreshToken,
+      });
       return response.data.accessToken;
     } catch {
       return rejectWithValue('Failed to refresh token');
