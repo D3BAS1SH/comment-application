@@ -57,7 +57,9 @@ const RegisterPage: FC = () => {
   const getSignedUploadUrl = async (): Promise<UploadUrlResponse> => {
     try {
       console.log('Requesting signed upload URL...');
-      const response = await authClient.get('/api/v1/auth/upload-url');
+      const response = await authClient.get(
+        '/api/v1/auth/cloudinary-utility/upload-url'
+      );
 
       if (!response.data) {
         throw new Error('No data received from upload URL endpoint');
