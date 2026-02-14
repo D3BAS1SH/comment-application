@@ -50,21 +50,93 @@ export class UsersService {
         select: {
           id: true,
           isVerified: true,
+          firstName: true,
           VerificationToken: true,
         },
       });
     console.log(existenceAndVerificationOfUser);
 
     if (existenceAndVerificationOfUser) {
-      if (
-        existenceAndVerificationOfUser.VerificationToken &&
-        existenceAndVerificationOfUser.VerificationToken.expiresAt > new Date()
-      ) {
+      // If user exists and verified again tries to register.
+      if (existenceAndVerificationOfUser.isVerified) {
         throw new ConflictException(
-          'Check In the email, we have sent you the verification mail. Or Try again after 15 minutes.'
+          `User already exists with email ${email}, Try logging or resetting password`
         );
       }
-      throw new ConflictException(`User already exists with ${email}.`);
+
+      // User exists but unverified.
+      if (existenceAndVerificationOfUser.VerificationToken) {
+        // Token has expired
+        if (
+          existenceAndVerificationOfUser.VerificationToken.expiresAt <
+          new Date()
+        ) {
+          // Remove Token and User too to make a fresh registration
+          await this.prismaService.$transaction(async (tx) => {
+            // Remove Token linked to the user first
+            await tx.verificationToken.delete({
+              where: {
+                userId: existenceAndVerificationOfUser.id,
+              },
+            });
+
+            // Remove User here
+            await tx.user.delete({
+              where: {
+                id: existenceAndVerificationOfUser.id,
+              },
+            });
+          });
+
+          console.log(
+            'User Cleanup: User already existing and token was expired.'
+          );
+        } else {
+          // Token still valid but for some reason user couldn't get it. Send again
+          try {
+            await this.emailService.sendVerificationEmail(
+              email,
+              existenceAndVerificationOfUser.firstName,
+              existenceAndVerificationOfUser.VerificationToken.token
+            );
+
+            const expiresInMinutes = Math.ceil(
+              (existenceAndVerificationOfUser.VerificationToken.expiresAt.getTime() -
+                Date.now()) /
+                60000
+            );
+
+            return {
+              message:
+                'A verification email has been resent to your inbox. ' +
+                'Please check your email (including spam folder).',
+              email: email,
+              expiresIn: `${expiresInMinutes} minutes`,
+            };
+          } catch (error: unknown) {
+            console.error(
+              'Email sending failed due to: ',
+              error instanceof Error
+                ? error.message
+                : 'Unknown reason, Contact support team'
+            );
+            return {
+              message:
+                'We could not send the verification email. ' +
+                'Please try again in a few minutes or contact support.',
+              warning: 'Email delivery failed',
+              email: email,
+            };
+          }
+        }
+      } // User exists but
+      else {
+        await this.prismaService.user.delete({
+          where: {
+            id: existenceAndVerificationOfUser.id,
+          },
+        });
+      }
     }
 
     console.log('Password hashing Initiated.');
@@ -98,16 +170,11 @@ export class UsersService {
         console.log(`Verification Token:`);
         console.log(currentVerificationToken);
 
-        await this.emailService.sendVerificationEmail(
-          email,
-          firstName,
-          currentVerificationToken.token
-        );
-        console.log('Successfully Email sent');
-
         return {
-          message:
-            'User Creation has been on hold for verification. Verification Link is sent to mail.',
+          userId: userDocument.id,
+          userName: userDocument.firstName,
+          email: userDocument.email,
+          token: currentVerificationToken.token,
         };
       },
       {
@@ -116,7 +183,35 @@ export class UsersService {
       }
     );
 
-    return transactionResult;
+    try {
+      console.log('Email sending initiated');
+      await this.emailService.sendVerificationEmail(
+        transactionResult.email,
+        transactionResult.userName,
+        transactionResult.token
+      );
+      console.log('Email sending completion');
+      return {
+        message:
+          'Account created successfully! ' +
+          'Please check your email to verify your account.',
+        email: email,
+        expiresIn: '15 minutes',
+      };
+    } catch (error: unknown) {
+      console.error(
+        'failed email sending due to: ',
+        error instanceof Error ? error : 'Some unknown reason'
+      );
+      return {
+        message:
+          'Account created, but we could not send the verification email. ' +
+          'Please try registering again with the same email to resend the link, ' +
+          'or contact support.',
+        warning: 'Email delivery failed',
+        email: email,
+      };
+    }
   }
 
   /**
