@@ -108,10 +108,6 @@ export class EmailService {
       );
       const verificationLink = `${appBaseUrl}/verify-user?token=${token}`;
       console.log('Sending Verification Mail Link Generation.');
-      const html = this.renderTemplate('verification', {
-        userName,
-        verificationLink,
-      });
       console.log('Sending Verification Mail Sending');
       const { data, error } = await this.resend.emails.send({
         to: [to],
@@ -119,8 +115,14 @@ export class EmailService {
           'MAIL_FROM_EMAIL',
           'HorizonComms <noreply@horizoncomms.me>'
         ),
-        subject: '',
-        html,
+        subject: 'Verify Your Identity',
+        template: {
+          id: 'acf15232-3de9-4440-a1b4-c1d2f6f4c314',
+          variables: {
+            userName: userName,
+            verificationLink: verificationLink,
+          },
+        },
       });
 
       if (error) {

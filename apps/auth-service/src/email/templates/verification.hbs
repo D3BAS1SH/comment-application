@@ -1,168 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Email</title>
+    <title>Email Verification</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #f5f5f5;
-            color: #222;
-        }
-        .wrapper {
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 512px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 60px 30px;
-            text-align: center;
-        }
-        .logo {
-            width: 60px;
-            height: 60px;
-            background-color: #000;
-            border-radius: 12px;
-            margin: 0 auto 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .title {
-            font-size: 28px;
-            font-weight: 600;
-            color: #000;
-            margin-bottom: 40px;
-            line-height: 1.3;
-        }
-        .content {
-            text-align: left;
-            margin-bottom: 40px;
-        }
-        .greeting {
-            font-size: 15px;
-            color: #c9302c;
-            font-weight: 500;
-            margin-bottom: 16px;
-        }
-        .message {
-            font-size: 14px;
-            color: #444;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .button-wrapper {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .button {
-            display: inline-block;
-            padding: 14px 40px;
-            background-color: #000;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        .footer-note {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
-        .divider {
-            height: 1px;
-            background-color: #e5e5e5;
-            margin: 40px 0;
-        }
-        .company-footer {
-            font-size: 12px;
-            color: #999;
-            text-align: center;
-        }
-        @media (max-width: 480px) {
-            .wrapper {
-                padding: 12px;
-            }
-            .container {
-                padding: 40px 20px;
-            }
-            .logo {
-                width: 50px;
-                height: 50px;
-                font-size: 26px;
-                margin-bottom: 30px;
-            }
-            .title {
-                font-size: 22px;
-                margin-bottom: 30px;
-            }
-            .content {
-                margin-bottom: 30px;
-            }
-            .greeting {
-                font-size: 14px;
-                margin-bottom: 12px;
-            }
-            .message {
-                font-size: 13px;
-            }
-            .button-wrapper {
-                margin-bottom: 30px;
-            }
-            .button {
-                display: block;
-                padding: 12px 24px;
-                font-size: 13px;
-                width: 100%;
-                box-sizing: border-box;
-            }
-            .footer-note {
-                font-size: 12px;
-                margin-bottom: 30px;
-            }
-            .divider {
-                margin: 30px 0;
-            }
-            .company-footer {
-                font-size: 11px;
-            }
-        }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .button { display: inline-block; padding: 10px 20px; margin: 20px 0; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <div class="container">
-            <div class="logo">L</div>
-            <h1 class="title">Verify your email address</h1>
-            
-            <div class="content">
-                <p class="greeting">Hello,</p>
-                <p class="message">We received a request to verify your identity. Click the button below to confirm your email address and continue.</p>
-            </div>
-
-            <div class="button-wrapper">
-                <a href="{{verificationlink}}" class="button">Verify Identity</a>
-            </div>
-
-            <p class="footer-note">If you didn't request this, you can safely ignore this email.</p>
-
-            <div class="divider"></div>
-
-            <p class="company-footer">Your Company • 123 Street Ave, City, Country</p>
-        </div>
+    <div class="container">
+        <h2>Email Verification</h2>
+        <p>Hello {{userName}},</p>
+        <p>Thank you for registering with our service. Please click the button below to verify your email address:</p>
+        <a href="{{verificationLink}}" class="button">Verify Email</a>
+        <p>If you did not register for this service, please ignore this email.</p>
+        <p>Thanks,<br>Developers</p>
     </div>
 </body>
 </html>
