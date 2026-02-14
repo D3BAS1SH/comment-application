@@ -18,7 +18,7 @@ let pendingRequests: ((token: string) => void)[] = [];
 async function refreshToken(): Promise<string> {
   const refreshTokenValue = getRefreshToken();
   const response: AxiosResponse<{ accessToken: string }> = await client.post(
-    '/auth/refresh',
+    '/api/v1/auth/users/refresh',
     {
       refreshToken: refreshTokenValue,
     }
