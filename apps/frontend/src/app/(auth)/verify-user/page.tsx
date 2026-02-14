@@ -56,7 +56,7 @@ export default function VerifyUserPage() {
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
     try {
-      const response = await authClient.get(`/api/v1/auth/verify-email`, {
+      const response = await authClient.get(`/api/v1/auth/users/verify-email`, {
         params: { token: verifyToken },
         signal: controller.signal,
       });

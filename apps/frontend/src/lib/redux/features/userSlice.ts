@@ -74,7 +74,7 @@ export const refreshAccessToken = createAsyncThunk(
   'user/refreshToken',
   async (refreshToken: string, { rejectWithValue }) => {
     try {
-      const response = await authClient.post('/auth/users/refresh', {
+      const response = await authClient.post('/api/v1/auth/users/refresh', {
         refreshToken,
       });
       return response.data.accessToken;
