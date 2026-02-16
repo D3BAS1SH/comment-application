@@ -62,7 +62,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       maxAge: maxAgeMilisecondsAccessToken,
       path: '/',
     });
@@ -71,7 +72,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       maxAge: maxAgeMilisecondsRefreshToken,
       path: '/',
     });
@@ -106,7 +108,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       maxAge: maxAgeMilisecondsAccessToken,
       path: '/',
     });
@@ -115,7 +118,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       maxAge: maxAgeMilisecondsRefreshToken,
       path: '/',
     });
@@ -144,7 +148,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       path: '/',
     });
 
@@ -153,7 +158,8 @@ export class UsersController {
       httpOnly: true,
       secure:
         this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
+      domain: '.horizoncomms.me',
       path: '/',
     });
     return { message: Result ?? 'Logging Out Successful' };
