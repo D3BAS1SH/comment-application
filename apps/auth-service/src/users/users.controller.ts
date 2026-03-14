@@ -16,7 +16,6 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { LoginUser } from './dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
-import ms, { StringValue } from 'ms';
 import { ValidUserDto } from './dto/valid-user-payload.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RefreshGuard } from './guards/refreh.guard';
@@ -46,38 +45,10 @@ export class UsersController {
   @Post('login')
   async login(
     @Body() loginUser: LoginUser,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) _response: Response
   ) {
     const loginResponse = await this.usersService.login(loginUser);
-    const expirationValueRefresh = this.configService.getOrThrow<StringValue>(
-      'JWT_REFRESH_EXPIRATION'
-    );
-    const expirationValueAccess = this.configService.getOrThrow<StringValue>(
-      'JWT_ACCESS_EXPIRATION'
-    );
-    const maxAgeMilisecondsRefreshToken = ms(expirationValueRefresh);
-    const maxAgeMilisecondsAccessToken = ms(expirationValueAccess);
 
-    response.cookie('accessToken', loginResponse.accessToken, {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      maxAge: maxAgeMilisecondsAccessToken,
-      path: '/',
-    });
-
-    response.cookie('refreshToken', loginResponse.refreshToken, {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      maxAge: maxAgeMilisecondsRefreshToken,
-      path: '/',
-    });
-    console.log('Cookie set with refresh Token');
     return loginResponse;
   }
 
@@ -85,44 +56,14 @@ export class UsersController {
   @UseGuards(RefreshGuard)
   async refreshToken(
     @Req() request: Request,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) _response: Response
   ) {
-    console.log('-----------At refresh Controller-------');
-    console.log(request.user);
     //convert the request.user to RefreshTokenRespones
     const validRefreshTokenPayload = request.user as RefreshTokenResponse;
     //Making a call to user service to refresh the token
     const refreshTokenResponse = await this.usersService.refreshMyToken(
       validRefreshTokenPayload
     );
-    const expirationValueRefresh = this.configService.getOrThrow<StringValue>(
-      'JWT_REFRESH_EXPIRATION'
-    );
-    const expirationValueAccess = this.configService.getOrThrow<StringValue>(
-      'JWT_ACCESS_EXPIRATION'
-    );
-    const maxAgeMilisecondsRefreshToken = ms(expirationValueRefresh);
-    const maxAgeMilisecondsAccessToken = ms(expirationValueAccess);
-
-    response.cookie('accessToken', refreshTokenResponse.accessToken, {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      maxAge: maxAgeMilisecondsAccessToken,
-      path: '/',
-    });
-
-    response.cookie('refreshToken', refreshTokenResponse.refreshToken, {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      maxAge: maxAgeMilisecondsRefreshToken,
-      path: '/',
-    });
     return refreshTokenResponse;
   }
 
@@ -130,7 +71,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async logoutUser(
     @Req() request: Request,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) _response: Response
   ): Promise<{ message: string }> {
     const userPayload = request.user as ValidUserDto;
     // console.log(request.cookies);
@@ -143,25 +84,6 @@ export class UsersController {
     // console.log(accessToken);
     const Result = await this.usersService.logout(userPayload, accessToken);
 
-    // clear access token
-    response.clearCookie('accessToken', {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      path: '/',
-    });
-
-    // clear refresh token
-    response.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure:
-        this.configService.getOrThrow<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      domain: '.horizoncomms.me',
-      path: '/',
-    });
     return { message: Result ?? 'Logging Out Successful' };
   }
 
