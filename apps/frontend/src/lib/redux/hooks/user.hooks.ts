@@ -4,7 +4,7 @@ import type {
   UserLogin,
   UserRegister,
   UserState,
-} from '@/types/user.interface';
+} from '@/features/auth/types/user.interface';
 import { loginUser, registerUser } from '../features/userSlice';
 
 /**
