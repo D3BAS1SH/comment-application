@@ -48,3 +48,25 @@ export interface UserLoginResponse {
 export interface UserRegisterResponse {
   message: string;
 }
+
+export interface UserVerificationTokenResponse {
+  isVerified: boolean;
+  email: string;
+  message: string;
+}
+
+export interface ResetPasswordToken {
+  password: string;
+  token: string;
+}
+
+export interface ResetPasswordTokenResponse {
+  message: string;
+}
+
+/**
+ * Do not use it in the Forget password server auth service's class method
+ */
+export interface ForgetPasswordInitiateResponse {
+  message: string;
+}
