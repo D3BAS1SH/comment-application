@@ -12,7 +12,11 @@
     "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(js|jsx|ts|tsx|json|css|scss|md|mdx)$')",
     "lint-staged": "lint-staged",
     "test:ci": "jest --ci --coverage --passWithNoTests",
-    "branch:check": "node scripts/branch-check.js"
+    "branch:check": "node scripts/branch-check.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -41,6 +45,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -48,6 +55,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "husky": "^9.0.1",
+    "jest": "^29.7.0",
     "lint-staged": "^15.2.0",
     "tailwindcss": "^4",
     "typescript": "^5",

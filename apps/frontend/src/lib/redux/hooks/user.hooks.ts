@@ -1,101 +1,39 @@
-import { useDispatch } from 'react-redux';
-import store, { AppDispatch } from '../store';
-import type {
-  UserLogin,
-  UserRegister,
-  UserState,
-} from '@/types/user.interface';
-import { loginUser, registerUser } from '../features/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { loginUser, registerUser, logoutUser } from '../features/userSlice';
+import { UserLogin, UserRegister } from '@/features/auth/types/user.interface';
 
 /**
- * Utility functions to access user-related Redux state outside of React components
- * These can be used anywhere in your code, including non-React contexts like axios interceptors
+ * Hook to access and interact with the user state.
+ * This is the primary way for React components to interact with auth.
  */
-
-/**
- * Get the current auth state from Redux
- * @returns The current auth state
- */
-export const getAuthState = (): UserState => {
-  return store.getState().user;
-};
-
-/**
- * Get the current access token from Redux
- * @returns The current access token or null
- */
-export const getAccessToken = (): string | null => {
-  return getAuthState().accessToken;
-};
-
-/**
- * Get the current refresh token from Redux
- * @returns The current refresh token or null
- */
-export const getRefreshToken = (): string | null => {
-  return getAuthState().refreshToken;
-};
-
-/**
- * Check if the user is authenticated based on Redux state
- * @returns True if the user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-  const { id, accessToken } = getAuthState();
-  return Boolean(id && accessToken);
-};
-
-/**
- * Get the current loading state
- * @returns The current loading state as true of false
- */
-export const useIsloading = (): boolean => {
-  const { loading } = getAuthState();
-  return loading;
-};
-
-/**
- * Get the current error message
- * @returns The current error state as string
- */
-export const useError = (): string | null => {
-  const { error } = getAuthState();
-  return error;
-};
-
-/**
- * Get the current user ID from Redux
- * @returns The current user ID or null
- */
-export const getUserId = (): string | null => {
-  return getAuthState().id;
-};
-
-/**
- * Get the user's full name from Redux
- * @returns The user's full name or empty string
- */
-export const getUserFullName = (): string => {
-  const { firstName, lastName } = getAuthState();
-  if (firstName && lastName) {
-    return `${firstName} ${lastName}`;
-  } else if (firstName) {
-    return firstName;
-  } else if (lastName) {
-    return lastName;
-  }
-  return '';
-};
-
 export const useUser = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user);
 
   const login = (credentials: UserLogin) => dispatch(loginUser(credentials));
-  const register = (Rcredentials: UserRegister) =>
-    dispatch(registerUser(Rcredentials));
+  const register = (credentials: UserRegister) =>
+    dispatch(registerUser(credentials));
+  const logout = () => dispatch(logoutUser());
 
   return {
+    ...user,
     login,
     register,
+    logout,
+    isAuthenticated: Boolean(user.id && user.accessToken),
+    fullName:
+      user.firstName && user.lastName
+        ? `${user.firstName} ${user.lastName}`
+        : user.firstName || user.lastName || '',
   };
 };
+
+/**
+ * Standardized selectors for more granular subscriptions
+ */
+export const selectUser = (state: RootState) => state.user;
+export const selectIsAuthenticated = (state: RootState) =>
+  Boolean(state.user.id && state.user.accessToken);
+export const selectUserLoading = (state: RootState) => state.user.loading;
+export const selectUserError = (state: RootState) => state.user.error;

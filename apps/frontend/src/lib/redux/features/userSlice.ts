@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import authClient from '@/lib/http/axios.auth';
-import type { AxiosError } from 'axios';
+import apiClient, { NormalizedError } from '@/lib/api/api-client';
 import {
   UserLogin,
   UserLoginResponse,
   UserRegister,
   UserRegisterResponse,
   UserState,
-} from '@/types/user.interface';
-import { CustomErrorResponseDto } from '@/types/custom-error-response.interface';
+} from '@/features/auth/types/user.interface';
 
 const initialState: UserState = {
   id: null,
@@ -30,28 +28,19 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >('user/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await authClient.post(
-      '/api/v1/auth/users/login',
+    const response = await apiClient.post<UserLoginResponse>(
+      '/auth/login',
       credentials
     );
-    return response.data; // your success response containing tokens and user info
+    return response.data;
   } catch (error) {
-    let message = 'Login failed';
-
-    if ((error as AxiosError).response?.data) {
-      const data = (error as AxiosError).response
-        ?.data as CustomErrorResponseDto;
-      if (data.message) {
-        message = data.message;
-      }
-    }
-
-    return rejectWithValue(message);
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Login failed');
   }
 });
 
 /**
- *
+ * Async thunk for registration
  */
 export const registerUser = createAsyncThunk<
   UserRegisterResponse,
@@ -59,27 +48,42 @@ export const registerUser = createAsyncThunk<
   { rejectValue: string }
 >('user/register', async (Rcredentials, { rejectWithValue }) => {
   try {
-    const registerResponse = await authClient.post(
-      '/api/v1/auth/users/register',
+    const response = await apiClient.post<UserRegisterResponse>(
+      '/auth/register',
       Rcredentials
     );
-    return registerResponse.data;
-  } catch {
-    return rejectWithValue('Failed while registering');
+    return response.data;
+  } catch (error) {
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Registration failed');
   }
 });
 
-// Async thunk for token refresh (optional here, can be handled via interceptor)
-export const refreshAccessToken = createAsyncThunk(
-  'user/refreshToken',
-  async (refreshToken: string, { rejectWithValue }) => {
+// Async thunk for token refresh
+export const refreshAccessToken = createAsyncThunk<
+  string, // Returns the new access token
+  void,
+  { rejectValue: string }
+>('user/refreshToken', async (_, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{ accessToken: string }>(
+      '/auth/refresh'
+    );
+    return response.data.accessToken;
+  } catch (error) {
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Failed to refresh token');
+  }
+});
+
+export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
+  'user/logout',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await authClient.post('/api/v1/auth/users/refresh', {
-        refreshToken,
-      });
-      return response.data.accessToken;
-    } catch {
-      return rejectWithValue('Failed to refresh token');
+      await apiClient.post('/auth/logout');
+    } catch (error) {
+      const err = error as NormalizedError;
+      return rejectWithValue(err.message || 'Failed to logout');
     }
   }
 );
@@ -88,18 +92,6 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    logout(state) {
-      state.id = null;
-      state.firstName = null;
-      state.lastName = null;
-      state.email = null;
-      state.imageUrl = null;
-      state.isVerified = false;
-      state.accessToken = null;
-      state.refreshToken = null;
-      state.loading = false;
-      state.error = null;
-    },
     tokenRefreshed(state, action) {
       state.accessToken = action.payload;
     },
@@ -132,9 +124,21 @@ const userSlice = createSlice({
       .addCase(refreshAccessToken.rejected, (state) => {
         state.accessToken = null;
         state.refreshToken = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.id = null;
+        state.firstName = null;
+        state.lastName = null;
+        state.email = null;
+        state.imageUrl = null;
+        state.isVerified = false;
+        state.accessToken = null;
+        state.refreshToken = null;
+        state.loading = false;
+        state.error = null;
       });
   },
 });
 
-export const { logout, tokenRefreshed } = userSlice.actions;
+export const { tokenRefreshed } = userSlice.actions;
 export default userSlice.reducer;
