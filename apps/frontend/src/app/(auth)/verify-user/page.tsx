@@ -82,7 +82,7 @@ function VerifyUserContent() {
     if (token && !hasStarted.current) {
       hasStarted.current = true;
       // We intentionally call this inside useEffect for one-time initialization.
-       
+
       verifyEmail(token);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
