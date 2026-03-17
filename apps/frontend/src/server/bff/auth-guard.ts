@@ -32,3 +32,16 @@ export async function authGuard(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
+
+export async function refreshTokenExtract(
+  _request: Request
+): Promise<string | NextResponse> {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get('refreshToken')?.value;
+
+  if (!refreshToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return refreshToken;
+}
