@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import apiClient, { NormalizedError } from '@/lib/api/api-client';
 import {
   UserLogin,
   UserLoginResponse,
@@ -27,30 +28,19 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >('user/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return rejectWithValue(data.message || 'Login failed');
-    }
-
-    return data;
-  } catch (error) {
-    return rejectWithValue(
-      error instanceof Error ? error.message : 'Login failed'
+    const response = await apiClient.post<UserLoginResponse>(
+      '/auth/login',
+      credentials
     );
+    return response.data;
+  } catch (error) {
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Login failed');
   }
 });
 
 /**
- *
+ * Async thunk for registration
  */
 export const registerUser = createAsyncThunk<
   UserRegisterResponse,
@@ -58,60 +48,42 @@ export const registerUser = createAsyncThunk<
   { rejectValue: string }
 >('user/register', async (Rcredentials, { rejectWithValue }) => {
   try {
-    const registerResponse = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(Rcredentials),
-    });
-    const data = await registerResponse.json();
-    return data;
-  } catch (error) {
-    return rejectWithValue(
-      error instanceof Error ? error.message : 'Registration failed'
+    const response = await apiClient.post<UserRegisterResponse>(
+      '/auth/register',
+      Rcredentials
     );
+    return response.data;
+  } catch (error) {
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Registration failed');
   }
 });
 
-// Async thunk for token refresh (optional here, can be handled via interceptor)
-export const refreshAccessToken = createAsyncThunk(
-  'user/refreshToken',
-  async (refreshToken: string, { rejectWithValue }) => {
-    try {
-      const response = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to refresh token'
-      );
-    }
+// Async thunk for token refresh
+export const refreshAccessToken = createAsyncThunk<
+  string, // Returns the new access token
+  void,
+  { rejectValue: string }
+>('user/refreshToken', async (_, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{ accessToken: string }>(
+      '/auth/refresh'
+    );
+    return response.data.accessToken;
+  } catch (error) {
+    const err = error as NormalizedError;
+    return rejectWithValue(err.message || 'Failed to refresh token');
   }
-);
+});
 
-export const logoutUser = createAsyncThunk(
+export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   'user/logout',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data;
+      await apiClient.post('/auth/logout');
     } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to logout'
-      );
+      const err = error as NormalizedError;
+      return rejectWithValue(err.message || 'Failed to logout');
     }
   }
 );
