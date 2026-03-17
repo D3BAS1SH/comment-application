@@ -10,170 +10,103 @@ import {
   Navigation,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { AppNavbar } from '@/components/app-navbar';
+import { FintechButton } from '@/components/fintech-button';
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
       {/* Navigation */}
       <AppNavbar onMenuToggle={() => {}} showBrand={false} />
 
       {/* Hero Section */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
-        {/* Animated Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Curved Lines */}
+      <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden pt-20">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Curved SVG Lines for tech feel */}
           <svg
-            className="absolute h-full w-full"
+            className="absolute h-full w-full opacity-20"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
               <linearGradient id="grad1" x1="1" y1="0" x2="0" y2="0">
                 <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
-                <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#22d3ee" stopOpacity="1" />
                 <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
               </linearGradient>
-              <linearGradient id="grad2" x1="1" y1="0" x2="0" y2="0">
-                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0" />
-                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
-              </linearGradient>
             </defs>
-            {/* Top Curves */}
             <motion.path
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                duration: 2,
-                ease: 'easeInOut',
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: 'loop',
-                repeatDelay: 1,
-              }}
-              d="M 100 100 Q 300 0 500 100 T 900 100"
-              fill="none"
-              stroke="url(#grad1)"
-              strokeWidth="1"
-            />
-            <motion.path
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                duration: 2,
-                ease: 'easeInOut',
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: 'loop',
-                repeatDelay: 1,
-                delay: 0.5,
-              }}
-              d="M 0 200 Q 200 100 400 200 T 800 200"
-              fill="none"
-              stroke="url(#grad2)"
-              strokeWidth="1"
-            />
-            {/* Bottom Curves */}
-            <motion.path
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                duration: 2,
-                ease: 'easeInOut',
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: 'loop',
-                repeatDelay: 1,
-                delay: 1,
-              }}
-              d="M 100 600 Q 300 500 500 600 T 900 600"
+              transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
+              d="M -100 200 Q 400 50 900 300 T 1400 100"
               fill="none"
               stroke="url(#grad1)"
               strokeWidth="1"
             />
           </svg>
 
-          {/* Straight Lines */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0"
-          >
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{
-                  x: '-100%',
-                  opacity: [0, 0.7, 0.7, 0],
-                }}
-                transition={{
-                  duration: 2.5,
-                  delay: i * 0.2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  repeatType: 'loop',
-                  ease: 'linear',
-                }}
-                className="absolute right-0"
-                style={{
-                  top: `${15 + i * 10}%`,
-                  height: '1px',
-                  width: '100%',
-                  background: `linear-gradient(90deg, transparent, ${i % 2 === 0 ? '#22d3ee' : '#8b5cf6'}60, transparent)`,
-                }}
-              />
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Animated Background */}
-        <div className="absolute inset-0 z-[1]">
+          {/* Ambient Glows */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2 }}
-            className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-cyan-500/30 blur-3xl"
+            className="absolute -left-1/4 top-1/4 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-[120px]"
           />
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 0.5 }}
-            className="absolute -right-1/4 top-1/2 h-96 w-96 rounded-full bg-violet-500/30 blur-3xl"
+            className="absolute -right-1/4 top-1/2 h-[500px] w-[500px] rounded-full bg-violet-500/10 blur-[120px]"
           />
         </div>
 
         {/* Content */}
-        <div className="container relative z-[3] px-4 text-center">
+        <div className="container relative z-10 px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="mx-auto max-w-3xl space-y-8"
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="mx-auto max-w-4xl space-y-10"
           >
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-4">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400/80">
+                Premium Experience
+              </span>
+            </div>
+
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-[1.1]">
               Horizon Comms
             </h1>
-            <p className="mx-auto max-w-2xl text-muted text-gray-400 sm:text-xl">
-              It brings together chat, posts, comments, authentication, and
-              interactive canvases — enabling teams and communities to connect,
-              create, and share effortlessly.
+
+            <p className="mx-auto max-w-2xl text-lg text-gray-400 sm:text-xl leading-relaxed">
+              Connect effortlessly. Create boundlessly. Share instantly. The
+              all-in-one platform for modern communities and high-performance
+              teams.
             </p>
-            <div className="flex justify-center space-x-4">
-              <Button
+
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
+              <FintechButton
+                variant="primary"
+                size="lg"
                 onClick={() => router.push('/login')}
-                className="bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600"
+                className="w-full sm:w-auto px-8 py-6 text-lg group shadow-xl shadow-cyan-500/10"
               >
-                Begin
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
+                Join Now
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </FintechButton>
+
+              <FintechButton
                 variant="outline"
-                className="border-white/10 text-lg text-white hover:bg-white/10"
+                size="lg"
+                className="w-full sm:w-auto px-8 py-6 text-lg border-white/10 text-white hover:bg-white/5"
               >
-                Know More
-              </Button>
+                Learn More
+              </FintechButton>
             </div>
           </motion.div>
         </div>
@@ -182,124 +115,151 @@ export default function Home() {
       {/* Features Section */}
       <section
         id="features"
-        className="relative z-10 border-t border-white/10 bg-black py-24"
+        className="relative z-10 py-32 bg-black overflow-hidden"
       >
-        <div className="container px-4">
-          <div className="mb-16 text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Why Choose Us?
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0%,transparent_100%)]"></div>
+        <div className="container px-4 relative">
+          <div className="mb-20 text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-6">
+              Core Capabilities
             </h2>
-            <p className="mt-4 text-gray-400">
-              Experience communication that truly connects people.
+            <div className="h-1.5 w-20 bg-gradient-to-r from-cyan-400 to-violet-500 mx-auto rounded-full mb-6"></div>
+            <p className="text-gray-400 text-lg">
+              Engineered with modern microservices to deliver a lag-free,
+              scalable environment.
             </p>
           </div>
+
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
-            >
-              <CreditCard className="mb-4 h-12 w-12 text-cyan-400" />
-              <h3 className="mb-2 text-xl font-bold">Real-Time Chat</h3>
-              <p className="text-gray-400">
-                Communicate instantly with peers through our low-latency,
-                real-time chat built with WebSockets. Messages sync seamlessly
-                across devices.
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-violet-400/50"
-            >
-              <LineChart className="mb-4 h-12 w-12 text-violet-400" />
-              <h3 className="mb-2 text-xl font-bold">Collaborative Canvas</h3>
-              <p className="text-gray-400">
-                Draw, brainstorm, and visualize ideas together in an interactive
-                canvas — perfect for remote teamwork and creative sessions.
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-cyan-400/50"
-            >
-              <Lock className="mb-4 h-12 w-12 text-cyan-400" />
-              <h3 className="mb-2 text-xl font-bold">Post & Comment System</h3>
-              <p className="text-gray-400">
-                Share thoughts, updates, or announcements, and let others engage
-                through threaded comments — all handled via scalable
-                microservices.
-              </p>
-            </motion.div>
+            {[
+              {
+                icon: <CreditCard className="h-10 w-10 text-cyan-400" />,
+                title: 'Real-Time Chat',
+                desc: 'Instant peer communication with sub-second latency via WebSockets. Seamless syncing everywhere.',
+                color: 'cyan',
+              },
+              {
+                icon: <LineChart className="h-10 w-10 text-violet-400" />,
+                title: 'Interactive Canvas',
+                desc: 'Brainstorm and visualize ideas in real-time. The ultimate space for remote creative sessions.',
+                color: 'violet',
+              },
+              {
+                icon: <Lock className="h-10 w-10 text-cyan-400" />,
+                title: 'Posts & Threads',
+                desc: 'Share complex updates and engage through deep, threaded discussions managed by scalable logic.',
+                color: 'cyan',
+              },
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="group p-8 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300"
+              >
+                <div
+                  className={`mb-6 p-4 rounded-2xl bg-white/[0.03] w-fit group-hover:scale-110 transition-transform duration-300`}
+                >
+                  {feature.icon}
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-white tracking-tight">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-400 leading-relaxed text-sm lg:text-base">
+                  {feature.desc}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 border-t border-white/10 bg-black py-24">
+      <section className="py-24 relative overflow-hidden">
         <div className="container px-4">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-950/50 to-violet-950/50 p-8 text-center backdrop-blur-sm md:p-12 lg:p-16">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              Ready to Get Started?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-gray-400">
-              Join creators and teams who trust Horizon Comms to stay connected,
-              share ideas, and collaborate in real-time.
-            </p>
-            <ul className="mx-auto mt-8 flex max-w-xl flex-col gap-4 text-left">
-              <li className="flex items-center space-x-3">
-                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>Built with transparency — no unnecessary complexity</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>
-                  Always active — reliable uptime and continuous support
-                </span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <CheckCircle2 className="h-5 w-5 text-cyan-400" />
-                <span>Secure, scalable, and powered by microservices</span>
-              </li>
-            </ul>
-            <Button className="mt-8 bg-gradient-to-r from-cyan-400 to-violet-500 text-lg text-black hover:from-cyan-500 hover:to-violet-600">
-              Join Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+          <div className="relative mx-auto max-w-5xl rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-gray-900 to-black p-12 lg:p-20 text-center overflow-hidden">
+            {/* CTA Background patterns */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-[100px] -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-500/10 blur-[100px] -ml-32 -mb-32"></div>
+
+            <div className="relative z-10">
+              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl mb-8">
+                Ready to transform <br />
+                <span className="text-cyan-400">your workflow?</span>
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-gray-400 text-lg mb-12">
+                Join thousands of creators and professionals building the future
+                on Horizon Comms.
+              </p>
+
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <FintechButton
+                  variant="primary"
+                  size="lg"
+                  onClick={() => router.push('/register')}
+                  className="w-full sm:w-auto px-10"
+                >
+                  Join Now
+                </FintechButton>
+
+                <div className="flex flex-col items-start space-y-2 text-left sm:ml-8">
+                  {[
+                    'Built with extreme transparency',
+                    '99.9% Uptime guaranteed',
+                    'Pure microservice power',
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center space-x-2 text-sm text-gray-400"
+                    >
+                      <CheckCircle2 size={16} className="text-cyan-400" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-black py-8">
-        <div className="container flex flex-col items-center justify-between space-y-4 px-4 md:flex-row md:space-y-0">
-          <div className="flex items-center space-x-2">
-            <Navigation className="h-6 w-6 text-cyan-400" />
-            <span className="font-bold">Horizon Comms</span>
+      <footer className="border-t border-white/5 bg-black py-16">
+        <div className="container px-4 mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0">
+            <Link href="/" className="flex items-center space-x-2 group">
+              <Navigation className="h-6 w-6 text-cyan-400 transition-transform group-hover:rotate-12" />
+              <span className="font-bold text-xl tracking-tighter">
+                Horizon Comms
+              </span>
+            </Link>
+
+            <div className="flex items-center space-x-12">
+              <Link
+                className="text-sm text-gray-500 hover:text-white transition-colors"
+                href="#"
+              >
+                Privacy
+              </Link>
+              <Link
+                className="text-sm text-gray-500 hover:text-white transition-colors"
+                href="#"
+              >
+                Terms
+              </Link>
+              <Link
+                className="text-sm text-gray-500 hover:text-white transition-colors"
+                href="#"
+              >
+                Support
+              </Link>
+            </div>
           </div>
-          <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Horizon Comms. All rights reserved.
-          </p>
-          <div className="flex space-x-6">
-            <Link
-              className="text-sm text-gray-400 hover:text-cyan-400"
-              href="#"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              className="text-sm text-gray-400 hover:text-cyan-400"
-              href="#"
-            >
-              Terms of Use
-            </Link>
+          <div className="mt-12 pt-8 border-t border-white/5 text-center text-xs text-gray-600">
+            © {new Date().getFullYear()} Horizon Comms. A premium communication
+            suite.
           </div>
         </div>
       </footer>
