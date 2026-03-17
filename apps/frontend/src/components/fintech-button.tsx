@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { forwardRef } from 'react';
+import { Spinner } from './spinner';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -17,18 +18,31 @@ interface FintechButtonProps extends Omit<
   variant?: ButtonVariant;
   size?: ButtonSize;
   children: React.ReactNode;
+  isLoading?: boolean;
+  loadingText?: string;
+  spinnerVariant?: 'ring' | 'dots' | 'gradient';
 }
 
 const FintechButton = forwardRef<HTMLButtonElement, FintechButtonProps>(
   (
-    { className, variant = 'primary', size = 'md', children, ...props },
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      isLoading,
+      loadingText,
+      spinnerVariant = 'ring',
+      children,
+      disabled,
+      ...props
+    },
     ref
   ) => {
     const buttonVariant: ButtonVariant = variant;
     const buttonSize: ButtonSize = size;
 
     const baseClasses =
-      'relative inline-flex items-center justify-center font-bold tracking-tighter transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+      'relative inline-flex items-center justify-center font-bold tracking-tighter transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden';
 
     const variants: Record<ButtonVariant, string> = {
       primary:
@@ -49,22 +63,41 @@ const FintechButton = forwardRef<HTMLButtonElement, FintechButtonProps>(
     return (
       <motion.button
         ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={isLoading ? {} : { scale: 1.02 }}
+        whileTap={isLoading ? {} : { scale: 0.98 }}
         className={cn(
           baseClasses,
           variants[buttonVariant],
           sizes[buttonSize],
           className
         )}
+        disabled={isLoading || disabled}
         {...props}
       >
         {buttonVariant === 'primary' && (
           <div className="absolute inset-0 rounded-inherit bg-gradient-to-r from-cyan-400/20 to-violet-500/20 blur-xl" />
         )}
-        <span className="relative z-10 flex items-center gap-2">
+
+        {isLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-inherit/50">
+            <Spinner
+              variant={spinnerVariant}
+              size={size === 'sm' ? 'sm' : 'md'}
+            />
+          </div>
+        )}
+
+        <span
+          className={cn(
+            'relative z-10 flex items-center gap-2 transition-opacity duration-200',
+            isLoading && 'opacity-0'
+          )}
+        >
           {children}
         </span>
+        {isLoading && loadingText && (
+          <span className="sr-only">{loadingText}</span>
+        )}
       </motion.button>
     );
   }
