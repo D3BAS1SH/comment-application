@@ -1,6 +1,12 @@
 import axios, { type AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 
+/**
+ *
+ * @param baseURL URL for the service specifically. Not the API Server URL.
+ * @param serviceName Name of the service
+ * @returns AxiosInstance for the service
+ */
 export function createServiceClient(
   baseURL: string,
   serviceName: string
