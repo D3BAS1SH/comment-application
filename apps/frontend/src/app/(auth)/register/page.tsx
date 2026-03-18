@@ -18,8 +18,8 @@ import TextType from '@/features/auth/components/text-type';
 import { ImageCropperModal } from '@/features/auth/components/image-cropper-modal';
 
 // Hooks
-import { useImageUpload } from '@/features/profile/hooks/use-image-upload';
-import { useUser } from '@/lib/redux/hooks/user.hooks';
+import { useImageUpload } from '@/features/auth/hooks/use-image-upload';
+import { useUser } from '@/features/auth/hooks/use-auth';
 import { useNotify } from '@/hooks/use-notify';
 import apiClient from '@/lib/api/api-client';
 import { registerUser } from '@/lib/redux/features/userSlice';

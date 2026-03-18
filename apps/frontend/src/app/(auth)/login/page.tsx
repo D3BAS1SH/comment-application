@@ -16,7 +16,7 @@ import { LoadingButton } from '@/features/auth/components/loading-button';
 import TextType from '@/features/auth/components/text-type';
 
 // Hooks
-import { useUser } from '@/lib/redux/hooks/user.hooks';
+import { useUser } from '@/features/auth/hooks/use-auth';
 import { useNotify } from '@/hooks/use-notify';
 import { loginUser } from '@/lib/redux/features/userSlice';
 

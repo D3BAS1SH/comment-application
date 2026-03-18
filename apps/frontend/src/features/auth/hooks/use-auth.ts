@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { loginUser, registerUser, logoutUser } from '../features/userSlice';
+import { AppDispatch, RootState } from '@/lib/redux/store';
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+} from '@/lib/redux/features/userSlice';
 import { UserLogin, UserRegister } from '@/features/auth/types/user.interface';
 
 /**
