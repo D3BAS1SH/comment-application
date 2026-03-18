@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { motion } from 'framer-motion';
-import { FintechCard } from '@/components/fintech-card';
+import { FintechCard } from '@/components/ui/fintech-card';
 
 interface VerifyLayoutProps {
   children: React.ReactNode;

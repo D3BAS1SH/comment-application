@@ -1,0 +1,241 @@
+# Frontend Restructure & UI Redesign Plan
+
+After a comprehensive audit of the entire `apps/frontend` codebase, here is the full analysis and step-by-step plan.
+
+---
+
+## Current State Analysis
+
+### Component Inventory (`src/components/`)
+
+15 files are scattered in `src/components/` with no feature-based organization:
+
+| File | Category | Used By | Should Move To |
+|------|----------|---------|---------------|
+| `fintech-button.tsx` | Auth UI / Shared | Auth layout, landing page, app-navbar, home page | `src/components/ui/` (shared) |
+| `fintech-card.tsx` | Auth UI / Shared | fintech-form, home page, fintech-showcase | `src/components/ui/` (shared) |
+| `fintech-form.tsx` | Auth UI | Login, Register, fintech-showcase | `features/auth/components/` |
+| `fintech-input.tsx` | Auth UI | Login, Register, fintech-showcase | `features/auth/components/` |
+| `fintech-showcase.tsx` | Demo/Showcase | Landing page (optional) | **DELETE** or `src/components/showcase/` |
+| `loading-button.tsx` | Auth UI | Login, Register | `features/auth/components/` |
+| `TextType.tsx` | Auth UI | Login, Register branding panels | `features/auth/components/` |
+| `image-cropper-modal.tsx` | Profile/Auth UI | Register page | `features/auth/components/` |
+| `form-input.tsx` | Legacy Auth | Not currently used by any page | **DELETE** (superseded by `FintechInput`) |
+| `spinner.tsx` | Shared UI | `loading-button`, `fintech-button` | `src/components/ui/` (shared) |
+| `app-navbar.tsx` | Layout/Workspace | Landing page, home layout | `features/workspace/components/` |
+| `sidebar.tsx` | Layout/Workspace | Home layout | `features/workspace/components/` |
+| `SplashCursor.tsx` | Shared UI/Animation | Not imported anywhere currently | `src/components/ui/` or **DELETE** |
+| `feed-skeleton.tsx` | Posts UI | Not currently imported | `features/posts/components/` |
+| `dashboard-skeletons.tsx` | Shared Skeleton | Not currently imported | `src/components/ui/` |
+
+### Hooks Inventory
+
+| Hook | Location | Used By | Should Move To |
+|------|----------|---------|---------------|
+| `useNotify` | `src/hooks/use-notify.ts` | Login, Register, Verify pages | Keep in `src/hooks/` (app-wide utility) |
+| `useUser` | `src/lib/redux/hooks/user.hooks.ts` | Login, Register | Keep in `src/lib/redux/hooks/` (Redux-specific) |
+| `useImageUpload` | `features/profile/hooks/` | Register page | Move to `features/auth/hooks/` or keep shared |
+
+### Feature Directory Structure (Already Exists But Empty)
+
+```
+src/features/
+├── auth/
+│   ├── components/
+│   │   └── verify/          ← Has verify-success, verify-error, verify-loading
+│   ├── hooks/               ← Only .gitkeep
+│   └── types/
+│       └── user.interface.ts ← Already organized
+├── chat/
+│   ├── components/          ← .gitkeep
+│   ├── hooks/               ← .gitkeep
+│   └── types/               ← .gitkeep
+├── posts/
+│   ├── components/          ← .gitkeep
+│   ├── hooks/               ← .gitkeep
+│   └── types/               ← .gitkeep
+├── profile/
+│   ├── components/          ← .gitkeep
+│   ├── hooks/               ← .gitkeep (has use-image-upload?)
+│   └── types/               ← .gitkeep
+└── workspace/
+    ├── components/          ← .gitkeep
+    ├── hooks/               ← .gitkeep
+    └── types/               ← .gitkeep
+```
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **UI Redesign Direction**: You mentioned wanting to "replace the whole UI with a different design." Before I proceed with the UI redesign phase, I need to know:
+> 1. **What design style do you want?** (e.g., minimal/clean, glassmorphism, neobrutalism, material design, a specific reference site?)
+> 2. **Color scheme preference?** (keep dark theme? switch to light? specific brand colors?)
+> 3. **Should the "Fintech" naming convention change?** (e.g., rename to align with "Horizon Comms" branding?)
+> 4. **Should I redesign the landing page, home dashboard, and auth pages—or just the auth pages?**
+
+> [!WARNING]
+> The restructuring phase (Phase 1) can be done independently of the UI redesign. I recommend **doing restructuring first**, verifying the build still passes, and **then** redesigning the UI in a separate phase.
+
+---
+
+## Proposed Changes
+
+### Phase 1: Folder Restructuring (Feature-Based Architecture)
+
+#### Step 1 — Move auth-specific components into `features/auth/components/`
+
+Move these files from `src/components/` → `src/features/auth/components/`:
+
+- `fintech-form.tsx` → `features/auth/components/auth-form.tsx`
+- `fintech-input.tsx` → `features/auth/components/auth-input.tsx`
+- `loading-button.tsx` → `features/auth/components/loading-button.tsx`
+- `TextType.tsx` → `features/auth/components/text-type.tsx`
+- `image-cropper-modal.tsx` → `features/auth/components/image-cropper-modal.tsx`
+
+#### Step 2 — Move workspace/layout components into `features/workspace/components/`
+
+- `app-navbar.tsx` → `features/workspace/components/app-navbar.tsx`
+- `sidebar.tsx` → `features/workspace/components/sidebar.tsx`
+
+#### Step 3 — Move post-related components into `features/posts/components/`
+
+- `feed-skeleton.tsx` → `features/posts/components/feed-skeleton.tsx`
+
+#### Step 4 — Keep truly shared UI primitives in `src/components/ui/`
+
+- `fintech-button.tsx` → `src/components/ui/fintech-button.tsx` (used across features)
+- `fintech-card.tsx` → `src/components/ui/fintech-card.tsx` (used across features)
+- `spinner.tsx` → `src/components/ui/spinner.tsx` (used across features)
+- `dashboard-skeletons.tsx` → `src/components/ui/dashboard-skeletons.tsx`
+
+#### Step 5 — Clean up / delete unused files
+
+- **DELETE** `src/components/form-input.tsx` (superseded by `FintechInput`)
+- **DELETE** `src/components/fintech-showcase.tsx` (demo component, not production)
+- **DECIDE** on `SplashCursor.tsx` — keep in `src/components/ui/` or delete
+
+#### Step 6 — Create barrel exports (`index.ts`) for each feature
+
+```
+features/auth/components/index.ts      → export all auth components
+features/workspace/components/index.ts → export navbar, sidebar
+features/posts/components/index.ts     → export feed-skeleton
+```
+
+#### Step 7 — Update all import paths
+
+Update imports in:
+- `src/app/(auth)/login/page.tsx`
+- `src/app/(auth)/register/page.tsx`
+- `src/app/(auth)/layout.tsx`
+- `src/app/(auth)/verify-user/page.tsx`
+- `src/app/page.tsx` (landing page)
+- `src/app/home/layout.tsx`
+- `src/app/home/page.tsx`
+- `src/components/fintech-form.tsx` (internal import to `fintech-card`)
+- `src/components/fintech-button.tsx` (internal import to `spinner`)
+- `src/components/loading-button.tsx` (internal imports)
+
+---
+
+### Phase 2: UI Redesign (Pending User Direction)
+
+This phase will be planned after you confirm the design direction. It will involve:
+- Redesigning auth page components with the new look
+- Redesigning the auth layout (header, footer)
+- Optionally redesigning the landing page and home dashboard
+- Updating the Tailwind config if needed for new colors/themes
+
+---
+
+### Target Folder Structure After Phase 1
+
+```
+src/
+├── app/
+│   ├── (auth)/
+│   │   ├── layout.tsx
+│   │   ├── login/page.tsx
+│   │   ├── register/page.tsx
+│   │   ├── verify-user/page.tsx
+│   │   ├── reset-password/page.tsx
+│   │   └── help/page.tsx
+│   ├── api/auth/...
+│   ├── home/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── ui/
+│       ├── button.tsx          (shadcn)
+│       ├── skeleton.tsx        (shadcn)
+│       ├── sonner.tsx          (shadcn)
+│       ├── fintech-button.tsx  (shared)
+│       ├── fintech-card.tsx    (shared)
+│       ├── spinner.tsx         (shared)
+│       └── dashboard-skeletons.tsx
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   │   ├── auth-form.tsx
+│   │   │   ├── auth-input.tsx
+│   │   │   ├── loading-button.tsx
+│   │   │   ├── text-type.tsx
+│   │   │   ├── image-cropper-modal.tsx
+│   │   │   ├── verify/
+│   │   │   │   ├── verify-error.tsx
+│   │   │   │   ├── verify-loading.tsx
+│   │   │   │   ├── verify-success.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   │   └── .gitkeep
+│   │   └── types/
+│   │       └── user.interface.ts
+│   ├── workspace/
+│   │   ├── components/
+│   │   │   ├── app-navbar.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   └── types/
+│   ├── posts/
+│   │   ├── components/
+│   │   │   ├── feed-skeleton.tsx
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   └── types/
+│   ├── chat/...
+│   └── profile/...
+├── hooks/
+│   └── use-notify.ts          (app-wide, stays here)
+├── lib/
+│   ├── redux/
+│   │   ├── hooks/user.hooks.ts (Redux-specific, stays here)
+│   │   ├── features/userSlice.ts
+│   │   ├── hooks.ts
+│   │   └── store.ts
+│   ├── api/
+│   └── utils.ts
+├── types/
+└── utils/
+```
+
+---
+
+## Verification Plan
+
+### Automated Verification
+1. **Build check**: Run `npm run build` in `apps/frontend/` — must complete with zero errors
+2. **Lint check**: Run `npx eslint src/` to verify no broken imports
+3. **Dev server**: Run `npm run dev` and verify it starts without runtime errors
+
+### Manual Verification
+1. **Browser test**: Open the dev server, navigate to `/login`, `/register`, `/verify-user`, and `/home` — each page should render without visual regressions
+2. **Import grep**: Run `grep -r "@/components/" src/` to ensure no stale imports remain pointing to old paths
+
+> [!NOTE]
+> No existing unit or integration tests were found in the project, so we rely on build verification and manual visual checks.

@@ -8,11 +8,14 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Components
-import { FintechForm, FintechFormField } from '@/components/fintech-form';
-import { FintechInput } from '@/components/fintech-input';
-import { LoadingButton } from '@/components/loading-button';
-import TextType from '@/components/TextType';
-import { ImageCropperModal } from '@/components/image-cropper-modal';
+import {
+  FintechForm,
+  FintechFormField,
+} from '@/features/auth/components/auth-form';
+import { FintechInput } from '@/features/auth/components/auth-input';
+import { LoadingButton } from '@/features/auth/components/loading-button';
+import TextType from '@/features/auth/components/text-type';
+import { ImageCropperModal } from '@/features/auth/components/image-cropper-modal';
 
 // Hooks
 import { useImageUpload } from '@/features/profile/hooks/use-image-upload';

@@ -6,7 +6,7 @@ import {
   FintechCardContent,
   FintechCardHeader,
   FintechCardTitle,
-} from '@/components/fintech-card';
+} from '@/components/ui/fintech-card';
 import {
   BarChart3,
   TrendingUp,

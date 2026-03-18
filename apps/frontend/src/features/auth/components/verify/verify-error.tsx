@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
-import { FintechButton } from '@/components/fintech-button';
+import { FintechButton } from '@/components/ui/fintech-button';
 import { VerifyLayout } from './verify-layout';
 
 interface VerifyErrorProps {

@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { FintechButton } from './fintech-button';
+import { FintechButton } from '@/components/ui/fintech-button';
 
 interface AppNavbarProps {
   onMenuToggle: () => void;

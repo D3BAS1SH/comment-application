@@ -11,8 +11,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AppNavbar } from '@/components/app-navbar';
-import { FintechButton } from '@/components/fintech-button';
+import { AppNavbar } from '@/features/workspace/components/app-navbar';
+import { FintechButton } from '@/components/ui/fintech-button';
 
 export default function Home() {
   const router = useRouter();

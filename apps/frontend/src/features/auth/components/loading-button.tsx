@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button, type buttonVariants } from '@/components/ui/button';
-import { Spinner } from '@/components/spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { VariantProps } from 'class-variance-authority';
 

@@ -1,7 +1,7 @@
 import { Navigation } from 'lucide-react';
 import Link from 'next/link';
 import React, { FC } from 'react';
-import { FintechButton } from '@/components/fintech-button';
+import { FintechButton } from '@/components/ui/fintech-button';
 
 // Define the type for the component's props
 interface AuthLayoutProps {

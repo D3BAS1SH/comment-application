@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FintechCard, FintechCardHeader } from '@/components/fintech-card';
+import { FintechCard, FintechCardHeader } from '@/components/ui/fintech-card';
 import { Clock, Heart, MessageCircle, Share2 } from 'lucide-react';
 
 export default function PostPage() {

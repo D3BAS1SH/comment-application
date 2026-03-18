@@ -7,10 +7,13 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 // Components
-import { FintechForm, FintechFormField } from '@/components/fintech-form';
-import { FintechInput } from '@/components/fintech-input';
-import { LoadingButton } from '@/components/loading-button';
-import TextType from '@/components/TextType';
+import {
+  FintechForm,
+  FintechFormField,
+} from '@/features/auth/components/auth-form';
+import { FintechInput } from '@/features/auth/components/auth-input';
+import { LoadingButton } from '@/features/auth/components/loading-button';
+import TextType from '@/features/auth/components/text-type';
 
 // Hooks
 import { useUser } from '@/lib/redux/hooks/user.hooks';

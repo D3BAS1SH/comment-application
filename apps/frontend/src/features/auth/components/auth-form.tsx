@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { forwardRef } from 'react';
-import { FintechCard } from './fintech-card';
+import { FintechCard } from '@/components/ui/fintech-card';
 
 interface FintechFormProps extends Omit<HTMLMotionProps<'form'>, 'ref'> {
   title?: string;

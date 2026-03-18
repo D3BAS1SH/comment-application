@@ -4,8 +4,8 @@ import type React from 'react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { Sidebar } from '@/components/sidebar';
-import { AppNavbar } from '@/components/app-navbar';
+import { Sidebar } from '@/features/workspace/components/sidebar';
+import { AppNavbar } from '@/features/workspace/components/app-navbar';
 
 export default function HomeLayout({
   children,

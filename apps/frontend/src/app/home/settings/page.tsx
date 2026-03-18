@@ -5,8 +5,8 @@ import {
   FintechCard,
   FintechCardHeader,
   FintechCardTitle,
-} from '@/components/fintech-card';
-import { FintechButton } from '@/components/fintech-button';
+} from '@/components/ui/fintech-card';
+import { FintechButton } from '@/components/ui/fintech-button';
 import { Lock, Bell, Eye } from 'lucide-react';
 
 export default function SettingsPage() {

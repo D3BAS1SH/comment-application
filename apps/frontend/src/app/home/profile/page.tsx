@@ -6,7 +6,7 @@ import {
   FintechCardContent,
   FintechCardHeader,
   FintechCardTitle,
-} from '@/components/fintech-card';
+} from '@/components/ui/fintech-card';
 import { User, Mail, Phone } from 'lucide-react';
 
 export default function ProfilePage() {
