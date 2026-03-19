@@ -13,10 +13,10 @@ interface TerminalNavProps {
 }
 
 const defaultLinks: NavLink[] = [
-  { label: './NETWORK', href: '#' },
-  { label: './MODULES', href: '#modules' },
+  { label: './HOME', href: '/' },
+  { label: './MANUAL', href: '/about' },
   { label: './SECURE_VAULT', href: '/login' },
-  { label: './EXIT', href: '/login', danger: true },
+  { label: './SETUP_VAULT', href: '/register', danger: true },
 ];
 
 /**

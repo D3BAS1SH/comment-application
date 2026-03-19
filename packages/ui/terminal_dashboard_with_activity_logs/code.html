@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="bg-black text-gray-300 font-mono" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Root@DataStore:~# Dashboard</title>
+<!-- Tailwind CSS CDN with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'terminal-green': '#00FF00',
+            'terminal-dim': '#008F11',
+          },
+          animation: {
+            'blink': 'blink 1s step-end infinite',
+          },
+          keyframes: {
+            blink: {
+              '0%, 100%': { opacity: 1 },
+              '50%': { opacity: 0 },
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-terminal-styles">
+    /* Remove default scrollbar and use terminal-style scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #374151; /* gray-700 */
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00FF00;
+    }
+    /* Cursor blinking effect */
+    .terminal-cursor::after {
+      content: '_';
+      animation: blink 1s step-end infinite;
+      color: #00FF00;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden select-none">
+<!-- BEGIN: Header (System Status Bar) -->
+<header class="h-10 border-b border-gray-700 flex items-center justify-between px-4 text-xs bg-black" data-purpose="system-status-bar">
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-2">
+<span class="text-green-400 font-bold">CORE_SYS:</span>
+<span class="text-gray-500">v4.2.0-stable</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-gray-500">CPU:</span>
+<span class="text-green-400">0.42% [||........]</span>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<div class="hidden md:flex items-center space-x-2">
+<span class="text-gray-500">ROLE:</span>
+<span class="text-green-400">SUDO_USER</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-green-400 tracking-widest" id="system-clock">2023-10-27 14:32:01</span>
+</div>
+</div>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Root Layout Container -->
+<div class="flex flex-1 overflow-hidden" data-purpose="tiling-container">
+<!-- BEGIN: Sidebar Navigation -->
+<aside class="w-64 border-r border-gray-700 bg-black flex flex-col" data-purpose="sidebar-nav">
+<div class="p-4 border-b border-gray-700 mb-4">
+<h2 class="text-green-400 font-bold text-sm tracking-tighter">DATA_STORE_MGMT</h2>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<!-- Authentication Link -->
+<a class="block px-3 py-2 text-sm text-gray-500 hover:text-green-400 transition-colors" href="#">
+            Authentication
+        </a>
+<!-- Active Link (Tasks) -->
+<a class="block px-3 py-2 text-sm text-green-400 bg-gray-900 border-l-2 border-green-400" data-purpose="active-link" href="#">
+          &gt; Tasks_
+        </a>
+<a class="block px-3 py-2 text-sm text-gray-500 hover:text-green-400 transition-colors" href="#">
+            Chat
+        </a>
+<a class="block px-3 py-2 text-sm text-gray-500 hover:text-green-400 transition-colors" href="#">
+            Canvas
+        </a>
+<a class="block px-3 py-2 text-sm text-gray-500 hover:text-green-400 transition-colors" href="#">
+            Feed
+        </a>
+</nav>
+<!-- Connection Status -->
+<div class="p-4 border-t border-gray-700 text-[10px] space-y-1">
+<div class="flex justify-between">
+<span class="text-gray-600">CONNECTION:</span>
+<span class="text-green-600">ENCRYPTED</span>
+</div>
+<div class="flex justify-between">
+<span class="text-gray-600">IP_ADDR:</span>
+<span class="text-gray-400">192.168.1.104</span>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar Navigation -->
+<!-- BEGIN: Main Dashboard Content -->
+<main class="flex-1 bg-black p-4 grid grid-cols-12 grid-rows-6 gap-4 overflow-auto" data-purpose="main-grid">
+<!-- BEGIN: Primary Terminal Window -->
+<section class="col-span-12 lg:col-span-8 row-span-4 bg-gray-900 border border-gray-700 flex flex-col" data-purpose="main-terminal">
+<div class="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
+<div class="flex space-x-2">
+<span class="w-2.5 h-2.5 bg-gray-700 rounded-none"></span>
+<span class="text-[10px] text-gray-400 mt-0.5 uppercase tracking-widest">bash — root@datastore: ~</span>
+</div>
+<div class="flex space-x-3 text-[10px] text-gray-500">
+<span>_</span>
+<span>□</span>
+<span>×</span>
+</div>
+</div>
+<div class="flex-1 p-6 overflow-y-auto leading-relaxed text-sm lg:text-base">
+<p class="text-green-400 mb-2">Welcome to DataStore v4.2.0 (GNU/Linux 5.15.0-generic x86_64)</p>
+<p class="text-gray-500 mb-4">* Documentation: https://docs.datastore.local</p>
+<p class="text-gray-300">Last login: Fri Oct 27 09:12:04 on tty1</p>
+<div class="mt-6 space-y-2">
+<div class="flex">
+<span class="text-green-400 mr-2">root@datastore:~$</span>
+<span class="text-gray-200">initialize-workspace --verbose</span>
+</div>
+<p class="text-gray-500">[INFO] Loading environment variables...</p>
+<p class="text-gray-500">[INFO] Mounting file system /dev/sda1...</p>
+<p class="text-gray-500">[OK] Connection to node-cluster-alpha established.</p>
+<div class="flex mt-8">
+<span class="text-green-400 mr-2">root@datastore:~$</span>
+<span class="text-gray-200 terminal-cursor"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Primary Terminal Window -->
+<!-- BEGIN: System Metrics Tiling -->
+<section class="col-span-12 lg:col-span-4 row-span-2 bg-gray-900 border border-gray-700 p-4" data-purpose="metrics-panel">
+<div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+<h3 class="text-xs text-green-400 uppercase tracking-widest font-bold">Storage_Usage</h3>
+<span class="text-[10px] text-gray-500">REFRESH_RATE: 2s</span>
+</div>
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="flex justify-between text-[10px]">
+<span class="text-gray-400">NVMe_01 (System)</span>
+<span class="text-green-400">42%</span>
+</div>
+<div class="w-full h-2 bg-black border border-gray-700">
+<div class="h-full bg-green-500 w-[42%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[10px]">
+<span class="text-gray-400">HDD_Backup (Data)</span>
+<span class="text-yellow-600">88%</span>
+</div>
+<div class="w-full h-2 bg-black border border-gray-700">
+<div class="h-full bg-yellow-600 w-[88%]"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="col-span-12 lg:col-span-4 row-span-2 bg-gray-900 border border-gray-700 p-4" data-purpose="network-panel">
+<div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+<h3 class="text-xs text-green-400 uppercase tracking-widest font-bold">Network_Traffic</h3>
+</div>
+<div class="h-24 flex items-end space-x-1" data-purpose="mini-graph">
+<!-- Placeholder simple bar graph -->
+<div class="w-full h-4 bg-green-900/40"></div>
+<div class="w-full h-8 bg-green-900/40"></div>
+<div class="w-full h-6 bg-green-900/40"></div>
+<div class="w-full h-12 bg-green-500"></div>
+<div class="w-full h-10 bg-green-900/40"></div>
+<div class="w-full h-16 bg-green-900/40"></div>
+<div class="w-full h-7 bg-green-900/40"></div>
+<div class="w-full h-14 bg-green-500"></div>
+</div>
+<div class="mt-4 flex justify-between text-[10px] text-gray-500">
+<span>IN: 1.2 MB/s</span>
+<span>OUT: 420 KB/s</span>
+</div>
+</section>
+<!-- END: System Metrics Tiling -->
+<!-- BEGIN: New Bottom Activity Log Section -->
+<section class="col-span-12 row-span-2 bg-gray-900 border-t border-gray-700 font-mono overflow-y-auto" data-purpose="comprehensive-activity-log">
+<div class="sticky top-0 bg-gray-900 p-4 border-b border-gray-800 flex items-center">
+<h3 class="text-xs text-green-400 uppercase tracking-widest font-bold flex items-center">
+        ACTIVITY_LOGS<span class="ml-1 text-green-400 animate-blink">█</span>
+</h3>
+</div>
+<div class="p-4 space-y-2 text-[12px]">
+<div class="flex space-x-2">
+<span class="text-gray-500">[15:42:01]</span>
+<span class="text-gray-600">|</span>
+<span class="text-blue-400">[AUTH]</span>
+<span class="text-gray-600">|</span>
+<span class="text-gray-300">Secure handshake initialized with node-cluster-alpha.</span>
+</div>
+<div class="flex space-x-2">
+<span class="text-gray-500">[15:41:45]</span>
+<span class="text-gray-600">|</span>
+<span class="text-green-400">[TASK]</span>
+<span class="text-gray-600">|</span>
+<span class="text-gray-300">Background indexing of /var/lib/datastore completed.</span>
+</div>
+<div class="flex space-x-2">
+<span class="text-gray-500">[15:40:12]</span>
+<span class="text-gray-600">|</span>
+<span class="text-yellow-400">[WARN]</span>
+<span class="text-gray-600">|</span>
+<span class="text-gray-300">Memory usage exceeded threshold (85%). Garbage collection started.</span>
+</div>
+<div class="flex space-x-2">
+<span class="text-gray-500">[15:38:55]</span>
+<span class="text-gray-600">|</span>
+<span class="text-cyan-400">[INFO]</span>
+<span class="text-gray-600">|</span>
+<span class="text-gray-300">Kernel patch applied successfully. System reboot not required.</span>
+</div>
+<div class="flex space-x-2">
+<span class="text-gray-500">[15:35:20]</span>
+<span class="text-gray-600">|</span>
+<span class="text-red-400">[FAIL]</span>
+<span class="text-gray-600">|</span>
+<span class="text-gray-300">Database synchronization timeout on 'Replica-02'. Retrying in 30s.</span>
+</div>
+</div>
+</section>
+<!-- END: New Bottom Activity Log Section -->
+</main>
+<!-- END: Main Dashboard Content -->
+</div>
+<!-- END: Root Layout Container -->
+<!-- BEGIN: Scripts -->
+<script data-purpose="clock-logic">
+    // Simple script to update the system clock in the header
+    function updateClock() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      const clockString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      document.getElementById('system-clock').textContent = clockString;
+    }
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+<!-- END: Scripts -->
+</body></html>

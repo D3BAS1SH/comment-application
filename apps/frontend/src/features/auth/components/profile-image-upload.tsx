@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProfileImageUploadProps {
@@ -13,8 +13,8 @@ interface ProfileImageUploadProps {
 }
 
 /**
- * Profile image upload circle with preview, hover overlay, and remove button.
- * Purely presentational — all logic is handled by the parent via props.
+ * Profile image upload for terminal theme.
+ * Square, zero radius, terminal colors.
  */
 export function ProfileImageUpload({
   imagePreview,
@@ -23,29 +23,35 @@ export function ProfileImageUpload({
   disabled = false,
 }: ProfileImageUploadProps) {
   return (
-    <div className="flex flex-col items-center space-y-3 py-2">
+    <div className="flex flex-col items-center space-y-4 py-4 font-mono">
       <label htmlFor="image-upload" className="cursor-pointer group relative">
-        <div className="w-24 h-24 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center hover:border-cyan-400/50 transition-all duration-300 bg-white/5 group-hover:bg-white/10 relative overflow-hidden shadow-inner">
+        <div className="w-32 h-32 border-2 border-dashed border-gray-700 flex items-center justify-center hover:border-green-400 transition-all duration-300 bg-gray-900 group-hover:bg-gray-800 relative overflow-hidden">
           {imagePreview ? (
             <Image
               src={imagePreview}
               alt="Profile preview"
               fill
-              className="rounded-full object-cover"
+              className="object-cover opacity-80"
             />
           ) : (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-4 text-center">
               <UploadCloud
-                className="text-gray-500 group-hover:text-cyan-400 transition-colors"
-                size={28}
+                className="text-gray-600 group-hover:text-green-400 transition-colors"
+                size={32}
               />
-              <span className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
-                Attach
+              <span className="text-[10px] text-gray-500 mt-2 uppercase tracking-[0.2em]">
+                Attach_Avatar
               </span>
             </div>
           )}
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-            <UploadCloud className="text-white" size={20} />
+
+          {/* Scanline effect on image */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent h-2 w-full animate-scanline pointer-events-none" />
+
+          <div className="absolute inset-0 bg-green-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/60 px-2 py-1">
+              Replace_Source
+            </span>
           </div>
         </div>
       </label>
@@ -67,9 +73,10 @@ export function ProfileImageUpload({
             exit={{ opacity: 0, y: -5 }}
             type="button"
             onClick={onClear}
-            className="text-xs text-red-400/80 hover:text-red-400 transition-colors"
+            className="flex items-center gap-2 text-[10px] text-red-500 hover:text-red-400 transition-colors uppercase font-bold tracking-widest"
           >
-            Remove photo
+            <X size={12} />
+            Unlink_Binary
           </motion.button>
         )}
       </AnimatePresence>

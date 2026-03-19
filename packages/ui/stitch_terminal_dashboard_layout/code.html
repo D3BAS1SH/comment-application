@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="bg-black" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Horizoncomms | Root Access</title>
+<!-- BEGIN: Core Dependencies -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"Courier New"', 'Courier', 'monospace'],
+          },
+          colors: {
+            terminal: {
+              green: '#4ade80',
+              dim: '#166534',
+              gray: '#9ca3af',
+              dark: '#0a0a0a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="global-resets">
+    * { border-radius: 0px !important; }
+    body { font-family: 'Courier New', Courier, monospace; }
+    .terminal-blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 
+      0%, 100% { opacity: 1; } 
+      50% { opacity: 0; } 
+    }
+    .scanline {
+      width: 100%;
+      height: 2px;
+      background: rgba(74, 222, 128, 0.05);
+      position: fixed;
+      top: 0;
+      z-index: 50;
+      pointer-events: none;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan {
+      from { top: 0; }
+      to { top: 100%; }
+    }
+  </style>
+<!-- END: Core Dependencies -->
+</head>
+<body class="text-gray-400 selection:bg-green-900 selection:text-white">
+<!-- Scanline effect for atmosphere -->
+<div class="scanline"></div>
+<!-- BEGIN: MainHeader -->
+<nav class="border-b border-gray-800 bg-black sticky top-0 z-40 px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="text-green-400 font-bold" data-purpose="nav-brand">
+      [ ROOT_ACCESS ] @horizoncomms:~$ <span class="text-white">ls ./HOME</span>
+</div>
+<div class="flex flex-wrap gap-6 text-sm uppercase" data-purpose="nav-links">
+<a class="hover:text-green-400 transition-colors" href="#">./NETWORK</a>
+<a class="hover:text-green-400 transition-colors" href="#">./MODULES</a>
+<a class="hover:text-green-400 transition-colors" href="#">./SECURE_VAULT</a>
+<a class="text-red-500 hover:bg-red-950 transition-colors px-1" href="#">./EXIT</a>
+</div>
+</nav>
+<!-- END: MainHeader -->
+<main>
+<!-- BEGIN: HeroSection -->
+<section class="min-h-[80vh] flex items-center justify-center p-4 md:p-10" data-purpose="hero-container">
+<div class="w-full max-w-5xl bg-slate-950 border border-gray-700 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+<!-- Terminal Title Bar -->
+<div class="bg-gray-800 px-4 py-1 flex justify-between items-center border-b border-gray-700">
+<div class="flex gap-2">
+<div class="w-3 h-3 bg-red-600"></div>
+<div class="w-3 h-3 bg-yellow-600"></div>
+<div class="w-3 h-3 bg-green-600"></div>
+</div>
+<div class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">BASH - 80x24</div>
+<div class="w-12"></div>
+</div>
+<!-- Terminal Body -->
+<div class="p-8 md:p-16 space-y-6">
+<div class="space-y-2">
+<h1 class="text-2xl md:text-5xl font-bold text-green-400">
+              INITIATING SYSTEM...<span class="terminal-blink">_</span>
+</h1>
+<p class="text-sm md:text-base text-gray-500 max-w-2xl leading-relaxed">
+              Deployment build: <span class="text-gray-300">v4.0.2-stable</span>. <br/>
+              Encrypted connection established via 256-bit AES. <br/>
+<span class="text-yellow-600 underline">WARNING:</span> All actions are logged to kernel-01.local.
+            </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="bg-green-400 text-black px-8 py-3 font-bold hover:bg-green-300 transition-colors uppercase tracking-tighter">
+              EXECUTE_LOGIN
+            </button>
+<button class="bg-transparent border border-green-400 text-green-400 px-8 py-3 font-bold hover:bg-green-400/10 transition-colors uppercase tracking-tighter">
+              READ_DOCS
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: ModuleSeparator -->
+<div class="px-6 py-4 flex items-center gap-4 border-y border-gray-800">
+<span class="text-green-900 font-bold">&gt;&gt;&gt;</span>
+<span class="text-green-400 font-bold tracking-[0.2em]">AVAILABLE_MODULES</span>
+<div class="flex-grow border-t border-dashed border-gray-800"></div>
+</div>
+<!-- END: ModuleSeparator -->
+<!-- BEGIN: CoreModules -->
+<section class="max-w-6xl mx-auto py-20 px-6 space-y-32">
+<!-- [01] Task Management -->
+<article class="grid md:grid-cols-2 gap-12 items-center" data-purpose="module-01">
+<div class="order-2 md:order-1 space-y-4">
+<div class="text-cyan-400 font-bold text-lg">[01] OPERATIONAL</div>
+<h2 class="text-white text-3xl font-bold uppercase tracking-tight">Task Management Kernel</h2>
+<p class="text-gray-400 leading-relaxed text-sm">
+            Priority scheduling via heuristic task allocation. Monitor workflow pipelines with zero latency. 
+            The kernel manages thread distribution and process priority across all sub-systems in real-time.
+          </p>
+<div class="pt-2">
+<code class="text-xs bg-gray-900 p-2 border border-gray-800 block">sh ./scripts/init_task_scheduler.sh --force</code>
+</div>
+</div>
+<div class="order-1 md:order-2 bg-gray-900 border border-gray-800 h-64 flex items-center justify-center overflow-hidden relative" data-purpose="framebuffer-output">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#4ade80 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
+<div class="text-gray-700 text-6xl opacity-20">[ OPER ]</div>
+<div class="absolute bottom-2 right-2 text-[10px] text-gray-600">FR_01_TASK</div>
+</div>
+</article>
+<!-- [02] Post Broadcast -->
+<article class="grid md:grid-cols-2 gap-12 items-center" data-purpose="module-02">
+<div class="bg-gray-900 border border-gray-800 h-64 flex items-center justify-center overflow-hidden relative" data-purpose="framebuffer-output">
+<div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(0deg, #f0abfc 0px, #f0abfc 1px, transparent 1px, transparent 10px);"></div>
+<div class="text-gray-700 text-6xl opacity-20">[ DIST ]</div>
+<div class="absolute bottom-2 right-2 text-[10px] text-gray-600">FR_02_BROADCAST</div>
+</div>
+<div class="space-y-4">
+<div class="text-purple-400 font-bold text-lg">[02] DISTRIBUTION</div>
+<h2 class="text-white text-3xl font-bold uppercase tracking-tight">Post Broadcast Protocol</h2>
+<p class="text-gray-400 leading-relaxed text-sm">
+            Mass-packet transmission across multiple edge nodes. Deploy content packages with automated 
+            synchronization. Supports multi-casting and peer-to-peer relay validation.
+          </p>
+<div class="pt-2">
+<code class="text-xs bg-gray-900 p-2 border border-gray-800 block">curl -X POST /api/v1/broadcast -d @payload.json</code>
+</div>
+</div>
+</article>
+<!-- [03] Chat Protocol -->
+<article class="grid md:grid-cols-2 gap-12 items-center" data-purpose="module-03">
+<div class="order-2 md:order-1 space-y-4">
+<div class="text-yellow-400 font-bold text-lg">[03] COMM_LINK</div>
+<h2 class="text-white text-3xl font-bold uppercase tracking-tight">Chat Protocol Layer</h2>
+<p class="text-gray-400 leading-relaxed text-sm">
+            Encrypted messaging via secure sockets. Low-latency peer communication with 
+            end-to-end verification. Zero-retention policy for all active sessions.
+          </p>
+<div class="pt-2">
+<code class="text-xs bg-gray-900 p-2 border border-gray-800 block">telnet irc.horizoncomms.net 6667</code>
+</div>
+</div>
+<div class="order-1 md:order-2 bg-gray-900 border border-gray-800 h-64 flex items-center justify-center overflow-hidden relative" data-purpose="framebuffer-output">
+<div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(45deg, #facc15 25%, transparent 25%, transparent 50%, #facc15 50%, #facc15 75%, transparent 75%, transparent); background-size: 20px 20px;"></div>
+<div class="text-gray-700 text-6xl opacity-20">[ COMM ]</div>
+<div class="absolute bottom-2 right-2 text-[10px] text-gray-600">FR_03_NET_CHAT</div>
+</div>
+</article>
+<!-- [04] Canvas Visualization -->
+<article class="grid md:grid-cols-2 gap-12 items-center" data-purpose="module-04">
+<div class="bg-gray-900 border border-gray-800 h-64 flex items-center justify-center overflow-hidden relative" data-purpose="framebuffer-output">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-32 h-32 border border-blue-900/40 rotate-45"></div>
+<div class="w-48 h-48 border border-blue-900/20 absolute rotate-12"></div>
+</div>
+<div class="text-gray-700 text-6xl opacity-20">[ VISUAL ]</div>
+<div class="absolute bottom-2 right-2 text-[10px] text-gray-600">FR_04_GPU_RENDER</div>
+</div>
+<div class="space-y-4">
+<div class="text-blue-400 font-bold text-lg">[04] ANALYTICS</div>
+<h2 class="text-white text-3xl font-bold uppercase tracking-tight">Canvas Visualization</h2>
+<p class="text-gray-400 leading-relaxed text-sm">
+            Real-time vector rendering of complex data structures. Map node dependencies and 
+            network traffic through hardware-accelerated framebuffer outputs.
+          </p>
+<div class="pt-2">
+<code class="text-xs bg-gray-900 p-2 border border-gray-800 block">glxgears -info &gt;&gt; /dev/null</code>
+</div>
+</div>
+</article>
+<!-- [05] Activity Logger -->
+<article class="grid md:grid-cols-2 gap-12 items-center" data-purpose="module-05">
+<div class="order-2 md:order-1 space-y-4">
+<div class="text-red-400 font-bold text-lg">[05] SYSTEM_LOG</div>
+<h2 class="text-white text-3xl font-bold uppercase tracking-tight">Activity Logger</h2>
+<p class="text-gray-400 leading-relaxed text-sm">
+            Immutable audit trails for every packet. Tracking user interactions, system failures, 
+            and security events across the entire deployment stack.
+          </p>
+<div class="pt-2">
+<code class="text-xs bg-gray-900 p-2 border border-gray-800 block">tail -f /var/log/horizon/access.log</code>
+</div>
+</div>
+<div class="order-1 md:order-2 bg-gray-900 border border-gray-800 h-64 flex items-center justify-center overflow-hidden relative" data-purpose="framebuffer-output">
+<div class="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(239,68,68,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.2)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+<div class="text-gray-700 text-6xl opacity-20">[ LOG ]</div>
+<div class="absolute bottom-2 right-2 text-[10px] text-gray-600">FR_05_AUDIT</div>
+</div>
+</article>
+</section>
+<!-- END: CoreModules -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="border-t border-gray-800 bg-black px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-widest text-gray-500 font-bold">
+<div class="uppercase" data-purpose="footer-copyright">
+      © 1998-2026 HORIZONCOMMS INTERFACE. NO RIGHTS RESERVED. COPYLEFT BYPASSED.
+    </div>
+<div class="text-gray-600" data-purpose="footer-loc">
+      LOC: <span class="text-white">127.0.0.1</span>
+</div>
+<div class="flex items-center gap-2" data-purpose="footer-status">
+      SYS_STATUS: <span class="text-green-400">OPTIMAL</span>
+<div class="w-2 h-2 bg-green-400 animate-pulse"></div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+<!-- BEGIN: InteractiveElements -->
+<script data-purpose="terminal-effects">
+    // Add simple click feedback for terminal buttons
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('mousedown', () => {
+        btn.style.transform = 'translateY(1px)';
+      });
+      btn.addEventListener('mouseup', () => {
+        btn.style.transform = 'translateY(0px)';
+      });
+    });
+
+    // Console message on load
+    console.log('%c [!] HORIZONCOMMS SYSTEM LOADED', 'background: #000; color: #4ade80; font-weight: bold;');
+  </script>
+<!-- END: InteractiveElements -->
+</body></html>

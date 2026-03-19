@@ -34,7 +34,6 @@ function VerifyUserContent() {
         }
   );
 
-  const [retryCount, setRetryCount] = useState(0);
   const hasStarted = useRef(false);
 
   const verifyEmail = useCallback(
@@ -90,7 +89,6 @@ function VerifyUserContent() {
 
   const handleRetry = async () => {
     if (!token) return;
-    setRetryCount((prev: number) => prev + 1);
     setError(null);
     setState('loading');
     await verifyEmail(token);
@@ -103,7 +101,7 @@ function VerifyUserContent() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+    <>
       {state === 'loading' && <VerifyLoading />}
       {state === 'success' && <VerifySuccess onContinue={handleContinue} />}
       {state === 'error' && error && (
@@ -116,7 +114,7 @@ function VerifyUserContent() {
           onBack={handleBackHome}
         />
       )}
-    </div>
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type PatternType = 'dots' | 'lines' | 'diagonal' | 'geometric' | 'grid';
@@ -15,6 +16,7 @@ interface ModuleCardProps {
   patternType?: PatternType;
   watermark: string;
   frameLabel: string;
+  image?: string;
 }
 
 const patternStyles: Record<PatternType, React.CSSProperties> = {
@@ -54,6 +56,7 @@ export function ModuleCard({
   patternType = 'dots',
   watermark,
   frameLabel,
+  image,
 }: ModuleCardProps) {
   const isEven = index % 2 === 0;
 
@@ -90,8 +93,23 @@ export function ModuleCard({
           style={patternStyles[patternType]}
         />
       )}
-      <div className="text-gray-700 text-6xl opacity-20">{watermark}</div>
-      <div className="absolute bottom-2 right-2 text-[10px] text-gray-600">
+
+      {image && (
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80" />
+        </div>
+      )}
+
+      <div className="relative z-10 text-gray-400 text-6xl font-black opacity-30 select-none tracking-tighter">
+        {watermark}
+      </div>
+      <div className="absolute bottom-2 right-2 z-20 text-[10px] text-gray-500 font-mono bg-black/50 px-1 py-0.5 border border-gray-800/50">
         {frameLabel}
       </div>
     </div>

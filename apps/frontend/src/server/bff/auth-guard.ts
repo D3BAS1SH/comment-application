@@ -28,7 +28,7 @@ export async function authGuard(
       isVerified: payload.isVerified,
       accessToken,
     };
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }

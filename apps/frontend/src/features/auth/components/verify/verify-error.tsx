@@ -1,9 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { AlertCircle } from 'lucide-react';
-import { FintechButton } from '@/components/ui/fintech-button';
+import React from 'react';
+import { TerminalStatusLog, LogEntry } from './terminal-status-log';
 import { VerifyLayout } from './verify-layout';
+import { AlertCircle } from 'lucide-react';
 
 interface VerifyErrorProps {
   title?: string;
@@ -15,78 +15,72 @@ interface VerifyErrorProps {
 }
 
 export function VerifyError({
-  title = 'Verification Failed',
-  message = "We couldn't verify your account. The verification link may be expired or invalid.",
-  errorCode,
+  title = 'VERIFICATION_FAILED',
+  message = 'Inbound token invalid or expired. Access denied.',
+  errorCode = 'SEC_ERR_TOKEN_MISMATCH',
   onRetry,
   onContactSupport,
   onBack,
 }: VerifyErrorProps) {
+  const entries: LogEntry[] = [
+    { status: 'DONE', message: 'EXTRACTING_TOKEN_FROM_URI' },
+    { status: 'ERROR', message: `VALIDATION_ERROR: ${errorCode}` },
+    { status: 'INFO', message: 'CONNECTION_TERMINATED_BY_HOST' },
+  ];
+
   return (
-    <VerifyLayout>
-      <div className="flex flex-col items-center justify-center space-y-6">
-        {/* Error Icon */}
-        <motion.div
-          id="Alerted"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.div
-            animate={{ rotate: [0, -5, 5, 0] }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+    <VerifyLayout title="ACCESS_DENIED_ALARM">
+      <div className="flex flex-col items-center justify-center space-y-8">
+        <div className="flex flex-col items-center space-y-4">
+          {/* Error Icon */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-red-600/30 blur-2xl rounded-full animate-pulse" />
+            <AlertCircle
+              size={56}
+              className="text-red-500 relative z-10"
+              strokeWidth={1.5}
+            />
+          </div>
+
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-red-600 tracking-widest uppercase animate-bounce">
+              {title}
+            </h2>
+            <p className="text-gray-500 text-[10px] uppercase tracking-wider mt-1">
+              {message}
+            </p>
+          </div>
+        </div>
+
+        <TerminalStatusLog entries={entries} showPrompt={false} />
+
+        <div className="w-full space-y-3">
+          <button
+            onClick={onRetry}
+            className="w-full bg-red-600 hover:bg-red-500 text-black font-bold py-4 rounded-none tracking-widest text-xs flex items-center justify-center gap-2 uppercase transition-colors shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
           >
-            <AlertCircle size={64} className="text-red-400" strokeWidth={1.5} />
-          </motion.div>
-        </motion.div>
-
-        {/* Error Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center space-y-2"
-        >
-          <h2 className="text-2xl font-bold text-white">{title}</h2>
-          <p className="text-gray-400 text-sm">{message}</p>
-          {errorCode && (
-            <p className="text-gray-500 text-xs">Error code: {errorCode}</p>
-          )}
-        </motion.div>
-
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="w-full space-y-3"
-        >
-          <FintechButton variant="primary" className="w-full" onClick={onRetry}>
-            Try Again
-          </FintechButton>
+            RETRY_PROTOCOL
+          </button>
 
           <div className="flex gap-3">
-            <FintechButton
-              variant="outline"
-              className="flex-1"
+            <button
               onClick={onContactSupport}
+              className="flex-1 bg-transparent border border-gray-800 text-gray-500 hover:text-white hover:border-white py-2 text-[10px] font-bold tracking-widest uppercase transition-all"
             >
-              Contact Support
-            </FintechButton>
-            <FintechButton variant="ghost" className="flex-1" onClick={onBack}>
-              Back Home
-            </FintechButton>
+              ADM_CONTACT
+            </button>
+            <button
+              onClick={onBack}
+              className="flex-1 bg-transparent border border-gray-800 text-gray-500 hover:text-white hover:border-white py-2 text-[10px] font-bold tracking-widest uppercase transition-all"
+            >
+              TERM_EXIT
+            </button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Accessibility: Alert region for screen readers */}
-        <div
-          role="alert"
-          aria-live="assertive"
-          aria-label="Error verifying email"
-          className="sr-only"
-        >
-          {title}. {message}
+        <div className="flex justify-between w-full px-1 text-[9px] text-gray-700 uppercase">
+          <span className="text-red-900 animate-pulse">ALARM_ACTIVE</span>
+          <span className="text-red-900/60 font-bold">Node: SEC-01-FAIL</span>
         </div>
       </div>
     </VerifyLayout>

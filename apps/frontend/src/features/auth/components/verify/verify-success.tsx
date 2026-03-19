@@ -1,9 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
-import { FintechButton } from '@/components/ui/fintech-button';
+import React from 'react';
+import { TerminalStatusLog, LogEntry } from './terminal-status-log';
 import { VerifyLayout } from './verify-layout';
+import { CheckCircle2 } from 'lucide-react';
 
 interface VerifySuccessProps {
   title?: string;
@@ -12,66 +12,50 @@ interface VerifySuccessProps {
 }
 
 export function VerifySuccess({
-  title = 'Account Verified',
-  description = "Thanks — we've verified your email. You may now sign in.",
+  title = 'IDENTITY_VERIFIED',
+  description = 'Access granted. Secured handshake complete.',
   onContinue,
 }: VerifySuccessProps) {
+  const entries: LogEntry[] = [
+    { status: 'DONE', message: 'TOKEN_VALIDATION_COMPLETE' },
+    { status: 'DONE', message: 'USER_ACCOUNT_ACTIVATED' },
+    { status: 'SUCCESS', message: 'PERMISSION_HANDOFF_AUTHORIZED' },
+  ];
+
   return (
-    <VerifyLayout>
-      <div className="flex flex-col items-center justify-center space-y-6">
-        {/* Animated Check Mark */}
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            <CheckCircle2
-              size={64}
-              className="text-green-400"
-              strokeWidth={1.5}
-            />
-          </motion.div>
-        </motion.div>
+    <VerifyLayout title="VERIFICATION_SUCCESSFUL">
+      <div className="flex flex-col items-center justify-center space-y-8">
+        <div className="flex flex-col items-center space-y-4">
+          {/* Success Icon */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full animate-pulse" />
+            <CheckCircle2 size={48} className="text-green-500 relative z-10" />
+          </div>
 
-        {/* Success Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center space-y-2"
-        >
-          <h2 className="text-2xl font-bold text-white">{title}</h2>
-          <p className="text-gray-400">{description}</p>
-        </motion.div>
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-green-500 tracking-widest uppercase">
+              {title}
+            </h2>
+            <p className="text-gray-500 text-[10px] uppercase tracking-wider mt-1">
+              {description}
+            </p>
+          </div>
+        </div>
 
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="w-full"
-        >
-          <FintechButton
-            variant="primary"
-            className="w-full"
+        <TerminalStatusLog entries={entries} showPrompt={false} />
+
+        <div className="w-full">
+          <button
             onClick={onContinue}
+            className="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-4 rounded-none tracking-widest text-xs flex items-center justify-center gap-2 uppercase transition-colors"
           >
-            Go to Login
-          </FintechButton>
-        </motion.div>
+            GO_TO_DASHBOARD
+          </button>
+        </div>
 
-        {/* Accessibility: Live region for screen readers */}
-        <div
-          role="status"
-          aria-live="polite"
-          aria-label="Email verified successfully"
-          className="sr-only"
-        >
-          {title}. {description}
+        <div className="flex justify-between w-full px-1 text-[9px] text-gray-700 uppercase">
+          <span>Trace: Completed</span>
+          <span className="text-green-900/60 font-bold">Node: HC-PRIME-01</span>
         </div>
       </div>
     </VerifyLayout>

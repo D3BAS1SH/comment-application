@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ade80",
+                        "background-light": "#000000",
+                        "background-dark": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["JetBrains Mono", "monospace"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "0px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: black;
+            color: #d1d5db;
+        }
+        .hanging-indent {
+            padding-left: 2rem;
+            text-indent: -2rem;
+        }
+        .section-content {
+            padding-left: 4rem;
+        }
+        @media (max-width: 768px) {
+            .section-content {
+                padding-left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="font-mono bg-black text-gray-300 antialiased selection:bg-green-900 selection:text-green-400">
+<div class="min-h-screen w-full flex flex-col items-center p-4 md:p-8">
+<!-- Main Terminal Container -->
+<div class="w-full max-w-5xl border border-gray-800 bg-black p-6 md:p-10 shadow-none">
+<!-- Header/Top Bar -->
+<div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-400 text-sm">terminal</span>
+<span class="text-xs uppercase tracking-widest text-gray-500 font-bold">Terminal Session: Horizoncomms_Manual</span>
+</div>
+<div class="text-xs text-gray-500">
+                    LAST UPDATE: 2023-11-24
+                </div>
+</div>
+<!-- Man Page Header -->
+<div class="flex justify-between items-baseline mb-10">
+<span class="font-bold">HORIZONCOMMS(1)</span>
+<span class="font-bold">General Commands Manual</span>
+<span class="font-bold">HORIZONCOMMS(1)</span>
+</div>
+<!-- NAME Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">NAME</h2>
+<div class="section-content">
+                    HORIZONCOMMS - A highly scalable orchestration environment for decentralized communication.
+                </div>
+</div>
+<!-- SYNOPSIS Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">SYNOPSIS</h2>
+<div class="section-content">
+<span class="font-bold">horizoncomms</span> [<span class="italic text-gray-400">OPTIONS</span>] [<span class="italic text-gray-400">MODULE</span>]...
+                </div>
+</div>
+<!-- DESCRIPTION Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">DESCRIPTION</h2>
+<div class="section-content space-y-4">
+<p>
+<span class="font-bold">Horizoncomms</span> is a high-performance, low-latency communication layer designed for secure data exchange across distributed nodes. It integrates collaborative canvases, real-time chat protocols, and task orchestration into a single, unified terminal interface.
+                    </p>
+<p>
+                        The system operates on a decentralized backbone, ensuring that no single point of failure can disrupt the orchestration of complex workflows. By leveraging a proprietary mesh protocol, <span class="text-green-400/80">horizoncomms</span> achieves sub-50ms latency for global state synchronization.
+                    </p>
+</div>
+</div>
+<!-- OPTIONS Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">OPTIONS</h2>
+<div class="section-content space-y-3">
+<div class="flex gap-8">
+<span class="font-bold min-w-[120px]">-c, --canvas</span>
+<span>Initialize the collaborative visual workspace.</span>
+</div>
+<div class="flex gap-8">
+<span class="font-bold min-w-[120px]">-s, --secure</span>
+<span>Enable end-to-end quantum-resistant encryption.</span>
+</div>
+<div class="flex gap-8">
+<span class="font-bold min-w-[120px]">-o, --orchestrate</span>
+<span>Deploy automated task handlers for project management.</span>
+</div>
+<div class="flex gap-8">
+<span class="font-bold min-w-[120px]">-v, --verbose</span>
+<span>Output detailed debug logs to stdout.</span>
+</div>
+</div>
+</div>
+<!-- CORE FEATURES (Custom Section) -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">CORE FEATURES</h2>
+<div class="section-content space-y-2">
+<div class="flex gap-2">
+<span>[ ]</span>
+<span>Zero-Knowledge Identity Verification</span>
+</div>
+<div class="flex gap-2">
+<span>[ ]</span>
+<span>Real-time Multi-user Terminal Buffers</span>
+</div>
+<div class="flex gap-2">
+<span>[ ]</span>
+<span>Automated Module Scaling via Node Clustering</span>
+</div>
+<div class="flex gap-2">
+<span>[ ]</span>
+<span>Integrated API Gateway for External Protocol Hooks</span>
+</div>
+</div>
+</div>
+<!-- AUTHOR Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">AUTHOR</h2>
+<div class="section-content">
+                    Written by root &lt;sysadmin@horizoncomms.io&gt;.
+                </div>
+</div>
+<!-- REPORTING BUGS Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">REPORTING BUGS</h2>
+<div class="section-content">
+                    Report bugs to the internal issue tracker at <span class="underline decoration-gray-700">https://github.com/horizoncomms/core/issues</span>
+</div>
+</div>
+<!-- COPYRIGHT Section -->
+<div class="mb-8">
+<h2 class="text-green-400 font-bold mb-2">COPYRIGHT</h2>
+<div class="section-content">
+                    Copyright © 2024 Horizoncomms. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+                </div>
+</div>
+<!-- Man Page Footer -->
+<div class="flex justify-between items-baseline mt-16 border-t border-gray-800 pt-4">
+<span>Horizoncomms 1.0.4-stable</span>
+<span>2024-10-12</span>
+<span>HORIZONCOMMS(1)</span>
+</div>
+<!-- Interactive Search Placeholder -->
+<div class="mt-12 bg-gray-900/30 p-2 flex items-center gap-2 border-l-2 border-green-400">
+<span class="text-green-400 font-bold">:</span>
+<span class="text-gray-500 animate-pulse">_</span>
+<span class="text-xs text-gray-600 ml-auto">(END)</span>
+</div>
+</div>
+<!-- External Links / Quick Navigation -->
+<div class="w-full max-w-5xl mt-6 flex flex-wrap gap-4 text-xs">
+<a class="border border-gray-800 px-3 py-1 hover:bg-green-400 hover:text-black transition-colors" href="#">HELP(7)</a>
+<a class="border border-gray-800 px-3 py-1 hover:bg-green-400 hover:text-black transition-colors" href="#">NETWORK(8)</a>
+<a class="border border-gray-800 px-3 py-1 hover:bg-green-400 hover:text-black transition-colors" href="#">SECURITY(1)</a>
+<a class="border border-gray-800 px-3 py-1 hover:bg-green-400 hover:text-black transition-colors" href="#">INSTALL(1)</a>
+</div>
+</div>
+</body></html>

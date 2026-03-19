@@ -7,6 +7,9 @@ interface TerminalWindowProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
+  headerClassName?: string;
+  titleClassName?: string;
+  bodyClassName?: string;
 }
 
 /**
@@ -17,6 +20,9 @@ export function TerminalWindow({
   title = 'BASH - 80x24',
   children,
   className,
+  headerClassName,
+  titleClassName,
+  bodyClassName,
 }: TerminalWindowProps) {
   return (
     <div
@@ -26,20 +32,32 @@ export function TerminalWindow({
       )}
     >
       {/* Title Bar */}
-      <div className="bg-gray-800 px-4 py-1 flex justify-between items-center border-b border-gray-700">
+      <div
+        className={cn(
+          'bg-gray-800 px-4 py-1 flex justify-between items-center border-b border-gray-700',
+          headerClassName
+        )}
+      >
         <div className="flex gap-2">
           <div className="w-3 h-3 bg-red-600" />
           <div className="w-3 h-3 bg-yellow-600" />
           <div className="w-3 h-3 bg-green-600" />
         </div>
-        <div className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">
+        <div
+          className={cn(
+            'text-[10px] text-gray-400 font-bold tracking-widest uppercase',
+            titleClassName
+          )}
+        >
           {title}
         </div>
         <div className="w-12" />
       </div>
 
       {/* Body */}
-      <div className="p-8 md:p-16 space-y-6">{children}</div>
+      <div className={cn('p-8 md:p-16 space-y-6', bodyClassName)}>
+        {children}
+      </div>
     </div>
   );
 }

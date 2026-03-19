@@ -1,18 +1,11 @@
 'use client';
 
-import React, { FC } from 'react';
-import { Mail, Lock, User } from 'lucide-react';
+import React, { FC, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 // Components
-import {
-  FintechForm,
-  FintechFormField,
-} from '@/features/auth/components/auth-form';
-import { FintechInput } from '@/features/auth/components/auth-input';
-import { LoadingButton } from '@/features/auth/components/loading-button';
-import TextType from '@/features/auth/components/text-type';
+import { TerminalWindow } from '@/components/ui/terminal-window';
+import { TerminalFormInput } from '@/features/auth/components/terminal-form-input';
 import { ImageCropperModal } from '@/features/auth/components/image-cropper-modal';
 import { ProfileImageUpload } from '@/features/auth/components/profile-image-upload';
 
@@ -40,42 +33,25 @@ const RegisterPage: FC = () => {
     isLoading,
   } = useRegisterForm();
 
-  return (
-    <div className="grid h-full w-full max-w-6xl grid-cols-1 overflow-hidden rounded-2xl border border-white/10 bg-gray-900/50 shadow-lg md:grid-cols-2">
-      {/* Left Column: Branding */}
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-gray-900 to-black p-8 text-white md:flex">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl font-bold leading-tight">
-            <TextType
-              text="Join the Horizon Community"
-              cursorCharacter="●"
-              typingSpeed={75}
-              pauseDuration={1500}
-              deletingSpeed={40}
-              cursorBlinkDuration={0.5}
-              loop
-            />
-          </h1>
-          <p className="mt-4 text-gray-400">
-            Create an account to start your journey and connect with a global
-            network
-          </p>
-        </motion.div>
-      </div>
+  const [pid] = useState(() => Math.floor(Math.random() * 9000) + 1000);
 
-      {/* Right Column: Registration Form */}
-      <div className="flex flex-col justify-center p-8 md:p-12 overflow-y-auto max-h-[90vh]">
-        <FintechForm
-          variant="minimal"
-          title="Create Account"
-          subtitle="Fill in the details below to get started."
-          onSubmit={handleSubmit}
-          className="p-0 space-y-4"
-        >
+  return (
+    <div className="w-full max-w-2xl px-4">
+      <TerminalWindow
+        title="USER REGISTRATION UTILITY"
+        className="relative overflow-hidden"
+        bodyClassName="p-6 md:p-8 space-y-8"
+      >
+        {/* Command Header */}
+        <div className="mb-8 border-b border-gray-800 pb-4">
+          <h2 className="text-green-400 text-xl font-bold mb-1 font-mono">
+            <span className="text-gray-500">$</span> CREATE_NEW_USER --verbose
+          </h2>
+          <div className="h-0.5 w-16 bg-[#ec5b13]"></div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Avatar Section */}
           <ProfileImageUpload
             imagePreview={imagePreview}
             onFileSelect={handleFileSelect}
@@ -83,73 +59,80 @@ const RegisterPage: FC = () => {
             disabled={isLoading}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <FintechFormField>
-              <FintechInput
-                label="First Name"
-                placeholder="John"
-                icon={<User size={16} />}
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </FintechFormField>
-            <FintechFormField>
-              <FintechInput
-                label="Last Name"
-                placeholder="Doe"
-                icon={<User size={16} />}
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </FintechFormField>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TerminalFormInput
+              id="firstName"
+              label="Enter First Name:"
+              placeholder="operator_one"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              variant="boxed"
+            />
+            <TerminalFormInput
+              id="lastName"
+              label="Enter Last Name:"
+              placeholder="prime"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              variant="boxed"
+            />
           </div>
 
-          <FintechFormField>
-            <FintechInput
-              label="Email Address"
-              type="email"
-              placeholder="you@example.com"
-              icon={<Mail size={16} />}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </FintechFormField>
+          <TerminalFormInput
+            id="email"
+            label="Enter Binary Address (Email):"
+            type="email"
+            placeholder="operator@horizon.sh"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            variant="boxed"
+          />
 
-          <FintechFormField>
-            <FintechInput
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              icon={<Lock size={16} />}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </FintechFormField>
+          <TerminalFormInput
+            id="password"
+            label="Initialize Access Key (Password):"
+            type="password"
+            placeholder="****************"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            variant="boxed"
+          />
 
-          <LoadingButton
-            type="submit"
-            className="w-full mt-4"
-            isLoading={isLoading}
-            loadingText="Creating Account..."
-          >
-            Create Account
-          </LoadingButton>
-
-          <p className="text-center text-sm text-gray-400 mt-4">
-            Already have an account?{' '}
-            <Link
-              href="/login"
-              className="font-medium text-cyan-400 hover:underline"
+          {/* Submit Button */}
+          <div className="pt-4">
+            <button
+              disabled={isLoading}
+              className="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-4 px-6 rounded-none transition-colors flex items-center justify-center gap-2 group uppercase tracking-widest disabled:opacity-50"
+              type="submit"
             >
-              Log in
-            </Link>
-          </p>
-        </FintechForm>
-      </div>
+              <span className="w-2 h-2 bg-black rounded-full group-hover:animate-pulse"></span>
+              {isLoading ? 'INITIALIZING_USER...' : 'INITIALIZE_USER'}
+            </button>
+          </div>
+        </form>
+
+        {/* Footer Link */}
+        <div className="mt-8 pt-6 border-t border-gray-800 text-center">
+          <Link
+            href="/login"
+            className="text-gray-500 hover:text-green-400 text-xs transition-colors font-mono"
+          >
+            Already have an account? {'//'}{' '}
+            <span className="underline underline-offset-4 decoration-[#ec5b13]/50">
+              run login.sh
+            </span>
+          </Link>
+        </div>
+
+        {/* Decoder Metadata */}
+        <div className="absolute bottom-2 right-4 text-[9px] text-gray-700 select-none font-mono tracking-tighter">
+          LOC: 127.0.0.1 {'//'} PID: {pid} {'//'} ENV: PROD
+        </div>
+      </TerminalWindow>
 
       <ImageCropperModal
         isOpen={isCropperOpen}
