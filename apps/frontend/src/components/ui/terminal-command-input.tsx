@@ -12,6 +12,9 @@ const COMMANDS: Record<string, string> = {
   help: '/about',
   './login.sh': '/login',
   './register.sh': '/register',
+  '/': '/',
+  cd: '/',
+  './home.sh': '/',
 };
 
 /**
