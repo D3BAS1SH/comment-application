@@ -65,6 +65,54 @@ export default function AboutPage() {
           </div>
         </ManSection>
 
+        <ManSection title="COMMANDS">
+          <div className="space-y-4">
+            <p>
+              The system features a persistent terminal input utility at the
+              bottom of the interface. The following commands can be executed to
+              navigate the environment:
+            </p>
+            <div className="space-y-4 pl-4 border-l border-gray-800">
+              <div className="flex flex-col md:flex-row gap-2 md:gap-8">
+                <span className="font-bold min-w-[180px] text-green-400">
+                  cd manuals
+                </span>
+                <span>
+                  Access this manual page. Alias:{' '}
+                  <code className="text-cyan-400">./man.sh</code>,{' '}
+                  <code className="text-cyan-400">help</code>.
+                </span>
+              </div>
+              <div className="flex flex-col md:flex-row gap-2 md:gap-8">
+                <span className="font-bold min-w-[180px] text-green-400">
+                  ./login.sh
+                </span>
+                <span>Initialize the user authentication sequence.</span>
+              </div>
+              <div className="flex flex-col md:flex-row gap-2 md:gap-8">
+                <span className="font-bold min-w-[180px] text-green-400">
+                  ./register.sh
+                </span>
+                <span>Start the new user registration utility.</span>
+              </div>
+              <div className="flex flex-col md:flex-row gap-2 md:gap-8">
+                <span className="font-bold min-w-[180px] text-green-400">
+                  cd /
+                </span>
+                <span>
+                  Return to the primary dashboard. Alias:{' '}
+                  <code className="text-cyan-400">./home.sh</code>,{' '}
+                  <code className="text-cyan-400">cd</code>.
+                </span>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-500 italic mt-4 font-bold uppercase tracking-widest">
+              Note: Commands are case-insensitive and support standard Unix-like
+              syntax.
+            </p>
+          </div>
+        </ManSection>
+
         <ManSection title="CORE FEATURES">
           <div className="space-y-2">
             {[

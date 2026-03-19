@@ -119,7 +119,7 @@ export class AuthService {
   ): Promise<ServiceResult<UserVerificationTokenResponse>> {
     try {
       const response = await authClient.get<UserVerificationTokenResponse>(
-        `/users/verify-email-token?token=${token}`
+        `/users/verify-email?token=${token}`
       );
       return { data: response.data, error: null };
     } catch (error) {
