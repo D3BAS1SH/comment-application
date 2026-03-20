@@ -13,55 +13,84 @@ import {
   Wallet,
   ArrowUpRight,
   ArrowDownLeft,
+  Terminal as TerminalIcon,
+  Shield,
+  Activity,
+  Cpu,
 } from 'lucide-react';
+import { TerminalWindow } from '@/components/ui/terminal-window';
 
 export default function HomePage() {
   const stats = [
     {
-      title: 'Total Balance',
-      value: '$12,450.50',
-      change: '+5.2%',
-      icon: <Wallet className="h-8 w-8 text-cyan-400" />,
+      title: 'Active Session Time',
+      value: '04:22:15',
+      change: 'STABLE',
+      icon: <Activity className="h-6 w-6 text-cyan-400" />,
       positive: true,
     },
     {
-      title: 'Monthly Spending',
-      value: '$3,240.00',
-      change: '+2.1%',
-      icon: <TrendingUp className="h-8 w-8 text-violet-400" />,
-      positive: false,
+      title: 'Kernel Load',
+      value: '12.4%',
+      change: 'LOW',
+      icon: <Cpu className="h-6 w-6 text-violet-400" />,
+      positive: true,
     },
     {
-      title: 'Investments',
-      value: '$8,960.75',
-      change: '+12.5%',
-      icon: <BarChart3 className="h-8 w-8 text-cyan-400" />,
+      title: 'Firewall Status',
+      value: 'ACTIVE',
+      change: 'SECURE',
+      icon: <Shield className="h-6 w-6 text-green-400" />,
       positive: true,
     },
   ];
 
-  const transactions = [
+  const logEntries = [
     {
-      id: 1,
-      name: 'Netflix Subscription',
-      amount: '-$15.99',
-      type: 'subscription',
+      timestamp: '18:05:22',
+      event: 'USER_LOGIN',
+      status: 'SUCCESS',
+      source: '192.168.1.45',
     },
-    { id: 2, name: 'Direct Deposit', amount: '+$2,500.00', type: 'income' },
-    { id: 3, name: 'Grocery Store', amount: '-$82.50', type: 'expense' },
-    { id: 4, name: 'Freelance Payment', amount: '+$450.00', type: 'income' },
+    {
+      timestamp: '18:06:01',
+      event: 'KEY_ROTATION',
+      status: 'COMPLETED',
+      source: 'LOCAL_KERNEL',
+    },
+    {
+      timestamp: '18:06:45',
+      event: 'CONNECTION_RETRY',
+      status: 'RESOLVED',
+      source: 'EDGE_NODE_01',
+    },
+    {
+      timestamp: '18:07:02',
+      event: 'SYSTEM_AUDIT',
+      status: 'PASS',
+      source: 'CRON_JOB',
+    },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-8 font-mono">
+      {/* Terminal Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="border-l-4 border-green-400 pl-4 py-2"
       >
-        <h1 className="text-3xl font-bold tracking-tighter">Welcome Back!</h1>
-        <p className="text-gray-400 mt-2">Here is your financial overview</p>
+        <div className="flex items-center gap-2 text-green-400 text-xs font-bold tracking-widest uppercase">
+          <TerminalIcon size={14} />
+          <span>System Status: Operational</span>
+        </div>
+        <h1 className="text-3xl font-bold tracking-tighter mt-1 text-white">
+          Welcome, <span className="text-green-400">User</span>@horizon-comms:~$
+        </h1>
+        <p className="text-gray-500 mt-2 text-sm">
+          Last login: Fri Mar 20 18:02:11 on ttys001
+        </p>
       </motion.div>
 
       {/* Stats Grid */}
@@ -73,66 +102,87 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <FintechCard variant="hover-glow">
-              <FintechCardHeader>
-                <div className="flex items-center justify-between">
-                  <div>{stat.icon}</div>
-                  <div
-                    className={`text-sm font-medium ${stat.positive ? 'text-green-400' : 'text-red-400'}`}
-                  >
-                    {stat.positive ? (
-                      <ArrowUpRight size={16} />
-                    ) : (
-                      <ArrowDownLeft size={16} />
-                    )}
-                    {stat.change}
-                  </div>
+            <div className="group relative border border-green-400/20 bg-black p-6 transition-all hover:border-green-400/40">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-white/5 rounded-sm">{stat.icon}</div>
+                <div className="text-[10px] bg-green-400/10 text-green-400 px-2 py-0.5 font-bold tracking-tighter">
+                  {stat.change}
                 </div>
-              </FintechCardHeader>
-              <FintechCardContent>
-                <p className="text-gray-400 text-sm">{stat.title}</p>
-                <p className="text-2xl font-bold text-white mt-2">
+              </div>
+              <div>
+                <p className="text-gray-500 text-[10px] uppercase tracking-widest">
+                  {stat.title}
+                </p>
+                <p className="text-2xl font-bold text-white mt-1">
                   {stat.value}
                 </p>
-              </FintechCardContent>
-            </FintechCard>
+              </div>
+              {/* Decorative Corner */}
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-green-400/40" />
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-green-400/40" />
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Recent Transactions */}
+      {/* Main Terminal Window for Activity */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <FintechCard variant="glass">
-          <FintechCardHeader>
-            <FintechCardTitle>Recent Transactions</FintechCardTitle>
-          </FintechCardHeader>
-          <FintechCardContent>
-            <div className="space-y-4">
-              {transactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between py-3 border-b border-white/5 last:border-b-0"
-                >
-                  <div>
-                    <p className="text-white font-medium">{transaction.name}</p>
-                    <p className="text-gray-400 text-sm capitalize">
-                      {transaction.type}
-                    </p>
-                  </div>
-                  <p
-                    className={`font-semibold ${transaction.amount.includes('-') ? 'text-red-400' : 'text-green-400'}`}
+        <TerminalWindow
+          title="system_monitor --mode real-time"
+          className="max-w-none"
+          bodyClassName="p-0 space-y-0"
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-white/5 bg-white/5">
+                  <th className="px-6 py-3 font-semibold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Timestamp
+                  </th>
+                  <th className="px-6 py-3 font-semibold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Event Type
+                  </th>
+                  <th className="px-6 py-3 font-semibold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Payload Status
+                  </th>
+                  <th className="px-6 py-3 font-semibold text-gray-400 uppercase tracking-widest text-[10px]">
+                    Source Node
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {logEntries.map((log, idx) => (
+                  <tr
+                    key={idx}
+                    className="hover:bg-green-400/5 transition-colors"
                   >
-                    {transaction.amount}
-                  </p>
-                </div>
-              ))}
+                    <td className="px-6 py-4 text-gray-500 tabular-nums">
+                      [{log.timestamp}]
+                    </td>
+                    <td className="px-6 py-4 font-bold text-cyan-400">
+                      {log.event}
+                    </td>
+                    <td className="px-6 py-4 text-green-400">{log.status}</td>
+                    <td className="px-6 py-4 text-gray-400 italic">
+                      {log.source}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* Footer Area */}
+          <div className="p-4 border-t border-white/5 bg-black">
+            <div className="flex items-center gap-2 text-[10px] text-gray-600">
+              <span className="animate-pulse">●</span>
+              <span>LIVE_DATA_STREAM INITIATED...</span>
             </div>
-          </FintechCardContent>
-        </FintechCard>
+          </div>
+        </TerminalWindow>
       </motion.div>
     </div>
   );
