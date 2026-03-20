@@ -1,19 +1,15 @@
 'use client';
 
 import React, { FC, useState } from 'react';
-import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 
 // Components
-import { FintechForm, FintechFormField } from '@/components/fintech-form';
-import { FintechInput } from '@/components/fintech-input';
-import { LoadingButton } from '@/components/loading-button';
-import TextType from '@/components/TextType';
+import { TerminalWindow } from '@/components/ui/terminal-window';
+import { TerminalFormInput } from '@/features/auth/components/terminal-form-input';
 
 // Hooks
-import { useUser } from '@/lib/redux/hooks/user.hooks';
+import { useUser } from '@/features/auth/hooks/use-auth';
 import { useNotify } from '@/hooks/use-notify';
 import { loginUser } from '@/lib/redux/features/userSlice';
 
@@ -45,100 +41,66 @@ const LoginPage: FC = () => {
   };
 
   return (
-    <div className="grid h-full w-full max-w-5xl grid-cols-1 overflow-hidden rounded-2xl border border-white/10 bg-gray-900/50 shadow-lg md:grid-cols-2">
-      {/* Left Column: Branding and Welcome Message */}
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-gray-900 to-black p-8 text-white md:flex">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl font-bold leading-tight">
-            <TextType
-              text="Connect with your world, instantly"
-              cursorCharacter="●"
-              typingSpeed={75}
-              pauseDuration={1500}
-              deletingSpeed={40}
-              cursorBlinkDuration={0.5}
-              loop
-            />
-          </h1>
-          <p className="mt-4 text-gray-400">
-            Sign in to access your dashboard and manage all your communications
-            in one place
-          </p>
-        </motion.div>
-      </div>
+    <div className="w-full max-w-md">
+      <TerminalWindow
+        title="SECURE_LOGIN_SERVER"
+        className="border-green-800"
+        bodyClassName="p-6 md:p-8 space-y-8"
+      >
+        <form onSubmit={handleSubmit} className="space-y-8 py-4">
+          {/* Username (Email in this case) */}
+          <TerminalFormInput
+            id="email"
+            label="username@host:~$"
+            placeholder="root@horizon.sh"
+            type="email"
+            variant="prompt"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            showCursor={true}
+          />
 
-      {/* Right Column: Login Form */}
-      <div className="flex flex-col justify-center p-8 md:p-12">
-        <FintechForm
-          variant="minimal"
-          title="Welcome Back"
-          subtitle="Enter your credentials to continue."
-          onSubmit={handleSubmit}
-          className="max-w-none p-0"
-        >
-          <FintechFormField>
-            <FintechInput
-              id="email"
-              label="Email Address"
-              type="email"
-              placeholder="you@example.com"
-              icon={<Mail size={18} />}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </FintechFormField>
+          {/* Password */}
+          <TerminalFormInput
+            id="password"
+            label="password:"
+            type="password"
+            variant="prompt"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            showCursor={true}
+          />
 
-          <FintechFormField>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white invisible">
-                  Password
-                </span>
-                <Link
-                  href="#"
-                  className="relative z-20 text-xs text-cyan-400 hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-              <FintechInput
-                id="password"
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                icon={<Lock size={18} />}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </FintechFormField>
+          {/* Action Button */}
+          <div className="pt-4">
+            <button
+              disabled={loading}
+              className="w-full bg-green-600 text-black font-bold py-3 hover:bg-green-500 transition-colors uppercase tracking-widest rounded-none focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50"
+              type="submit"
+            >
+              {loading ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
+            </button>
+          </div>
 
-          <LoadingButton
-            type="submit"
-            className="w-full"
-            isLoading={loading}
-            loadingText="Authenticating..."
-          >
-            Login
-          </LoadingButton>
-
-          <p className="mt-6 text-center text-sm text-gray-400">
-            Don&apos;t have an account?{' '}
+          {/* Footer Link */}
+          <div className="text-center pt-2">
             <Link
               href="/register"
-              className="font-medium text-cyan-400 hover:underline"
+              className="text-xs text-gray-500 hover:text-green-400 transition-colors uppercase"
             >
-              Sign up
+              No account? {'//'} run register.sh
             </Link>
-          </p>
-        </FintechForm>
-      </div>
+          </div>
+        </form>
+
+        {/* Status Footer */}
+        <div className="flex justify-between items-center text-[10px] text-green-900 border-t border-green-900/30 pt-4 mt-4">
+          <span>STATUS: ENCRYPTED_CHANNEL</span>
+          <span>v2.4.0-STABLE</span>
+        </div>
+      </TerminalWindow>
     </div>
   );
 };

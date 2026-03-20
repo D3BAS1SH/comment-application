@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Horizoncomms | User Registration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#000000", // Overridden to pitch black as per request
+                        "terminal-green": "#4ade80",
+                        "terminal-bg": "#0a0a0a",
+                        "terminal-border": "#374151"
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(74, 222, 128, 0.1);
+            position: absolute;
+            top: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-black text-slate-100 min-h-screen flex flex-col font-mono">
+<!-- Top Navigation -->
+<header class="border-b border-gray-800 bg-black px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl">terminal</span>
+<h1 class="text-xl font-bold tracking-tighter text-slate-100">HORIZONCOMMS<span class="text-primary">_OS</span></h1>
+</div>
+<div class="text-xs text-gray-500 hidden md:block">
+            SYS_STATUS: <span class="text-terminal-green">ONLINE</span> | STACK: REG_MODULE_V2
+        </div>
+</header>
+<main class="flex-grow flex items-center justify-center p-4">
+<!-- Main Terminal Card -->
+<div class="w-full max-w-xl bg-gray-950 border border-gray-700 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden">
+<!-- Terminal Header Bar -->
+<div class="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 bg-red-500/50"></div>
+<div class="w-2.5 h-2.5 bg-yellow-500/50"></div>
+<div class="w-2.5 h-2.5 bg-green-500/50"></div>
+</div>
+<div class="text-[10px] text-gray-400 uppercase tracking-widest">User Registration Utility</div>
+</div>
+<div class="p-8">
+<!-- Command Header -->
+<div class="mb-8">
+<h2 class="text-terminal-green text-xl font-bold mb-1">
+<span class="text-gray-500">$</span> CREATE_NEW_USER --verbose
+                    </h2>
+<div class="h-1 w-20 bg-primary"></div>
+</div>
+<!-- Registration Form -->
+<form action="#" class="space-y-6">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block text-slate-300 text-sm">
+<span class="text-terminal-green">&gt;</span> Enter Email:
+                        </label>
+<input class="w-full bg-gray-900 border border-gray-700 text-slate-100 px-4 py-3 rounded-none focus:ring-1 focus:ring-terminal-green focus:border-terminal-green outline-none transition-all placeholder:text-gray-600" placeholder="operator@horizon.sh" type="email"/>
+</div>
+<!-- Username Field -->
+<div class="space-y-2">
+<label class="block text-slate-300 text-sm">
+<span class="text-terminal-green">&gt;</span> Enter Username:
+                        </label>
+<input class="w-full bg-gray-900 border border-gray-700 text-slate-100 px-4 py-3 rounded-none focus:ring-1 focus:ring-terminal-green focus:border-terminal-green outline-none transition-all placeholder:text-gray-600" placeholder="root_operator" type="text"/>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="block text-slate-300 text-sm">
+<span class="text-terminal-green">&gt;</span> Enter Password:
+                        </label>
+<input class="w-full bg-gray-900 border border-gray-700 text-slate-100 px-4 py-3 rounded-none focus:ring-1 focus:ring-terminal-green focus:border-terminal-green outline-none transition-all placeholder:text-gray-600" placeholder="****************" type="password"/>
+</div>
+<!-- Confirm Password Field -->
+<div class="space-y-2">
+<label class="block text-slate-300 text-sm">
+<span class="text-terminal-green">&gt;</span> Confirm Password:
+                        </label>
+<input class="w-full bg-gray-900 border border-gray-700 text-slate-100 px-4 py-3 rounded-none focus:ring-1 focus:ring-terminal-green focus:border-terminal-green outline-none transition-all placeholder:text-gray-600" placeholder="****************" type="password"/>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-4 px-6 rounded-none transition-colors flex items-center justify-center gap-2 group" type="submit">
+<span class="material-symbols-outlined text-xl">power_settings_new</span>
+                            INITIALIZE_USER
+                        </button>
+</div>
+</form>
+<!-- Footer Link -->
+<div class="mt-8 pt-6 border-t border-gray-800 text-center">
+<a class="text-gray-500 hover:text-terminal-green text-sm transition-colors" href="#">
+                        Already have an account? // <span class="underline underline-offset-4 decoration-primary/50">run login.sh</span>
+</a>
+</div>
+</div>
+<!-- Terminal Decorative Elements -->
+<div class="absolute bottom-2 right-4 text-[10px] text-gray-700 select-none">
+                LOC: 127.0.0.1 // PID: 8824
+            </div>
+</div>
+</main>
+<!-- System Footer -->
+<footer class="bg-black border-t border-gray-800 p-6 text-center text-xs text-gray-600">
+<div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex gap-6 uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">Security_Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Kernel_Logs</a>
+</div>
+<p>© 2024 HORIZON COMMUNICATIONS SYSTEM - ALL RIGHTS RESERVED</p>
+</div>
+</footer>
+<!-- Background Decoration -->
+<div class="fixed inset-0 z-[-1] opacity-20 pointer-events-none overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black"></div>
+<!-- Grid Pattern -->
+<div class="absolute inset-0" style="background-image: radial-gradient(rgba(236, 91, 19, 0.05) 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+</body></html>

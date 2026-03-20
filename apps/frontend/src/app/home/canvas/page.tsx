@@ -5,9 +5,9 @@ import {
   FintechCard,
   FintechCardHeader,
   FintechCardTitle,
-} from '@/components/fintech-card';
+} from '@/components/ui/fintech-card';
 import { Palette, Clock, Save, Download } from 'lucide-react';
-import { FintechButton } from '@/components/fintech-button';
+import { FintechButton } from '@/components/ui/fintech-button';
 
 export default function CanvasPage() {
   const toolbarItems = ['Pen', 'Shapes', 'Text', 'Layers', 'Effects'];

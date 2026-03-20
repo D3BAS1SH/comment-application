@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Login Server - SSH Terminal</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- BEGIN: Custom Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"Courier New"', 'Courier', 'monospace'],
+          },
+          animation: {
+            'blink': 'blink 1s step-end infinite',
+          },
+          keyframes: {
+            blink: {
+              '0%, 100%': { opacity: 1 },
+              '50%': { opacity: 0 },
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Custom Configuration -->
+<!-- BEGIN: Custom Typography Styles -->
+<style data-purpose="typography">
+    .cursor-block {
+      display: inline-block;
+      width: 0.6em;
+      height: 1em;
+      background-color: #16a34a; /* Matches green-600 */
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+  </style>
+<!-- END: Custom Typography Styles -->
+</head>
+<body class="bg-black font-mono text-green-600 min-h-screen flex items-center justify-center p-4 selection:bg-green-900 selection:text-white">
+<!-- BEGIN: Login Container -->
+<main class="w-full max-w-md" data-purpose="login-terminal-wrapper">
+<div class="bg-gray-950 border border-green-800 shadow-2xl overflow-hidden rounded-none">
+<!-- BEGIN: Terminal Header -->
+<header class="bg-green-900/20 border-b border-green-800 p-3 flex justify-between items-center">
+<h1 class="text-sm font-bold tracking-widest text-green-500">SECURE_LOGIN_SERVER</h1>
+<div class="flex space-x-2">
+<div class="w-2 h-2 bg-green-800"></div>
+<div class="w-2 h-2 bg-green-800"></div>
+</div>
+</header>
+<!-- END: Terminal Header -->
+<!-- BEGIN: LoginForm -->
+<form action="#" class="p-8 space-y-8" method="POST">
+<!-- Username Input Section -->
+<div class="space-y-2 group">
+<label class="block text-sm text-green-700" for="username">
+            username@host:~$ 
+          </label>
+<div class="relative flex items-center">
+<input autocomplete="off" class="w-full bg-transparent border-t-0 border-x-0 border-b border-gray-700 focus:ring-0 focus:border-green-500 text-green-400 placeholder-green-900 p-0 py-1 transition-colors rounded-none" id="username" name="username" placeholder="root" required="" type="text"/>
+<span class="cursor-block animate-blink absolute right-0"></span>
+</div>
+</div>
+<!-- Password Input Section -->
+<div class="space-y-2">
+<label class="block text-sm text-green-700" for="password">
+            password:
+          </label>
+<div class="relative flex items-center">
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-gray-700 focus:ring-0 focus:border-green-500 text-green-400 p-0 py-1 rounded-none" id="password" name="password" required="" type="password"/>
+<span class="cursor-block animate-blink absolute right-0"></span>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-green-600 text-black font-bold py-3 hover:bg-green-500 transition-colors uppercase tracking-widest rounded-none focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black" type="submit">
+            AUTHENTICATE
+          </button>
+</div>
+<!-- Footer Link -->
+<div class="text-center pt-2">
+<a class="text-xs text-gray-600 hover:text-green-700 transition-colors uppercase" href="#">
+            Forget password? // run reset.sh
+          </a>
+</div>
+</form>
+<!-- END: LoginForm -->
+<!-- BEGIN: Status Footer -->
+<footer class="p-2 bg-black/40 text-[10px] text-green-900 flex justify-between border-t border-green-900/30">
+<span>STATUS: ENCRYPTED_CHANNEL</span>
+<span>v2.4.0-STABLE</span>
+</footer>
+<!-- END: Status Footer -->
+</div>
+</main>
+<!-- END: Login Container -->
+</body></html>

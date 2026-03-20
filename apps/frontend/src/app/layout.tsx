@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import StoreProvider from './StoreProvider';
-import SplashCursor from '@/components/SplashCursor';
+import { TerminalCommandInput } from '@/components/ui/terminal-command-input';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,10 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-12`}
       >
-        <SplashCursor />
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          {children}
+          <TerminalCommandInput />
+        </StoreProvider>
         <Toaster richColors position="top-center" expand />
       </body>
     </html>

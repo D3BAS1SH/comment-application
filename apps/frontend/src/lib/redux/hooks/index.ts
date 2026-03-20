@@ -2,8 +2,8 @@
  * Re-exports of all domain-specific hooks for convenient imports
  */
 
-// User-related hooks
-export * from './user.hooks';
+// User-related hooks (now in features/auth/hooks)
+export * from '@/features/auth/hooks/use-auth';
 
 // Future exports:
 // export * from './post.hooks';

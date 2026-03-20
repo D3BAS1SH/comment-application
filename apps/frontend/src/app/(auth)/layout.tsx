@@ -1,66 +1,48 @@
-import { Navigation } from 'lucide-react';
-import Link from 'next/link';
-import React, { FC } from 'react';
-import { FintechButton } from '@/components/fintech-button';
+'use client';
 
-// Define the type for the component's props
+import React, { FC } from 'react';
+
+import { TerminalNav } from '@/components/ui/terminal-nav';
+import { TerminalFooter } from '@/components/ui/terminal-footer';
+import { Scanline } from '@/components/ui/scanline';
+
+/**
+ * Terminal UI Layout for authentication pages.
+ * Replaces the glassmorphism layout with a pitch-black terminal theme.
+ * Includes the application wide navbar and footer for consistency.
+ */
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white selection:bg-cyan-500/30">
-      {/* Header with app title/logo and branding */}
-      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link
-            className="flex items-center space-x-2 font-bold group"
-            href="/"
-          >
-            <div className="p-1.5 rounded-lg bg-cyan-950/30 border border-cyan-500/20 group-hover:border-cyan-500/40 transition-colors">
-              <Navigation
-                className="h-5 w-5 text-cyan-400"
-                fill="currentColor"
-                fillOpacity={0.2}
-              />
-            </div>
-            <span className="tracking-tight text-lg">Horizon Comms</span>
-          </Link>
-          <div className="flex items-center space-x-6">
-            <Link
-              className="hidden text-sm font-medium text-gray-400 hover:text-white transition-colors sm:block"
-              href="/login"
-            >
-              Sign In
-            </Link>
-            <Link href="/register">
-              <FintechButton
-                variant="primary"
-                size="sm"
-                className="font-semibold shadow-lg shadow-cyan-500/10"
-              >
-                Get Started
-              </FintechButton>
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="terminal-theme flex min-h-screen flex-col bg-black text-slate-100 font-mono selection:bg-green-900 selection:text-green-400">
+      <Scanline />
+
+      {/* Shared Global Navigation */}
+      <TerminalNav />
 
       {/* Main content container */}
-      <main className="flex flex-grow items-center justify-center p-4 pt-24 pb-12">
-        <div className="w-full max-w-6xl">{children}</div>
+      <main className="flex-grow flex items-center justify-center p-4">
+        {children}
       </main>
 
-      {/* Footer with copyright and legal info */}
-      <footer className="border-t border-white/5 py-8 text-center text-xs text-gray-500 bg-black/30">
-        <div className="container mx-auto">
-          <p>
-            &copy; {new Date().getFullYear()} Horizon Comms. Engineered for
-            connection.
-          </p>
-        </div>
-      </footer>
+      {/* Shared Global Footer */}
+      <TerminalFooter />
+
+      {/* Background Decoration (Grid/Radial) */}
+      <div className="fixed inset-0 z-[-1] opacity-20 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black" />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(rgba(236, 91, 19, 0.05) 1px, transparent 0)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FintechCard, FintechCardHeader } from '@/components/fintech-card';
-import { FintechInput } from '@/components/fintech-input';
+import { FintechCard, FintechCardHeader } from '@/components/ui/fintech-card';
+import { FintechInput } from '@/features/auth/components/auth-input';
 import { Search, Clock } from 'lucide-react';
 
 export default function SearchPage() {

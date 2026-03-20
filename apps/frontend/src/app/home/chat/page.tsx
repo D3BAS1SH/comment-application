@@ -5,7 +5,7 @@ import {
   FintechCard,
   FintechCardHeader,
   FintechCardTitle,
-} from '@/components/fintech-card';
+} from '@/components/ui/fintech-card';
 import { Clock } from 'lucide-react';
 
 export default function ChatPage() {
