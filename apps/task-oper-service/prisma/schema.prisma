@@ -1,0 +1,271 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum SprintStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+}
+
+enum IssuePriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  NONE
+}
+
+enum ActivityType {
+  STATUS_CHANGED
+  ASSIGNEE_CHANGED
+  PRIORITY_CHANGED
+  SPRINT_CHANGED
+  EPIC_CHANGED
+  TITLE_CHANGED
+  COMMENT_ADDED
+  ISSUE_CREATED
+  DUE_DATE_CHANGED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  avatar    String?
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  workspaces      WorkspaceMember[]
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+  assignedIssues  Issue[]           @relation("IssueAssignee")
+  reportedIssues  Issue[]           @relation("IssueReporter")
+  ledProjects     Project[]
+  comments        Comment[]
+  issueActivities IssueActivity[]
+  epics           Epic[]            @relation("EpicCreator")
+
+  @@map("users")
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  ownerId   String   @map("owner_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  owner            User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  workspaceMembers WorkspaceMember[]
+  projects         Project[]
+  issues           Issue[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  workspaceId String        @map("workspace_id")
+  userId      String        @map("user_id")
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now()) @map("joined_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+  @@map("workspace_members")
+}
+
+model Project {
+  id              String   @id @default(uuid())
+  workspaceId     String   @map("workspace_id")
+  name            String
+  key             String
+  description     String?
+  leadId          String?  @map("lead_id")
+  lastIssueNumber Int      @default(0) @map("last_issue_number")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  lead      User?     @relation(fields: [leadId], references: [id])
+  statuses  Status[]
+  labels    Label[]
+  epics     Epic[]
+  sprints   Sprint[]
+  issues    Issue[]
+
+  @@unique([workspaceId, key])
+  @@map("projects")
+}
+
+model Status {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  name      String
+  color     String
+  position  Float
+  isDone    Boolean  @default(false) @map("is_done")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issues  Issue[]
+
+  @@unique([projectId, name])
+  @@map("statuses")
+}
+
+model Label {
+  id        String @id @default(uuid())
+  projectId String @map("project_id")
+  color     String
+  name      String
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issueLabels IssueLabel[]
+
+  @@unique([projectId, name])
+  @@map("labels")
+}
+
+model Epic {
+  id          String    @id @default(uuid())
+  projectId   String    @map("project_id")
+  title       String
+  description String?
+  color       String?
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdBy   String    @map("created_by")
+
+  creator User    @relation("EpicCreator", fields: [createdBy], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issues  Issue[]
+
+  @@map("epics")
+}
+
+model Sprint {
+  id          String       @id @default(uuid())
+  projectId   String       @map("project_id")
+  name        String
+  goal        String?
+  status      SprintStatus @default(PLANNED)
+  startDate   DateTime?    @map("start_date")
+  endDate     DateTime?    @map("end_date")
+  completedAt DateTime?    @map("completed_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issues  Issue[]
+
+  @@map("sprints")
+}
+
+model Issue {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  projectId   String        @map("project_id")
+  issueNumber Int           @map("issue_number")
+  title       String
+  description String?
+  priority    IssuePriority @default(NONE)
+  position    Float         @default(0)
+
+  statusId   String  @map("status_id")
+  epicId     String? @map("epic_id")
+  sprintId   String? @map("sprint_id")
+  assigneeId String? @map("assignee_id")
+  reporterId String  @map("reporter_id")
+  parentId   String? @map("parent_id")
+
+  dueDate       DateTime? @map("due_date")
+  startedDate   DateTime? @map("started_date")
+  completedDate DateTime? @map("completed_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id])
+  project         Project         @relation(fields: [projectId], references: [id])
+  status          Status          @relation(fields: [statusId], references: [id])
+  epic            Epic?           @relation(fields: [epicId], references: [id])
+  sprint          Sprint?         @relation(fields: [sprintId], references: [id])
+  assignee        User?           @relation("IssueAssignee", fields: [assigneeId], references: [id])
+  reporter        User            @relation("IssueReporter", fields: [reporterId], references: [id])
+  issueLabels     IssueLabel[]
+  comments        Comment[]
+  issueActivities IssueActivity[]
+  parent          Issue?          @relation("SubTasks", fields: [parentId], references: [id])
+  subTasks        Issue[]         @relation("SubTasks")
+
+  @@unique([projectId, issueNumber])
+  @@index([workspaceId])
+  @@index([projectId])
+  @@index([sprintId])
+  @@index([epicId])
+  @@index([assigneeId])
+  @@index([statusId])
+  @@map("issues")
+}
+
+model IssueLabel {
+  issueId String @map("issue_id")
+  labelId String @map("label_id")
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([issueId, labelId])
+  @@map("issue_labels")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  issueId   String   @map("issue_id")
+  authorId  String   @map("author_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  issue  Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id])
+
+  @@map("comments")
+}
+
+model IssueActivity {
+  id        String       @id @default(uuid())
+  issueId   String       @map("issue_id")
+  actorId   String       @map("actor_id")
+  type      ActivityType
+  oldValue  String?      @map("old_value")
+  newValue  String?      @map("new_value")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  actor User  @relation(fields: [actorId], references: [id])
+
+  @@index([issueId])
+  @@map("issue_activities")
+}
