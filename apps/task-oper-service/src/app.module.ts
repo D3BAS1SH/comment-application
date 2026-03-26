@@ -9,16 +9,14 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
 
 @Module({
-  imports: [
-    LoggerModule
-  ],
+  imports: [LoggerModule],
   controllers: [AppController],
   providers: [
     AppService,
     // 1. Performance Monitor (Runs first in the pipeline)
     {
       provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor
+      useClass: LoggingInterceptor,
     },
     // 2. Specific Exception Filters (More specific first)
     {

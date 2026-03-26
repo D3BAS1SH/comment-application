@@ -41,7 +41,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
       errorCode = exception.errorCode;
 
-      this.loggerService.warn(`[AppException] | ${errorCode} | ${message}`, 'GlobalExceptionFilter');
+      this.loggerService.warn(
+        `[AppException] | ${errorCode} | ${message}`,
+        'GlobalExceptionFilter'
+      );
     }
     // 2. Handle standard NestJS HTTP exceptions
     else if (exception instanceof HttpException) {
@@ -60,7 +63,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         .replace('Exception', '')
         .toUpperCase();
 
-      this.loggerService.warn(`[HttpException] | ${status} | ${message}`, 'GlobalExceptionFilter');
+      this.loggerService.warn(
+        `[HttpException] | ${status} | ${message}`,
+        'GlobalExceptionFilter'
+      );
     }
     // 3. Handle all other unexpected errors
     else {
@@ -69,14 +75,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       errorCode = 'INTERNAL_SERVER_ERROR';
 
       // ✅ Use our smart error logger which unrolls nested causes
-      this.loggerService.error(`[UnhandledException] | ${message}`, exception as Error, 'GlobalExceptionFilter');
+      this.loggerService.error(
+        `[UnhandledException] | ${message}`,
+        exception as Error,
+        'GlobalExceptionFilter'
+      );
     }
 
     const errorDto = new CustomErrorResponseDto(
       status,
       request.url,
       message,
-      errorCode,
+      errorCode
     );
 
     response.status(status).json(errorDto);

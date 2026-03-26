@@ -32,7 +32,7 @@ export class LoggerService implements NestLoggerService {
             : combine(
                 colorize(),
                 timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-                devFormat,
+                devFormat
               ),
       }),
 
@@ -88,10 +88,19 @@ export class LoggerService implements NestLoggerService {
 
   log(message: string | Record<string, unknown>, context?: string) {
     const cleanMessage = this.redact(message);
-    this.logger.info(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+    this.logger.info(
+      typeof cleanMessage === 'string'
+        ? cleanMessage
+        : JSON.stringify(cleanMessage),
+      { context, traceId: TraceContext.getTraceId() }
+    );
   }
 
-  error(message: string | Record<string, unknown> | Error, stack?: string | Error | any, context?: string) {
+  error(
+    message: string | Record<string, unknown> | Error,
+    stack?: string | Error | any,
+    context?: string
+  ) {
     const traceId = TraceContext.getTraceId();
 
     if (message instanceof Error) {
@@ -103,18 +112,21 @@ export class LoggerService implements NestLoggerService {
       });
     } else if (stack instanceof Error) {
       const errorData = this.extractErrorData(stack);
-      this.logger.error(typeof message === 'string' ? message : errorData.message, {
-        ...errorData,
-        context,
-        traceId,
-      });
+      this.logger.error(
+        typeof message === 'string' ? message : errorData.message,
+        {
+          ...errorData,
+          context,
+          traceId,
+        }
+      );
     } else {
       const cleanMessage = this.redact(message);
       this.logger.error(
         typeof cleanMessage === 'string'
           ? cleanMessage
           : JSON.stringify(cleanMessage),
-        { stack, context, traceId },
+        { stack, context, traceId }
       );
     }
   }
@@ -126,17 +138,32 @@ export class LoggerService implements NestLoggerService {
 
   warn(message: string | Record<string, unknown>, context?: string) {
     const cleanMessage = this.redact(message);
-    this.logger.warn(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+    this.logger.warn(
+      typeof cleanMessage === 'string'
+        ? cleanMessage
+        : JSON.stringify(cleanMessage),
+      { context, traceId: TraceContext.getTraceId() }
+    );
   }
 
   debug(message: string | Record<string, unknown>, context?: string) {
     const cleanMessage = this.redact(message);
-    this.logger.debug(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+    this.logger.debug(
+      typeof cleanMessage === 'string'
+        ? cleanMessage
+        : JSON.stringify(cleanMessage),
+      { context, traceId: TraceContext.getTraceId() }
+    );
   }
 
   verbose(message: string | Record<string, unknown>, context?: string) {
     const cleanMessage = this.redact(message);
-    this.logger.verbose(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+    this.logger.verbose(
+      typeof cleanMessage === 'string'
+        ? cleanMessage
+        : JSON.stringify(cleanMessage),
+      { context, traceId: TraceContext.getTraceId() }
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

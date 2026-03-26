@@ -18,7 +18,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
   catch(
     exception: Prisma.PrismaClientKnownRequestError,
-    host: ArgumentsHost,
+    host: ArgumentsHost
   ): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -95,7 +95,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     this.loggerService.error(
       `[PrismaException] | ${exception.code} | ${errorMessage}`,
       exception,
-      'PrismaClientExceptionFilter',
+      'PrismaClientExceptionFilter'
     );
 
     response

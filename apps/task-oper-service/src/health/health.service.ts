@@ -13,7 +13,7 @@ export class HealthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
-    private readonly healthCheckService: HealthCheckService,
+    private readonly healthCheckService: HealthCheckService
   ) {}
 
   /**
@@ -85,7 +85,7 @@ export class HealthService {
 
     if (!isHealthy) {
       throw new Error(
-        `${key} check failed: Heap usage ${Math.round(heapUsed)}MB exceeds threshold ${threshold}MB`,
+        `${key} check failed: Heap usage ${Math.round(heapUsed)}MB exceeds threshold ${threshold}MB`
       );
     }
 
@@ -115,7 +115,7 @@ export class HealthService {
 
     if (!isHealthy) {
       throw new Error(
-        `${key} check failed: One or more security features disabled`,
+        `${key} check failed: One or more security features disabled`
       );
     }
 
