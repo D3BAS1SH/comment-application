@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
+import { TraceContext } from './trace.context';
 
 @Injectable()
-export class LoggerService implements LoggerService {
+export class LoggerService implements NestLoggerService {
   private logger: winston.Logger;
   constructor() {
     const { json, timestamp, errors, combine, printf, colorize } =
@@ -31,7 +32,7 @@ export class LoggerService implements LoggerService {
             : combine(
                 colorize(),
                 timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-                devFormat
+                devFormat,
               ),
       }),
 
@@ -60,7 +61,7 @@ export class LoggerService implements LoggerService {
     this.logger = winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
       format: combine(timestamp(), errors({ stack: true }), json()),
-      defaultMeta: { service: 'auth-service' },
+      defaultMeta: { service: 'task-oper-service' },
       transports: transports,
       exceptionHandlers: [
         new winston.transports.DailyRotateFile({
@@ -85,28 +86,106 @@ export class LoggerService implements LoggerService {
     });
   }
 
-  log(message: any, context?: string) {
-    this.logger.info(message, { context });
+  log(message: string | Record<string, unknown>, context?: string) {
+    const cleanMessage = this.redact(message);
+    this.logger.info(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
   }
 
-  error(message: any, stack?: string, context?: string) {
-    // If the message is actually an object (Error object), handle it gracefully
+  error(message: string | Record<string, unknown> | Error, stack?: string | Error | any, context?: string) {
+    const traceId = TraceContext.getTraceId();
+
     if (message instanceof Error) {
-      this.logger.error(message.message, { stack: message.stack, context });
+      const errorData = this.extractErrorData(message);
+      this.logger.error(errorData.message, {
+        ...errorData,
+        context: (stack as string) || context,
+        traceId,
+      });
+    } else if (stack instanceof Error) {
+      const errorData = this.extractErrorData(stack);
+      this.logger.error(typeof message === 'string' ? message : errorData.message, {
+        ...errorData,
+        context,
+        traceId,
+      });
     } else {
-      this.logger.error(message, { stack, context });
+      const cleanMessage = this.redact(message);
+      this.logger.error(
+        typeof cleanMessage === 'string'
+          ? cleanMessage
+          : JSON.stringify(cleanMessage),
+        { stack, context, traceId },
+      );
     }
   }
 
-  warn(message: any, context?: string) {
-    this.logger.warn(message, { context });
+  fatal(message: string | Record<string, unknown> | Error, context?: string) {
+    // In many professional setups, fatal is treated as a high-priority error
+    this.error(message, undefined, context);
   }
 
-  debug(message: any, context?: string) {
-    this.logger.debug(message, { context });
+  warn(message: string | Record<string, unknown>, context?: string) {
+    const cleanMessage = this.redact(message);
+    this.logger.warn(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
   }
 
-  verbose(message: any, context?: string) {
-    this.logger.verbose(message, { context });
+  debug(message: string | Record<string, unknown>, context?: string) {
+    const cleanMessage = this.redact(message);
+    this.logger.debug(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+  }
+
+  verbose(message: string | Record<string, unknown>, context?: string) {
+    const cleanMessage = this.redact(message);
+    this.logger.verbose(typeof cleanMessage === 'string' ? cleanMessage : JSON.stringify(cleanMessage), { context, traceId: TraceContext.getTraceId() });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private extractErrorData(error: any): any {
+    if (!(error instanceof Error)) return error;
+
+    return {
+      message: error.message,
+      stack: error.stack,
+      // Extract nested cause (ES2022 standard)
+      cause:
+        (error as any).cause instanceof Error
+          ? this.extractErrorData((error as any).cause)
+          : (error as any).cause,
+      // Capture Prisma specific metadata if it exists
+      ...((error as any).code && { code: (error as any).code }),
+      ...((error as any).meta && { meta: (error as any).meta }),
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private redact(data: any): any {
+    if (!data || typeof data !== 'object') return data;
+    const isArray = Array.isArray(data);
+    const copy = isArray ? [...data] : { ...data };
+
+    const keysToRedact = [
+      'password',
+      'token',
+      'secret',
+      'key',
+      'auth',
+      'credential',
+      'pass',
+      'pwd',
+      'authorization',
+      'cookie',
+      'ssn',
+      'credit_card',
+    ];
+
+    for (const key in copy) {
+      if (keysToRedact.includes(key.toLowerCase())) {
+        copy[key] = '[REDACTED]';
+      } else if (copy[key] && typeof copy[key] === 'object') {
+        copy[key] = this.redact(copy[key]); // This is the magic recursion
+      }
+    }
+
+    return copy;
   }
 }
