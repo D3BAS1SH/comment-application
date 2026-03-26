@@ -9,6 +9,7 @@ import {
 import { Request, Response } from 'express';
 import { CustomErrorResponseDto } from '../dto/error-response.dto';
 import { AppException } from '../exceptions/app.exception';
+import { LoggerService } from '../logger/logger.service';
 
 // ✅ Define a type for the expected object structure from HttpException
 interface HttpExceptionResponse {
@@ -18,7 +19,7 @@ interface HttpExceptionResponse {
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(GlobalExceptionFilter.name);
+  constructor(private readonly loggerService: LoggerService) {}
 
   // ✅ Create a private type guard to safely check the structure of an object
   private isHttpExceptionResponse(obj: unknown): obj is HttpExceptionResponse {
@@ -37,28 +38,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // 1. Handle our specific, structured custom exceptions first
     if (exception instanceof AppException) {
       status = exception.getStatus();
-      // ✅ The Fix: Access properties directly from the typed exception. It's safer.
       message = exception.message;
       errorCode = exception.errorCode;
 
-      this.logger.warn(`[AppException] | ${errorCode} | ${message}`, {
-        path: request.url,
-        details: exception.details,
-      });
+      this.loggerService.warn(`[AppException] | ${errorCode} | ${message}`, 'GlobalExceptionFilter');
     }
     // 2. Handle standard NestJS HTTP exceptions
     else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const errorResponse = exception.getResponse();
 
-      // ✅ The Fix: Use the type guard to safely determine the response shape
       if (typeof errorResponse === 'string') {
         message = errorResponse;
       } else if (this.isHttpExceptionResponse(errorResponse)) {
-        // TypeScript now knows errorResponse has a .message property
         message = errorResponse.message;
       } else {
-        // Fallback for unexpected object shapes
         message = 'An error occurred';
       }
 
@@ -66,9 +60,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         .replace('Exception', '')
         .toUpperCase();
 
-      this.logger.warn(`[HttpException] | ${status} | ${message}`, {
-        path: request.url,
-      });
+      this.loggerService.warn(`[HttpException] | ${status} | ${message}`, 'GlobalExceptionFilter');
     }
     // 3. Handle all other unexpected errors
     else {
@@ -76,14 +68,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = 'An unexpected internal server error occurred';
       errorCode = 'INTERNAL_SERVER_ERROR';
 
-      this.logger.error(`[UnhandledException] | ${message}`, exception);
+      // ✅ Use our smart error logger which unrolls nested causes
+      this.loggerService.error(`[UnhandledException] | ${message}`, exception as Error, 'GlobalExceptionFilter');
     }
 
     const errorDto = new CustomErrorResponseDto(
       status,
       request.url,
       message,
-      errorCode
+      errorCode,
     );
 
     response.status(status).json(errorDto);
