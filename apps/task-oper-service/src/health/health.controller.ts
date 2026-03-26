@@ -37,25 +37,11 @@ export class HealthController {
     return this.healthService.checkSecurityHealth();
   }
 
-  @Get('email')
-  @HealthCheck()
-  @ApiOperation({ summary: 'Get Email Health checks' })
-  checkEmailHealth() {
-    return this.healthService.checkEmail();
-  }
-
   @Get('database')
   @HealthCheck()
   @ApiOperation({ summary: 'Get Database Health checks' })
   async checkDatabaseHealth() {
     return await this.healthService.checkDatabase();
-  }
-
-  @Get('storage')
-  @HealthCheck()
-  @ApiOperation({ summary: 'Get Cloudinary Storage health check' })
-  async checkCloudinaryStorage() {
-    return await this.healthService.checkStorage();
   }
 
   @Get('service')

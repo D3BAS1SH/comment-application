@@ -98,14 +98,14 @@ export class LoggerService implements NestLoggerService {
 
   error(
     message: string | Record<string, unknown> | Error,
-    stack?: string | Error | any,
+    stack?: unknown,
     context?: string
   ) {
     const traceId = TraceContext.getTraceId();
 
     if (message instanceof Error) {
       const errorData = this.extractErrorData(message);
-      this.logger.error(errorData.message, {
+      this.logger.error(errorData.message as string, {
         ...errorData,
         context: (stack as string) || context,
         traceId,
@@ -113,7 +113,7 @@ export class LoggerService implements NestLoggerService {
     } else if (stack instanceof Error) {
       const errorData = this.extractErrorData(stack);
       this.logger.error(
-        typeof message === 'string' ? message : errorData.message,
+        typeof message === 'string' ? message : (errorData.message as string),
         {
           ...errorData,
           context,
@@ -166,29 +166,37 @@ export class LoggerService implements NestLoggerService {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private extractErrorData(error: any): any {
-    if (!(error instanceof Error)) return error;
+  private extractErrorData(error: unknown): Record<string, unknown> {
+    if (!(error instanceof Error)) {
+      return { message: String(error) };
+    }
+
+    const errorObj = error as unknown as Record<string, unknown>;
 
     return {
       message: error.message,
       stack: error.stack,
       // Extract nested cause (ES2022 standard)
       cause:
-        (error as any).cause instanceof Error
-          ? this.extractErrorData((error as any).cause)
-          : (error as any).cause,
+        errorObj.cause instanceof Error
+          ? this.extractErrorData(errorObj.cause)
+          : errorObj.cause,
       // Capture Prisma specific metadata if it exists
-      ...((error as any).code && { code: (error as any).code }),
-      ...((error as any).meta && { meta: (error as any).meta }),
+      ...(typeof errorObj.code === 'string' && { code: errorObj.code }),
+      ...(typeof errorObj.meta === 'object' &&
+        errorObj.meta !== null && { meta: errorObj.meta }),
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private redact(data: any): any {
+  private redact(data: unknown): unknown {
     if (!data || typeof data !== 'object') return data;
-    const isArray = Array.isArray(data);
-    const copy = isArray ? [...data] : { ...data };
+
+    if (Array.isArray(data)) {
+      return data.map((item) => this.redact(item));
+    }
+
+    const dataObj = data as Record<string, unknown>;
+    const copy: Record<string, unknown> = {};
 
     const keysToRedact = [
       'password',
@@ -205,11 +213,16 @@ export class LoggerService implements NestLoggerService {
       'credit_card',
     ];
 
-    for (const key in copy) {
+    for (const key in dataObj) {
       if (keysToRedact.includes(key.toLowerCase())) {
         copy[key] = '[REDACTED]';
-      } else if (copy[key] && typeof copy[key] === 'object') {
-        copy[key] = this.redact(copy[key]); // This is the magic recursion
+      } else {
+        const value = dataObj[key];
+        if (value && typeof value === 'object') {
+          copy[key] = this.redact(value);
+        } else {
+          copy[key] = value;
+        }
       }
     }
 
