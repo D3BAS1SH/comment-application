@@ -6,9 +6,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CustomErrorResponseDto } from '../dto/error-response.dto';
-import { AppException } from '../exceptions/app.exception';
-import { LoggerService } from '../logger/logger.service';
+import { CustomErrorResponseDto } from '../dto/error-response.dto.js';
+import { AppException } from '../exceptions/app.exception.js';
+import { LoggerService } from '../logger/logger.service.js';
 
 // ✅ Define a type for the expected object structure from HttpException
 interface HttpExceptionResponse {

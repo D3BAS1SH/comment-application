@@ -1,15 +1,26 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { LoggerModule } from './common/logger/logger.module';
-import { TraceMiddleware } from './common/logger/trace.middleware';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { LoggerModule } from './common/logger/logger.module.js';
+import { TraceMiddleware } from './common/logger/trace.middleware.js';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
-import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter.js';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter.js';
+import { HealthModule } from './health/health.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    LoggerModule,
+    HealthModule,
+    PrismaModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

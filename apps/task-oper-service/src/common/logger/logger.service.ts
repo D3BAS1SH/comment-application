@@ -1,7 +1,7 @@
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
-import { TraceContext } from './trace.context';
+import { TraceContext } from './trace.context.js';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {

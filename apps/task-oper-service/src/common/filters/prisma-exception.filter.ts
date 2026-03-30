@@ -1,9 +1,9 @@
 import { ArgumentsHost, Catch, HttpStatus, Injectable } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { Prisma } from '../../prisma/generated/client';
+import { Prisma } from '../../prisma/generated/client.js';
 import { Request, Response } from 'express';
-import { CustomErrorResponseDto } from '../dto/error-response.dto';
-import { LoggerService } from '../logger/logger.service';
+import { CustomErrorResponseDto } from '../dto/error-response.dto.js';
+import { LoggerService } from '../logger/logger.service.js';
 
 @Injectable()
 @Catch(Prisma.PrismaClientKnownRequestError)

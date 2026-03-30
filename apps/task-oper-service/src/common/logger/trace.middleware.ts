@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { uuidv7 } from 'uuidv7';
-import { TraceContext } from './trace.context';
+import { TraceContext } from './trace.context.js';
 
 @Injectable()
 export class TraceMiddleware implements NestMiddleware {
