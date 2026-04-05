@@ -9,7 +9,9 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter.
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserSyncModule } from './user-sync/user-sync.module.js';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -17,9 +19,21 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.getOrThrow<string>('REDIS_HOST'),
+          port: config.getOrThrow<number>('REDIS_PORT'),
+          // password: config.getOrThrow<string>('REDIS_PASSWORD'),  // Only enable on prods
+        },
+      }),
+    }),
     LoggerModule,
     HealthModule,
     PrismaModule,
+    UserSyncModule,
   ],
   controllers: [AppController],
   providers: [
