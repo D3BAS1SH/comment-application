@@ -23,6 +23,7 @@ import { CreateTokenDto } from 'src/token/dto/create-token.dto';
 import { ForgetPasswordBodyDto } from './dto/forget-password.dto';
 import { ResetPasswordBodyDto } from './dto/reset-password.dto';
 import { Prisma } from '../prisma/generated';
+import { UserSyncService } from 'src/user-sync/user-sync.service';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +32,8 @@ export class UsersService {
     private readonly prismaService: PrismaService,
     private readonly tokenService: TokenService,
     private readonly emailService: EmailService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly userSyncService: UserSyncService
   ) {}
 
   /**
@@ -237,7 +239,40 @@ export class UsersService {
     const verificationResult =
       await this.tokenService.verifyVerificationToken(token);
 
-    // Step 3: Log success and return the result
+    // Step 3: Add valid user to user-sync queue
+
+    // Step 3.1: Check if user is verified
+    if (!verificationResult.isVerified) {
+      return verificationResult;
+    }
+
+    // Step 3.2: Get required user information
+    const requiredUserInformation =
+      await this.prismaService.user.findUniqueOrThrow({
+        where: {
+          email: verificationResult.email,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          imageUrl: true,
+          createdAt: true,
+        },
+      });
+
+    // Step 3.3: Emit user created event
+    await this.userSyncService.emitUserCreated({
+      userId: requiredUserInformation.id,
+      email: requiredUserInformation.email,
+      firstName: requiredUserInformation.firstName,
+      lastName: requiredUserInformation.lastName,
+      avatar: requiredUserInformation.imageUrl,
+      timestamp: requiredUserInformation.createdAt.toISOString(),
+    });
+
+    // Step 4: Log success and return the result
     console.log('User verification completed successfully');
     return verificationResult;
   }
