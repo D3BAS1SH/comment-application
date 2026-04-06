@@ -16,7 +16,7 @@ export class UserSyncProcessor extends WorkerHost {
 
   constructor(
     private readonly logger: LoggerService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {
     super(); // WorkerHost requires super() call
   }
@@ -31,7 +31,7 @@ export class UserSyncProcessor extends WorkerHost {
   async process(job: Job<UserCreatedPayload>): Promise<void> {
     this.logger.log(
       `Processing job ${job.id} | type: ${job.name} | attempt: ${job.attemptsMade + 1}`,
-      this.context,
+      this.context
     );
 
     switch (job.name) {
@@ -48,7 +48,10 @@ export class UserSyncProcessor extends WorkerHost {
       //   break;
 
       default:
-        this.logger.warn(`Unknown job name: ${job.name} — skipping`, this.context);
+        this.logger.warn(
+          `Unknown job name: ${job.name} — skipping`,
+          this.context
+        );
     }
   }
 
@@ -82,7 +85,7 @@ export class UserSyncProcessor extends WorkerHost {
 
     this.logger.log(
       `User synced: ${data.userId} (${data.email})`,
-      this.context,
+      this.context
     );
   }
 
@@ -90,10 +93,7 @@ export class UserSyncProcessor extends WorkerHost {
 
   @OnWorkerEvent('completed')
   onCompleted(job: Job): void {
-    this.logger.log(
-      `Job ${job.id} completed successfully`,
-      this.context,
-    );
+    this.logger.log(`Job ${job.id} completed successfully`, this.context);
   }
 
   @OnWorkerEvent('failed')
@@ -101,7 +101,7 @@ export class UserSyncProcessor extends WorkerHost {
     this.logger.error(
       `Job ${job.id} FAILED after ${job.attemptsMade} attempts: ${error.message}`,
       error.stack,
-      this.context,
+      this.context
     );
   }
 }

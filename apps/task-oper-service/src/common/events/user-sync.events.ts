@@ -15,5 +15,5 @@ export interface UserCreatedPayload {
   firstName: string;
   lastName: string;
   avatar: string | null;
-  timestamp: string;      // ISO 8601
+  timestamp: string; // ISO 8601
 }
