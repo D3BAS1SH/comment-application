@@ -8,6 +8,7 @@ import { EmailModule } from 'src/email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { UserSyncModule } from 'src/user-sync/user-sync.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
     TokenModule,
     EmailModule,
     ConfigModule,
+    UserSyncModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, JwtStrategy, RefreshStrategy],

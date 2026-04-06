@@ -8,7 +8,10 @@
  * Do not change the BASE_URL
  * It is set in the .env file
  */
-const BASE_URL = process.env.BASE_SERVICE_URL!;
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? process.env.BASE_SERVICE_URL_LOCAL!
+    : process.env.BASE_SERVICE_URL!;
 
 /**
  * Service Paths

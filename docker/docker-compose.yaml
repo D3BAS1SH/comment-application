@@ -1,6 +1,6 @@
 services:
   auth-service:
-    image: d3ba110/auth-service:1.4
+    image: d3ba110/auth-service:1.7
     restart: unless-stopped
     container_name: auth-service
     env_file:
@@ -28,41 +28,37 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    depends_on:
+      redis:
+        condition: service_healthy
 
-          # I have decided to remove gateway-service application whose work will be now done at the nginx
-          # and no need to setup and whole own server made of NestJS to proxy only.
-          #gateway-service:
-          #    image: d3ba110/gateway-service:1.1
-          #    restart: unless-stopped
-          #    container_name: gateway-service
-          #    env_file:
-          #      - ./.production.gateway_service
-          #    expose:
-          #      - "3036"
-          #    networks:
-          #      - app_network
-          #    depends_on:
-          #      auth-service:
-          #        condition: service_healthy
-          #    healthcheck:
-          #      test: ["CMD", "curl", "-f", "http://localhost:3036/api/v1/health"]
-          #      interval: 30s
-          #      timeout: 10s
-          #      retries: 3
-          #      start_period: 40s
-          #    deploy:
-          #      resources:
-          #        limits:
-          #          cpus: '1'
-          #          memory: 1G
-          #        reservations:
-          #          cpus: '0.25'
-          #          memory: 256M
-          #    logging:
-          #      driver: json-file
-          #      options:
-          #        max-size: "10m"
-          #        max-file: "3"
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   nginx:
     image: nginx:alpine
@@ -80,7 +76,6 @@ services:
       - app_network
     depends_on:
       - auth-service
-        #      - gateway-service
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -105,3 +100,6 @@ services:
 networks:
   app_network:
     driver: bridge
+
+volumes:
+  redis_data:

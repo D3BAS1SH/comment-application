@@ -1,23 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  FintechCard,
-  FintechCardContent,
-  FintechCardHeader,
-  FintechCardTitle,
-} from '@/components/ui/fintech-card';
-import {
-  BarChart3,
-  TrendingUp,
-  Wallet,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Terminal as TerminalIcon,
-  Shield,
-  Activity,
-  Cpu,
-} from 'lucide-react';
+import { Terminal as TerminalIcon, Shield, Activity, Cpu } from 'lucide-react';
 import { TerminalWindow } from '@/components/ui/terminal-window';
 
 export default function HomePage() {

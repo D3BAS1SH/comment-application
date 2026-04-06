@@ -14,6 +14,8 @@ import { JwtExceptionFilter } from './common/filters/jwt-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { HealthModule } from './health/health.module';
+import { BullModule } from '@nestjs/bullmq';
+import { UserSyncModule } from './user-sync/user-sync.module';
 
 @Module({
   imports: [
@@ -36,12 +38,24 @@ import { HealthModule } from './health/health.module';
         ],
       }),
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.getOrThrow<string>('REDIS_HOST'),
+          port: config.getOrThrow<number>('REDIS_PORT'),
+          // password: config.getOrThrow<string>('REDIS_PASSWORD'),  // Only enable on prods
+        },
+      }),
+    }),
     PrismaModule,
     UsersModule,
     TokenModule,
     EmailModule,
     CloudinaryUtilityModule,
     HealthModule,
+    UserSyncModule,
   ],
   controllers: [AppController],
   providers: [
