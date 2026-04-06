@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
-import { USER_SYNC_QUEUE } from 'src/common/events/user-sync.events.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaModule } from 'src/prisma/prisma.module.js';
+import { USER_SYNC_QUEUE } from '../common/events/user-sync.events.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaModule } from '../prisma/prisma.module.js';
 import { UserSyncProcessor } from './user-sync.processor.js';
 
 @Module({

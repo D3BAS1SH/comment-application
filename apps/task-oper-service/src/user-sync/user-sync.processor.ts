@@ -5,9 +5,9 @@ import {
   USER_SYNC_QUEUE,
   UserSyncJobName,
   UserCreatedPayload,
-} from 'src/common/events/user-sync.events.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+} from '../common/events/user-sync.events.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 @Processor(USER_SYNC_QUEUE)
