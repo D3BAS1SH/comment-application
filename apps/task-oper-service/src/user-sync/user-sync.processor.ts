@@ -28,7 +28,9 @@ export class UserSyncProcessor extends WorkerHost {
    * We use a switch on `job.name` so this processor can handle
    * multiple event types (USER_CREATED, USER_UPDATED, etc.) in the future.
    */
-  async process(job: Job<UserCreatedPayload>): Promise<void> {
+  async process(
+    job: Job<UserCreatedPayload, void, UserSyncJobName>
+  ): Promise<void> {
     this.logger.log(
       `Processing job ${job.id} | type: ${job.name} | attempt: ${job.attemptsMade + 1}`,
       this.context
@@ -49,7 +51,7 @@ export class UserSyncProcessor extends WorkerHost {
 
       default:
         this.logger.warn(
-          `Unknown job name: ${job.name} — skipping`,
+          `Unknown job name: ${String(job.name)} — skipping`,
           this.context
         );
     }

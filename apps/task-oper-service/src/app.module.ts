@@ -3,7 +3,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { LoggerModule } from './common/logger/logger.module.js';
 import { TraceMiddleware } from './common/logger/trace.middleware.js';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter.js';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter.js';
@@ -12,6 +12,8 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserSyncModule } from './user-sync/user-sync.module.js';
 import { BullModule } from '@nestjs/bullmq';
+import { UserIdGuard } from './common/guards/user-id.guard.js';
+import { RedisModule } from './redis/redis.module.js';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { BullModule } from '@nestjs/bullmq';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    RedisModule.forRoot(),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -52,6 +55,11 @@ import { BullModule } from '@nestjs/bullmq';
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter,
+    },
+    // 4. Add UserIdGuard
+    {
+      provide: APP_GUARD,
+      useClass: UserIdGuard,
     },
   ],
 })

@@ -565,7 +565,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       '@types/supertest':
-        specifier: ^6.0.2
+        specifier: ^6.0.3
         version: 6.0.3
       eslint:
         specifier: ^9.18.0
