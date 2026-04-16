@@ -22,7 +22,7 @@
     "husky": "^9.0.1",
     "lint-staged": "^15.2.0",
     "prettier": "^3.6.0",
-    "turbo": "^2.5.4",
+    "turbo": "^2.9.6",
     "typescript": "5.8.2"
   },
   "packageManager": "pnpm@10.24.0",
