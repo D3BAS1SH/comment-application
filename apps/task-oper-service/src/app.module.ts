@@ -14,6 +14,7 @@ import { UserSyncModule } from './user-sync/user-sync.module.js';
 import { BullModule } from '@nestjs/bullmq';
 import { UserIdGuard } from './common/guards/user-id.guard.js';
 import { RedisModule } from './redis/redis.module.js';
+import { WorkspaceModule } from './workspace/workspace.module.js';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { RedisModule } from './redis/redis.module.js';
     HealthModule,
     PrismaModule,
     UserSyncModule,
+    WorkspaceModule,
   ],
   controllers: [AppController],
   providers: [
