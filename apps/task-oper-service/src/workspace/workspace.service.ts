@@ -328,23 +328,20 @@ export class WorkspaceService {
     }
   }
 
-  async checkSlug(checkSlug: CheckSlugDto): Promise<boolean> {
+  async checkSlug(slug: string): Promise<boolean> {
     try {
-      if (!checkSlug) {
-        throw new BadRequestException('Check slug values are required');
-      }
-      if (!checkSlug.slug) {
+      if (!slug) {
         throw new BadRequestException('Slug is required');
       }
 
       const workspace = await this.prismaService.workspace.findUniqueOrThrow({
         where: {
-          slug: checkSlug.slug,
+          slug: slug,
         },
       });
 
       this.loggerService.log(
-        `Slug checked successfully with value ${checkSlug.slug}`,
+        `Slug checked successfully with value ${slug}`,
         `${this.context} - checkSlug`
       );
       return workspace !== null;
