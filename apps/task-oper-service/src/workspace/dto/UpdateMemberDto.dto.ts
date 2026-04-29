@@ -1,11 +1,10 @@
-
 export enum memberRoles {
   OWNER,
   ADMIN,
   MEMBER,
-  VIEWER
+  VIEWER,
 }
 
 export class UpdateMemberDto {
-    role: memberRoles
+  role: memberRoles;
 }
