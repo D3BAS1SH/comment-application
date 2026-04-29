@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { WorkspaceService } from './workspace.service.js';
 import { LoggerService } from 'src/common/logger/logger.service.js';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto.js';
@@ -9,7 +18,6 @@ import { TransferOwnershipDto } from './dto/TransferOwnershipDto.dto.js';
 
 @Controller('workspaces')
 export class WorkspaceController {
-
   private readonly context: string = WorkspaceController.name;
   constructor(
     private readonly workspaceService: WorkspaceService,
@@ -18,7 +26,10 @@ export class WorkspaceController {
 
   @Get('/')
   async getAllWorkspaces(@UserId() userId: string) {
-    this.loggerService.log(`Getting all workspaces for user: ${userId}`, this.context);
+    this.loggerService.log(
+      `Getting all workspaces for user: ${userId}`,
+      this.context
+    );
     const getAllWorkspacesResponse =
       await this.workspaceService.getAllWorkspaces(userId);
     return getAllWorkspacesResponse;
@@ -47,7 +58,10 @@ export class WorkspaceController {
     @UserId() userId: string,
     @Body() createWorkspace: CreateWorkspaceDto
   ) {
-    this.loggerService.log(`Creating workspace for user: ${userId}`, this.context);
+    this.loggerService.log(
+      `Creating workspace for user: ${userId}`,
+      this.context
+    );
     const createWorkspaceResponse = await this.workspaceService.createWorkspace(
       createWorkspace,
       userId
@@ -60,7 +74,10 @@ export class WorkspaceController {
     @UserId() userId: string,
     @Body() updateWorkspace: UpdateWorkspaceDto
   ) {
-    this.loggerService.log(`Updating workspace for user: ${userId}`, this.context);
+    this.loggerService.log(
+      `Updating workspace for user: ${userId}`,
+      this.context
+    );
     const updateWorkspaceResponse = await this.workspaceService.updateWorkspace(
       userId,
       updateWorkspace
@@ -68,56 +85,53 @@ export class WorkspaceController {
     return updateWorkspaceResponse;
   }
 
-  @Get("/check-slug")
-  async checkSlug(@Query() slug: string){
+  @Get('/check-slug')
+  async checkSlug(@Query() slug: string) {
     this.loggerService.log(`Checking slug: ${slug}`, this.context);
     const checkSlugResponse = await this.workspaceService.checkSlug(slug);
     return checkSlugResponse;
   }
 
-  @Get("/:workspaceId/members")
+  @Get('/:workspaceId/members')
   async getAllMembers(
-    @UserId() userId:string,
-    @Param("workspaceId") workspaceId: string
-  ){}
+    @UserId() userId: string,
+    @Param('workspaceId') workspaceId: string
+  ) {}
 
-  @Get("/:workspaceId/members/me")
+  @Get('/:workspaceId/members/me')
   async getMyMembership(
     @UserId() userId: string,
-    @Param("workspaceId") workspaceId: string
-  ){}
+    @Param('workspaceId') workspaceId: string
+  ) {}
 
-  @Post("/:workspaceId/members")
+  @Post('/:workspaceId/members')
   async addMember(
     @UserId() userId: string,
-    @Param("workspaceId") workspaceId: string
-  ){}
+    @Param('workspaceId') workspaceId: string
+  ) {}
 
-  @Patch("/:workspaceId/members/:memberId")
+  @Patch('/:workspaceId/members/:memberId')
   async updateMember(
     @UserId() userId: string,
-    @Param("workspaceId") workspaceId: string,
-    @Param("memberId") memberId: string,
+    @Param('workspaceId') workspaceId: string,
+    @Param('memberId') memberId: string,
     @Body() updateMemberDto: UpdateMemberDto
-  ){}
+  ) {}
 
-  @Delete("/:workspaceId/members/:memberId")
+  @Delete('/:workspaceId/members/:memberId')
   async removeMember(
     @UserId() userId: string,
-    @Param("workspaceId") workspaceId: string,
-    @Param("memberId") memberId: string,
-  ){}
+    @Param('workspaceId') workspaceId: string,
+    @Param('memberId') memberId: string
+  ) {}
 
-  @Delete("/:workspaceId/members/me")
-  async removeMyself(
-    @UserId() userId: string,
-    @Param() workspaceId: string
-  ){}
+  @Delete('/:workspaceId/members/me')
+  async removeMyself(@UserId() userId: string, @Param() workspaceId: string) {}
 
-  @Post("/:workspaceId/transfer-ownership")
+  @Post('/:workspaceId/transfer-ownership')
   async transferOwnership(
     @UserId() userId: string,
-    @Param("workspaceId") workspaceId: string,
+    @Param('workspaceId') workspaceId: string,
     @Body() transferOwnership: TransferOwnershipDto
-  ){}
+  ) {}
 }

@@ -11,7 +11,6 @@ import { CreateWorkspaceResponse } from './dto/create-workspace.response.dto.js'
 import { WorkspaceDetails } from './dto/workspace-detail.dto.js';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto.js';
 import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
-import { CheckSlugDto } from './dto/check-slug.dto.js';
 
 interface WorkspaceUpdate {
   name?: string;
