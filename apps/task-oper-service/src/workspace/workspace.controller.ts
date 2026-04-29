@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service.js';
 import { LoggerService } from 'src/common/logger/logger.service.js';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto.js';
 import { UserId } from 'src/common/decorators/UserId.decorator.js';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto.js';
-import { CheckSlugDto } from './dto/check-slug.dto.js';
+import { UpdateMemberDto } from './dto/UpdateMemberDto.dto.js';
+import { TransferOwnershipDto } from './dto/TransferOwnershipDto.dto.js';
 
 @Controller('workspaces')
 export class WorkspaceController {
@@ -73,4 +74,50 @@ export class WorkspaceController {
     const checkSlugResponse = await this.workspaceService.checkSlug(slug);
     return checkSlugResponse;
   }
+
+  @Get("/:workspaceId/members")
+  async getAllMembers(
+    @UserId() userId:string,
+    @Param("workspaceId") workspaceId: string
+  ){}
+
+  @Get("/:workspaceId/members/me")
+  async getMyMembership(
+    @UserId() userId: string,
+    @Param("workspaceId") workspaceId: string
+  ){}
+
+  @Post("/:workspaceId/members")
+  async addMember(
+    @UserId() userId: string,
+    @Param("workspaceId") workspaceId: string
+  ){}
+
+  @Patch("/:workspaceId/members/:memberId")
+  async updateMember(
+    @UserId() userId: string,
+    @Param("workspaceId") workspaceId: string,
+    @Param("memberId") memberId: string,
+    @Body() updateMemberDto: UpdateMemberDto
+  ){}
+
+  @Delete("/:workspaceId/members/:memberId")
+  async removeMember(
+    @UserId() userId: string,
+    @Param("workspaceId") workspaceId: string,
+    @Param("memberId") memberId: string,
+  ){}
+
+  @Delete("/:workspaceId/members/me")
+  async removeMyself(
+    @UserId() userId: string,
+    @Param() workspaceId: string
+  ){}
+
+  @Post("/:workspaceId/transfer-ownership")
+  async transferOwnership(
+    @UserId() userId: string,
+    @Param("workspaceId") workspaceId: string,
+    @Body() transferOwnership: TransferOwnershipDto
+  ){}
 }
