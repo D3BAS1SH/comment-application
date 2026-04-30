@@ -1,10 +1,5 @@
-export enum memberRoles {
-  OWNER,
-  ADMIN,
-  MEMBER,
-  VIEWER,
-}
+import { WorkspaceRole } from 'src/prisma/generated/enums.js';
 
 export class UpdateMemberDto {
-  role: memberRoles;
+  role: WorkspaceRole;
 }

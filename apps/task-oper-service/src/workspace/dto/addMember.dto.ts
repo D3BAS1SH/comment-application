@@ -1,7 +1,11 @@
-import { memberRoles } from './UpdateMemberDto.dto.js';
+import { IsEmail, IsNotEmpty } from 'class-validator';
+import { WorkspaceRole } from 'src/prisma/generated/enums.js';
 
 export class AddMemberDto {
-  // Member id
-  userId: string;
-  role: memberRoles;
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  role: WorkspaceRole;
 }
