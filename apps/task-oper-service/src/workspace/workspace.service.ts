@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -11,6 +12,11 @@ import { CreateWorkspaceResponse } from './dto/create-workspace.response.dto.js'
 import { WorkspaceDetails } from './dto/workspace-detail.dto.js';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto.js';
 import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { GetAllMembersResponse } from './dto/get-all-members.dto.js';
+import { GetMembershipResponse } from './dto/GetMyMembershipResponse.dto.js';
+import { AddMemberDto } from './dto/addMember.dto.js';
+import { UpdateMemberDto } from './dto/UpdateMemberDto.dto.js';
+import { TransferOwnershipDto } from './dto/TransferOwnershipDto.dto.js';
 
 interface WorkspaceUpdate {
   name?: string;
@@ -348,6 +354,419 @@ export class WorkspaceService {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - checkSlug`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  // Workspace Member Services
+
+  async getAllMembers(userId: string, workspaceId: string):Promise<GetAllMembersResponse>{
+    try {
+      if(!userId){
+        throw new BadRequestException('User Id is required');
+      }
+      if(!workspaceId){
+        throw new BadRequestException('Workspace Id is required');
+      }
+
+      const workspace = await this.prismaService.workspace.findUniqueOrThrow({
+        where: {
+          id: workspaceId,
+          ownerId: userId,
+        },
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          ownerId: true,
+          slug: true,
+          workspaceMembers: {
+            select: {
+              user: {
+                select: {
+                  firstName: true,
+                  email: true,
+                },
+              },
+            },
+          },
+          owner: {
+            select: {
+              firstName: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      return new GetAllMembersResponse(
+        workspace.id,
+        workspace.name,
+        workspace.createdAt,
+        workspace.ownerId,
+        workspace.slug,
+        workspace.workspaceMembers,
+        workspace.owner
+      );
+      
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - getAllMembers`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  async getMyMembership(userId: string, workspaceId: string):Promise<GetMembershipResponse>{
+    try {
+      if(!userId){
+        throw new BadRequestException('User Id is required');
+      }
+      if(!workspaceId){
+        throw new BadRequestException('Workspace Id is required');
+      }
+
+      const membership = await this.prismaService.workspaceMember.findUniqueOrThrow({
+        where: {
+          workspaceId_userId: {
+            workspaceId: workspaceId,
+            userId: userId,
+          },
+        },
+        select: {
+          userId: true,
+          role: true,
+          user:{
+            select: {
+              email: true,
+            },
+          },
+        },
+      });
+
+      return new GetMembershipResponse(
+        membership.userId,
+        membership.role,
+        membership.user.email,
+      );
+      
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - getMyMembership`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  async addMember(userId: string, workspaceId: string, addMemberDto: AddMemberDto): Promise<GetMembershipResponse>{
+    try {
+      if(!userId){
+        throw new BadRequestException('User Id is required');
+      }
+      if(!workspaceId){
+        throw new BadRequestException('Workspace Id is required');
+      }
+      if(!addMemberDto){
+        throw new BadRequestException('Add Member Dto is required');
+      }
+
+      const memberUser = await this.prismaService.user.findUniqueOrThrow({
+        where:{
+          email: addMemberDto.email,
+        },
+        select:{
+          id: true,
+        },
+      });
+
+      const membership = await this.prismaService.workspaceMember.create({
+        data: {
+          workspaceId: workspaceId,
+          userId: memberUser.id,
+          role: addMemberDto.role,
+        },
+        select: {
+          userId: true,
+          role: true,
+          user: {
+            select: {
+              email: true,
+            }
+          }
+        },
+      });
+
+      return new GetMembershipResponse(
+        membership.userId,
+        membership.role,
+        membership.user.email,
+      );
+
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - addMember`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  async updateMember(userId: string, workspaceId: string, memberId: string, updateMemberObject: UpdateMemberDto): Promise<GetMembershipResponse> {
+    try {
+      if(!userId){
+        throw new BadRequestException('User Id is required');
+      }
+      if(!workspaceId){
+        throw new BadRequestException('Workspace Id is required');
+      }
+      if(!memberId){
+        throw new BadRequestException('Member Id is required');
+      }
+      if(!updateMemberObject){
+        throw new BadRequestException('Update Member Dto is required');
+      }
+
+      const userPrivilege = await this.prismaService.workspaceMember.findUniqueOrThrow({
+        where: {
+          workspaceId_userId: {
+            workspaceId: workspaceId,
+            userId: userId,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (userPrivilege.role !== 'OWNER') {
+        throw new BadRequestException('You do not have permission to update member');
+      }
+
+      const membership = await this.prismaService.workspaceMember.update({
+        where: {
+          workspaceId_userId: {
+            workspaceId: workspaceId,
+            userId: memberId,
+          },
+        },
+        data: {
+          role: updateMemberObject.role,
+        },
+        select: {
+          userId: true,
+          role: true,
+          user: {
+            select: {
+              email: true,
+            }
+          }
+        },
+      });
+
+      return new GetMembershipResponse(
+        membership.userId,
+        membership.role,
+        membership.user.email,
+      );
+      
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - updateMember`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  async removeMember(userId: string, workspaceId: string, memberId: string): Promise<void> {
+    try {
+
+      if(!userId){
+        throw new BadRequestException('User Id is required');
+      }
+      if(!workspaceId){
+        throw new BadRequestException('Workspace Id is required');
+      }
+      if(!memberId){
+        throw new BadRequestException('Member Id is required');
+      }
+      
+      const isOwnerMember = await this.prismaService.workspaceMember.findUniqueOrThrow({
+        where: {
+          workspaceId_userId: {
+            workspaceId,
+            userId
+          }
+        },
+        select: {
+          role: true
+        }
+      })
+
+      if(isOwnerMember.role === "OWNER" || isOwnerMember.role === "ADMIN") {
+        throw new BadRequestException('Can not remove user with higher privilege');
+      }
+
+      await this.prismaService.workspaceMember.delete({
+        where: {
+          workspaceId_userId:{
+            userId,
+            workspaceId
+          }
+        }
+      })
+      
+      this.loggerService.log('Member removed',this.context);
+
+      return;
+
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - updateMember`
+      );
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(
+            'Workspace not found or you do not have permission to update it'
+          );
+        }
+      }
+      throw new InternalServerErrorException(
+        error instanceof Error ? error.message : 'Internal Server Error'
+      );
+    }
+  }
+
+  async transferOwnerShip(callerId: string, workspaceId: string, transferOwnerShipTo: TransferOwnershipDto): Promise<GetMembershipResponse> {
+    try {
+
+      if(!callerId){
+        throw new BadRequestException("Caller Id missing");
+      }
+      if(!workspaceId){
+        throw new BadRequestException("Workspace Id is mandatory");
+      }
+      if(!transferOwnerShipTo){
+        throw new BadRequestException("No further information to transfer ownership");
+      }
+
+      const callerUser = await this.prismaService.workspaceMember.findFirstOrThrow(
+        {
+          where: {
+            userId: callerId
+          },
+          select: {
+            role: true
+          }
+        }
+      );
+
+      if(callerUser.role !== "OWNER") {
+        throw new ForbiddenException("You do not have the authority to transfer Ownership");
+      }
+
+      if(transferOwnerShipTo.fromRole === "OWNER"){
+        throw new ForbiddenException("User is already an Owner you can not transfer to someone with Owner access");
+      }
+
+      const updateCaller = await this.prismaService.workspaceMember.update({
+        where: {
+          workspaceId_userId:{
+            workspaceId: workspaceId,
+            userId: callerId
+          },
+          role: "OWNER"
+        },
+        data: {
+          role: "MEMBER"
+        }
+      });
+
+      if(!updateCaller || updateCaller.role === "OWNER"){
+        throw new InternalServerErrorException("Due to server error update can not be completed");
+      }
+
+      const updateUser = await this.prismaService.workspaceMember.update({
+        where: {
+          workspaceId_userId:{
+            workspaceId: workspaceId,
+            userId: transferOwnerShipTo.toUserId
+          },
+          role: "MEMBER"
+        },
+        data: {
+          role: "OWNER"
+        },
+        select: {
+          role: true,
+          userId: true,
+          user: {
+            select: {
+              email: true
+            }
+          }
+        }
+      })
+
+      if(!updateUser || updateUser.role !== "OWNER") {
+        throw new InternalServerErrorException("Due to server error the update couldn not be completed");
+      }
+
+      return new GetMembershipResponse(updateUser.userId,updateUser.role,updateUser.user.email);
+       
+    } catch (error:unknown) {
+      this.loggerService.error(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        `${this.context} - updateMember`
       );
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
