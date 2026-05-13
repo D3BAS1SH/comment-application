@@ -1,7 +1,7 @@
-import { memberRoles } from './UpdateMemberDto.dto.js';
+import { WorkspaceRole } from 'src/prisma/generated/enums.js';
 
 export class TransferOwnershipDto {
-  userId: string;
-  fromRole: memberRoles;
-  toRole: memberRoles;
+  toUserId: string;
+  fromRole: WorkspaceRole;
+  toRole: WorkspaceRole;
 }
