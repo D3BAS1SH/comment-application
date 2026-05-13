@@ -370,12 +370,15 @@ export class WorkspaceService {
 
   // Workspace Member Services
 
-  async getAllMembers(userId: string, workspaceId: string):Promise<GetAllMembersResponse>{
+  async getAllMembers(
+    userId: string,
+    workspaceId: string
+  ): Promise<GetAllMembersResponse> {
     try {
-      if(!userId){
+      if (!userId) {
         throw new BadRequestException('User Id is required');
       }
-      if(!workspaceId){
+      if (!workspaceId) {
         throw new BadRequestException('Workspace Id is required');
       }
 
@@ -418,8 +421,7 @@ export class WorkspaceService {
         workspace.workspaceMembers,
         workspace.owner
       );
-      
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - getAllMembers`
@@ -437,40 +439,43 @@ export class WorkspaceService {
     }
   }
 
-  async getMyMembership(userId: string, workspaceId: string):Promise<GetMembershipResponse>{
+  async getMyMembership(
+    userId: string,
+    workspaceId: string
+  ): Promise<GetMembershipResponse> {
     try {
-      if(!userId){
+      if (!userId) {
         throw new BadRequestException('User Id is required');
       }
-      if(!workspaceId){
+      if (!workspaceId) {
         throw new BadRequestException('Workspace Id is required');
       }
 
-      const membership = await this.prismaService.workspaceMember.findUniqueOrThrow({
-        where: {
-          workspaceId_userId: {
-            workspaceId: workspaceId,
-            userId: userId,
-          },
-        },
-        select: {
-          userId: true,
-          role: true,
-          user:{
-            select: {
-              email: true,
+      const membership =
+        await this.prismaService.workspaceMember.findUniqueOrThrow({
+          where: {
+            workspaceId_userId: {
+              workspaceId: workspaceId,
+              userId: userId,
             },
           },
-        },
-      });
+          select: {
+            userId: true,
+            role: true,
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        });
 
       return new GetMembershipResponse(
         membership.userId,
         membership.role,
-        membership.user.email,
+        membership.user.email
       );
-      
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - getMyMembership`
@@ -488,23 +493,27 @@ export class WorkspaceService {
     }
   }
 
-  async addMember(userId: string, workspaceId: string, addMemberDto: AddMemberDto): Promise<GetMembershipResponse>{
+  async addMember(
+    userId: string,
+    workspaceId: string,
+    addMemberDto: AddMemberDto
+  ): Promise<GetMembershipResponse> {
     try {
-      if(!userId){
+      if (!userId) {
         throw new BadRequestException('User Id is required');
       }
-      if(!workspaceId){
+      if (!workspaceId) {
         throw new BadRequestException('Workspace Id is required');
       }
-      if(!addMemberDto){
+      if (!addMemberDto) {
         throw new BadRequestException('Add Member Dto is required');
       }
 
       const memberUser = await this.prismaService.user.findUniqueOrThrow({
-        where:{
+        where: {
           email: addMemberDto.email,
         },
-        select:{
+        select: {
           id: true,
         },
       });
@@ -521,18 +530,17 @@ export class WorkspaceService {
           user: {
             select: {
               email: true,
-            }
-          }
+            },
+          },
         },
       });
 
       return new GetMembershipResponse(
         membership.userId,
         membership.role,
-        membership.user.email,
+        membership.user.email
       );
-
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - addMember`
@@ -550,35 +558,43 @@ export class WorkspaceService {
     }
   }
 
-  async updateMember(userId: string, workspaceId: string, memberId: string, updateMemberObject: UpdateMemberDto): Promise<GetMembershipResponse> {
+  async updateMember(
+    userId: string,
+    workspaceId: string,
+    memberId: string,
+    updateMemberObject: UpdateMemberDto
+  ): Promise<GetMembershipResponse> {
     try {
-      if(!userId){
+      if (!userId) {
         throw new BadRequestException('User Id is required');
       }
-      if(!workspaceId){
+      if (!workspaceId) {
         throw new BadRequestException('Workspace Id is required');
       }
-      if(!memberId){
+      if (!memberId) {
         throw new BadRequestException('Member Id is required');
       }
-      if(!updateMemberObject){
+      if (!updateMemberObject) {
         throw new BadRequestException('Update Member Dto is required');
       }
 
-      const userPrivilege = await this.prismaService.workspaceMember.findUniqueOrThrow({
-        where: {
-          workspaceId_userId: {
-            workspaceId: workspaceId,
-            userId: userId,
+      const userPrivilege =
+        await this.prismaService.workspaceMember.findUniqueOrThrow({
+          where: {
+            workspaceId_userId: {
+              workspaceId: workspaceId,
+              userId: userId,
+            },
           },
-        },
-        select: {
-          role: true,
-        },
-      });
+          select: {
+            role: true,
+          },
+        });
 
       if (userPrivilege.role !== 'OWNER') {
-        throw new BadRequestException('You do not have permission to update member');
+        throw new BadRequestException(
+          'You do not have permission to update member'
+        );
       }
 
       const membership = await this.prismaService.workspaceMember.update({
@@ -597,18 +613,17 @@ export class WorkspaceService {
           user: {
             select: {
               email: true,
-            }
-          }
+            },
+          },
         },
       });
 
       return new GetMembershipResponse(
         membership.userId,
         membership.role,
-        membership.user.email,
+        membership.user.email
       );
-      
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - updateMember`
@@ -626,49 +641,54 @@ export class WorkspaceService {
     }
   }
 
-  async removeMember(userId: string, workspaceId: string, memberId: string): Promise<void> {
+  async removeMember(
+    userId: string,
+    workspaceId: string,
+    memberId: string
+  ): Promise<void> {
     try {
-
-      if(!userId){
+      if (!userId) {
         throw new BadRequestException('User Id is required');
       }
-      if(!workspaceId){
+      if (!workspaceId) {
         throw new BadRequestException('Workspace Id is required');
       }
-      if(!memberId){
+      if (!memberId) {
         throw new BadRequestException('Member Id is required');
       }
-      
-      const isOwnerMember = await this.prismaService.workspaceMember.findUniqueOrThrow({
-        where: {
-          workspaceId_userId: {
-            workspaceId,
-            userId
-          }
-        },
-        select: {
-          role: true
-        }
-      })
 
-      if(isOwnerMember.role === "OWNER" || isOwnerMember.role === "ADMIN") {
-        throw new BadRequestException('Can not remove user with higher privilege');
+      const isOwnerMember =
+        await this.prismaService.workspaceMember.findUniqueOrThrow({
+          where: {
+            workspaceId_userId: {
+              workspaceId,
+              userId,
+            },
+          },
+          select: {
+            role: true,
+          },
+        });
+
+      if (isOwnerMember.role === 'OWNER' || isOwnerMember.role === 'ADMIN') {
+        throw new BadRequestException(
+          'Can not remove user with higher privilege'
+        );
       }
 
       await this.prismaService.workspaceMember.delete({
         where: {
-          workspaceId_userId:{
+          workspaceId_userId: {
             userId,
-            workspaceId
-          }
-        }
-      })
-      
-      this.loggerService.log('Member removed',this.context);
+            workspaceId,
+          },
+        },
+      });
+
+      this.loggerService.log('Member removed', this.context);
 
       return;
-
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - updateMember`
@@ -686,84 +706,99 @@ export class WorkspaceService {
     }
   }
 
-  async transferOwnerShip(callerId: string, workspaceId: string, transferOwnerShipTo: TransferOwnershipDto): Promise<GetMembershipResponse> {
+  async transferOwnerShip(
+    callerId: string,
+    workspaceId: string,
+    transferOwnerShipTo: TransferOwnershipDto
+  ): Promise<GetMembershipResponse> {
     try {
+      if (!callerId) {
+        throw new BadRequestException('Caller Id missing');
+      }
+      if (!workspaceId) {
+        throw new BadRequestException('Workspace Id is mandatory');
+      }
+      if (!transferOwnerShipTo) {
+        throw new BadRequestException(
+          'No further information to transfer ownership'
+        );
+      }
 
-      if(!callerId){
-        throw new BadRequestException("Caller Id missing");
-      }
-      if(!workspaceId){
-        throw new BadRequestException("Workspace Id is mandatory");
-      }
-      if(!transferOwnerShipTo){
-        throw new BadRequestException("No further information to transfer ownership");
-      }
-
-      const callerUser = await this.prismaService.workspaceMember.findFirstOrThrow(
-        {
+      const callerUser =
+        await this.prismaService.workspaceMember.findFirstOrThrow({
           where: {
-            userId: callerId
+            userId: callerId,
           },
           select: {
-            role: true
-          }
-        }
-      );
+            role: true,
+          },
+        });
 
-      if(callerUser.role !== "OWNER") {
-        throw new ForbiddenException("You do not have the authority to transfer Ownership");
+      if (callerUser.role !== 'OWNER') {
+        throw new ForbiddenException(
+          'You do not have the authority to transfer Ownership'
+        );
       }
 
-      if(transferOwnerShipTo.fromRole === "OWNER"){
-        throw new ForbiddenException("User is already an Owner you can not transfer to someone with Owner access");
+      if (transferOwnerShipTo.fromRole === 'OWNER') {
+        throw new ForbiddenException(
+          'User is already an Owner you can not transfer to someone with Owner access'
+        );
       }
 
       const updateCaller = await this.prismaService.workspaceMember.update({
         where: {
-          workspaceId_userId:{
+          workspaceId_userId: {
             workspaceId: workspaceId,
-            userId: callerId
+            userId: callerId,
           },
-          role: "OWNER"
+          role: 'OWNER',
         },
         data: {
-          role: "MEMBER"
-        }
+          role: 'MEMBER',
+        },
       });
 
-      if(!updateCaller || updateCaller.role === "OWNER"){
-        throw new InternalServerErrorException("Due to server error update can not be completed");
+      if (!updateCaller || updateCaller.role === 'OWNER') {
+        throw new InternalServerErrorException(
+          'Due to server error update can not be completed'
+        );
       }
 
       const updateUser = await this.prismaService.workspaceMember.update({
         where: {
-          workspaceId_userId:{
+          workspaceId_userId: {
             workspaceId: workspaceId,
-            userId: transferOwnerShipTo.toUserId
+            userId: transferOwnerShipTo.toUserId,
           },
-          role: "MEMBER"
+          role: 'MEMBER',
         },
         data: {
-          role: "OWNER"
+          role: 'OWNER',
         },
         select: {
           role: true,
           userId: true,
           user: {
             select: {
-              email: true
-            }
-          }
-        }
-      })
+              email: true,
+            },
+          },
+        },
+      });
 
-      if(!updateUser || updateUser.role !== "OWNER") {
-        throw new InternalServerErrorException("Due to server error the update couldn not be completed");
+      if (!updateUser || updateUser.role !== 'OWNER') {
+        throw new InternalServerErrorException(
+          'Due to server error the update couldn not be completed'
+        );
       }
 
-      return new GetMembershipResponse(updateUser.userId,updateUser.role,updateUser.user.email);
-       
-    } catch (error:unknown) {
+      return new GetMembershipResponse(
+        updateUser.userId,
+        updateUser.role,
+        updateUser.user.email
+      );
+    } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - updateMember`

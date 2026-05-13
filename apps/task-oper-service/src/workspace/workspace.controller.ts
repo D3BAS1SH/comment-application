@@ -104,8 +104,10 @@ export class WorkspaceController {
       `Getting all members for workspace: ${workspaceId}`,
       this.context
     );
-    const getAllMembersResponse =
-      await this.workspaceService.getAllMembers(userId, workspaceId);
+    const getAllMembersResponse = await this.workspaceService.getAllMembers(
+      userId,
+      workspaceId
+    );
     return getAllMembersResponse;
   }
 
@@ -118,8 +120,10 @@ export class WorkspaceController {
       `Getting my membership for workspace: ${workspaceId}`,
       this.context
     );
-    const getMyMembershipResponse =
-      await this.workspaceService.getMyMembership(userId, workspaceId);
+    const getMyMembershipResponse = await this.workspaceService.getMyMembership(
+      userId,
+      workspaceId
+    );
     return getMyMembershipResponse;
   }
 
@@ -152,8 +156,12 @@ export class WorkspaceController {
       `Updating member in workspace: ${workspaceId}`,
       this.context
     );
-    const updateMemberResponse =
-      await this.workspaceService.updateMember(userId, workspaceId, memberId, updateMemberDto);
+    const updateMemberResponse = await this.workspaceService.updateMember(
+      userId,
+      workspaceId,
+      memberId,
+      updateMemberDto
+    );
     return updateMemberResponse;
   }
 
@@ -168,7 +176,7 @@ export class WorkspaceController {
       this.context
     );
     await this.workspaceService.removeMember(userId, workspaceId, memberId);
-    return "Member Removed";
+    return 'Member Removed';
   }
 
   // @Delete('/:workspaceId/members/me')
@@ -184,7 +192,11 @@ export class WorkspaceController {
       `Transfering ownership in workspace: ${workspaceId}`,
       this.context
     );
-    const updatedUserResponse = await this.workspaceService.transferOwnerShip(userId,workspaceId,transferOwnership);
+    const updatedUserResponse = await this.workspaceService.transferOwnerShip(
+      userId,
+      workspaceId,
+      transferOwnership
+    );
     return updatedUserResponse;
   }
 }
