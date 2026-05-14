@@ -42,7 +42,7 @@ async function bootstrap() {
     .setTitle('TASK-OPER-SERVICE')
     .setDescription(
       'Task Oper Service — handles workspace management, membership, and ownership operations. ' +
-      'All endpoints require a valid Bearer JWT token in the Authorization header.'
+        'All endpoints require a valid Bearer JWT token in the Authorization header.'
     )
     .setVersion('1.2')
     .addTag('Workspaces', 'Workspace CRUD and membership management')

@@ -73,7 +73,9 @@ export class WorkspaceController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-  async getAllWorkspaces(@UserId() userId: string): Promise<ApiResponse<unknown>> {
+  async getAllWorkspaces(
+    @UserId() userId: string
+  ): Promise<ApiResponse<unknown>> {
     this.loggerService.log(
       `Getting all workspaces for user: ${userId}`,
       this.context
@@ -220,7 +222,11 @@ export class WorkspaceController {
       createWorkspace,
       userId
     );
-    return ApiResponse.success(data, 'Workspace created successfully', HttpStatus.CREATED);
+    return ApiResponse.success(
+      data,
+      'Workspace created successfully',
+      HttpStatus.CREATED
+    );
   }
 
   @Patch('/update')
@@ -289,7 +295,7 @@ export class WorkspaceController {
   @ApiOperation({
     summary: 'Get all members of a workspace',
     description:
-      'Returns the full member list for the specified workspace, including each member\'s user details and role.',
+      "Returns the full member list for the specified workspace, including each member's user details and role.",
   })
   @ApiParam({
     name: 'workspaceId',
@@ -346,7 +352,7 @@ export class WorkspaceController {
   @Get('/:workspaceId/members/me')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Get the current user\'s membership in a workspace',
+    summary: "Get the current user's membership in a workspace",
     description:
       'Returns the role and membership details of the authenticated user within the specified workspace.',
   })
@@ -458,13 +464,17 @@ export class WorkspaceController {
       workspaceId,
       addMemberDto
     );
-    return ApiResponse.success(data, 'Member added successfully', HttpStatus.CREATED);
+    return ApiResponse.success(
+      data,
+      'Member added successfully',
+      HttpStatus.CREATED
+    );
   }
 
   @Patch('/:workspaceId/members/:memberId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Update a member\'s role in a workspace',
+    summary: "Update a member's role in a workspace",
     description:
       'Changes the role of an existing workspace member. Only the workspace owner or an admin can update roles.',
   })
@@ -486,7 +496,11 @@ export class WorkspaceController {
         success: true,
         statusCode: 200,
         message: 'Member updated successfully',
-        data: { userId: 'usr_01j...', email: 'jane@example.com', role: 'ADMIN' },
+        data: {
+          userId: 'usr_01j...',
+          email: 'jane@example.com',
+          role: 'ADMIN',
+        },
         timestamp: '2026-05-14T08:00:00.000Z',
       },
     },
@@ -613,7 +627,8 @@ export class WorkspaceController {
   })
   @SwaggerApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid request body (missing toUserId, fromRole, or toRole).',
+    description:
+      'Invalid request body (missing toUserId, fromRole, or toRole).',
   })
   @SwaggerApiResponse({
     status: HttpStatus.FORBIDDEN,
