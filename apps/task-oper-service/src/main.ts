@@ -41,10 +41,22 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('TASK-OPER-SERVICE')
     .setDescription(
-      'This is the Task Oper service handle the task operations and managements'
+      'Task Oper Service — handles workspace management, membership, and ownership operations. ' +
+      'All endpoints require a valid Bearer JWT token in the Authorization header.'
     )
     .setVersion('1.2')
-    .addTag('Task Oper')
+    .addTag('Workspaces', 'Workspace CRUD and membership management')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter your JWT access token',
+        in: 'header',
+      },
+      'access-token' // <-- security scheme name, referenced by @ApiBearerAuth('access-token') on controllers
+    )
     .build();
 
   const doucmentFactory = () =>
