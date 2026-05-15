@@ -6,6 +6,6 @@ import { PrismaModule } from 'src/prisma/prisma.module.js';
 @Module({
   imports: [PrismaModule],
   controllers: [EpicController],
-  providers: [EpicService]
+  providers: [EpicService],
 })
 export class EpicModule {}

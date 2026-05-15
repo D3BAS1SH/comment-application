@@ -4,6 +4,6 @@ import { SprintController } from './sprint.controller.js';
 
 @Module({
   providers: [SprintService],
-  controllers: [SprintController]
+  controllers: [SprintController],
 })
 export class SprintModule {}
