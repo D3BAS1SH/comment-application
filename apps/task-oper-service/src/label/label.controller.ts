@@ -85,8 +85,16 @@ export class LabelController {
     @Body() createLabel: CreateLabelDto
   ): Promise<ApiResponse<LabelResponseDto>> {
     this.loggerService.log(`Create Label Called By ${callerId}`, this.context);
-    const createdLabel = await this.labelService.createLabel(callerId, projectId, createLabel);
-    return ApiResponse.success(createdLabel, 'Label created successfully', HttpStatus.CREATED);
+    const createdLabel = await this.labelService.createLabel(
+      callerId,
+      projectId,
+      createLabel
+    );
+    return ApiResponse.success(
+      createdLabel,
+      'Label created successfully',
+      HttpStatus.CREATED
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -143,7 +151,10 @@ export class LabelController {
     @UserId() callerId: string,
     @Param('projectId') projectId: string
   ): Promise<ApiResponse<LabelResponseDto[]>> {
-    this.loggerService.log(`Get All Labels Called By ${callerId}`, this.context);
+    this.loggerService.log(
+      `Get All Labels Called By ${callerId}`,
+      this.context
+    );
     const allLabel = await this.labelService.getAllLabel(callerId, projectId);
     return ApiResponse.success(allLabel, 'All labels fetched');
   }
@@ -189,7 +200,8 @@ export class LabelController {
   })
   @SwaggerApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'A label with the updated name already exists in this project.',
+    description:
+      'A label with the updated name already exists in this project.',
   })
   @SwaggerApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -210,7 +222,12 @@ export class LabelController {
     @Body() updateLabel: UpdateLabelDto
   ): Promise<ApiResponse<LabelResponseDto>> {
     this.loggerService.log(`Update Label Called By ${callerId}`, this.context);
-    const updatedLabel = await this.labelService.updateLabel(callerId, projectId, labelId, updateLabel);
+    const updatedLabel = await this.labelService.updateLabel(
+      callerId,
+      projectId,
+      labelId,
+      updateLabel
+    );
     return ApiResponse.success(updatedLabel, 'Label updated successfully');
   }
 
