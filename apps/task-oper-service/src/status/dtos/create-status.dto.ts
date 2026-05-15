@@ -30,7 +30,8 @@ export class CreateStatusDto {
   color: string;
 
   @ApiProperty({
-    description: 'Numeric position used to order statuses within a project (must be ≥ 0)',
+    description:
+      'Numeric position used to order statuses within a project (must be ≥ 0)',
     example: 1,
   })
   @IsNumber()

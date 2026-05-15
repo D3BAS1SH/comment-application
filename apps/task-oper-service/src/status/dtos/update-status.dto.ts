@@ -29,7 +29,8 @@ export class UpdateStatusDto {
   color?: string;
 
   @ApiPropertyOptional({
-    description: 'Updated numeric position to reorder this status (must be ≥ 0)',
+    description:
+      'Updated numeric position to reorder this status (must be ≥ 0)',
     example: 2,
   })
   @IsNumber()

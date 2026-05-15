@@ -32,7 +32,8 @@ export class StatusResponseDto {
   position: number;
 
   @ApiProperty({
-    description: 'Indicates whether this status represents a completed/done state',
+    description:
+      'Indicates whether this status represents a completed/done state',
     example: false,
   })
   isDone: boolean;
