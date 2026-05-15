@@ -15,6 +15,9 @@ import { BullModule } from '@nestjs/bullmq';
 import { UserIdGuard } from './common/guards/user-id.guard.js';
 import { RedisModule } from './redis/redis.module.js';
 import { WorkspaceModule } from './workspace/workspace.module.js';
+import { ProjectModule } from './project/project.module.js';
+import { StatusModule } from './status/status.module.js';
+import { LabelModule } from './label/label.module.js';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import { WorkspaceModule } from './workspace/workspace.module.js';
     PrismaModule,
     UserSyncModule,
     WorkspaceModule,
+    ProjectModule,
+    StatusModule,
+    LabelModule,
   ],
   controllers: [AppController],
   providers: [
