@@ -11,6 +11,8 @@ import { UserId } from 'src/common/decorators/UserId.decorator.js';
 import { CreateEpicDto } from './dtos/create-epic.dto.js';
 import { LoggerService } from 'src/common/logger/logger.service.js';
 import { EpicService } from './epic.service.js';
+import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { EpicResponseDto } from './dtos/epic-respones.dto.js';
 
 @Controller('projects/:projectId/epics')
 export class EpicController {
@@ -25,9 +27,11 @@ export class EpicController {
   async createEpic(
     @UserId() callerId: string,
     @Param('projectId') projectId: string,
-    @Body() creatEpic: CreateEpicDto
-  ) {
+    @Body() createEpicObject: CreateEpicDto
+  ): Promise<ApiResponse<EpicResponseDto>> {
     this.loggerService.log(`Create Epic by caller: ${callerId}`, this.context);
+    const createdEpic = await this.epicService.createEpic(callerId,projectId,createEpicObject);
+    return ApiResponse.success(createdEpic,'Epic Created successfully');
   }
 
   @Get()
