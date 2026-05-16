@@ -18,6 +18,9 @@ import { WorkspaceModule } from './workspace/workspace.module.js';
 import { ProjectModule } from './project/project.module.js';
 import { StatusModule } from './status/status.module.js';
 import { LabelModule } from './label/label.module.js';
+import { EpicModule } from './epic/epic.module.js';
+import { SprintModule } from './sprint/sprint.module.js';
+import { IssueModule } from './issue/issue.module.js';
 
 @Module({
   imports: [
@@ -45,6 +48,9 @@ import { LabelModule } from './label/label.module.js';
     ProjectModule,
     StatusModule,
     LabelModule,
+    EpicModule,
+    SprintModule,
+    IssueModule,
   ],
   controllers: [AppController],
   providers: [
