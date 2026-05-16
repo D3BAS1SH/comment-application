@@ -11,6 +11,8 @@ import { ReorderIssueDto } from './dtos/reorder-issue.dto.js';
 import { MoveSprintDto } from './dtos/move-sprint.dto.js';
 import { IssueResponseDto } from './dtos/issue-response.dto.js';
 import { IssueDetailResponseDto, SubTaskDto } from './dtos/issue-detail-response.dto.js';
+import { IssueCommentListResponseDto } from './dtos/issue-comment-list-response.dto.js';
+import { SubTaskListResponseDto } from './dtos/subtask-list-response.dto.js';
 import { IssueListResponseDto } from './dtos/issue-list-response.dto.js';
 import { IssueActivityListResponseDto } from './dtos/issue-activity-list-response.dto.js';
 
@@ -83,13 +85,6 @@ export class IssueService {
 				priority: st.priority,
 				status: st.status,
 				assignee: st.assignee
-			})) || [],
-			comments: issue.comments?.map((c: any) => ({
-				id: c.id,
-				body: c.body,
-				author: c.author,
-				createdAt: c.createdAt,
-				updatedAt: c.updatedAt
 			})) || []
 		});
 	}
@@ -121,12 +116,6 @@ export class IssueService {
 						status: { select: { id: true, name: true, color: true } },
 						assignee: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } }
 					}
-				},
-				comments: {
-					include: {
-						author: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } }
-					},
-					orderBy: { createdAt: 'desc' }
 				}
 			}
 		});
@@ -626,7 +615,7 @@ export class IssueService {
 		}
 	}
 
-	async getSubtasks(callerId: string, projectId: string, issueId: string): Promise<{ subTasks: SubTaskDto[]; total: number }> {
+	async getSubtasks(callerId: string, projectId: string, issueId: string): Promise<SubTaskListResponseDto> {
 		try {
 			await this.validateProjectAccess(callerId, projectId, false);
 
@@ -646,7 +635,7 @@ export class IssueService {
 				}
 			});
 
-			return {
+			return new SubTaskListResponseDto({
 				subTasks: subTasks.map(st => ({
 					id: st.id,
 					title: st.title,
@@ -662,7 +651,7 @@ export class IssueService {
 					} : undefined
 				})),
 				total: subTasks.length
-			};
+			});
 
 		} catch (error: unknown) {
 			this.loggerService.error(
@@ -695,6 +684,56 @@ export class IssueService {
 			this.loggerService.error(
 				error instanceof Error ? error.message : 'Internal Server Error',
 				`${this.context} - Get Activities`
+			);
+			if (error instanceof HttpException) throw error;
+			if (error instanceof PrismaClientKnownRequestError) throw error;
+			throw new InternalServerErrorException(
+				error instanceof Error ? error.message : 'Internal Server Error'
+			);
+		}
+	}
+
+	async getIssueComments(callerId: string, projectId: string, issueId: string): Promise<IssueCommentListResponseDto> {
+		try {
+			await this.validateProjectAccess(callerId, projectId, false);
+
+			const issue = await this.prismaService.issue.findUnique({
+				where: { id: issueId, projectId }
+			});
+
+			if (!issue) {
+				throw new NotFoundException('Issue not found');
+			}
+
+			const comments = await this.prismaService.comment.findMany({
+				where: { issueId },
+				include: {
+					author: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } }
+				},
+				orderBy: { createdAt: 'desc' }
+			});
+
+			return new IssueCommentListResponseDto({
+				comments: comments.map(c => ({
+					id: c.id,
+					body: c.body,
+					author: {
+						id: c.author.id,
+						firstName: c.author.firstName,
+						lastName: c.author.lastName,
+						email: c.author.email,
+						avatar: c.author.avatar ?? undefined
+					},
+					createdAt: c.createdAt,
+					updatedAt: c.updatedAt
+				})),
+				total: comments.length
+			});
+
+		} catch (error: unknown) {
+			this.loggerService.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				`${this.context} - Get Issue Comments`
 			);
 			if (error instanceof HttpException) throw error;
 			if (error instanceof PrismaClientKnownRequestError) throw error;

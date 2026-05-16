@@ -10,9 +10,11 @@ import { MoveSprintDto } from './dtos/move-sprint.dto.js';
 import { ApiResponse } from 'src/common/dto/api-response.dto.js';
 import { IssuePriority } from 'src/prisma/generated/enums.js';
 import { IssueResponseDto } from './dtos/issue-response.dto.js';
-import { IssueDetailResponseDto, SubTaskDto } from './dtos/issue-detail-response.dto.js';
+import { IssueDetailResponseDto, SubTaskDto, IssueCommentDto } from './dtos/issue-detail-response.dto.js';
 import { IssueListResponseDto } from './dtos/issue-list-response.dto.js';
 import { IssueActivityListResponseDto } from './dtos/issue-activity-list-response.dto.js';
+import { IssueCommentListResponseDto } from './dtos/issue-comment-list-response.dto.js';
+import { SubTaskListResponseDto } from './dtos/subtask-list-response.dto.js';
 
 @ApiTags('Issues')
 @Controller('projects/:projectId/issues')
@@ -513,9 +515,63 @@ export class IssueController {
 		@UserId() callerId: string,
 		@Param('projectId') projectId: string,
 		@Param('issueId') issueId: string
-	): Promise<ApiResponse<{ subTasks: SubTaskDto[]; total: number }>> {
+	): Promise<ApiResponse<SubTaskListResponseDto>> {
 		this.loggerService.log(`List all subtask Issue Called By ${callerId}`, this.context);
 		const result = await this.issueService.getSubtasks(callerId, projectId, issueId);
 		return ApiResponse.success(result, 'Issue subtasks retrieved successfully', HttpStatus.OK);
+	}
+
+	// ---------------------------------------------------------------------------
+	// GET /projects/:projectId/issues/:issueId/comments
+	// ---------------------------------------------------------------------------
+
+	@Get(':issueId/comments')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'List all comments of an issue',
+		description: 'Retrieves all comments associated with the specified issue, including author details.'
+	})
+	@ApiParam({ name: 'projectId', description: 'The unique identifier of the project.' })
+	@ApiParam({ name: 'issueId', description: 'The unique identifier of the issue.' })
+	@SwaggerApiResponse({
+		status: HttpStatus.OK,
+		description: 'Issue comments retrieved successfully.',
+		schema: {
+			example: {
+				success: true,
+				statusCode: 200,
+				message: 'Issue comments retrieved successfully',
+				data: {
+					comments: [
+						{
+							id: 'c1b2c3d4-e5f6-7890-abcd-ef1234567890',
+							body: 'This is a test comment.',
+							author: {
+								id: 'u1b2c3d4',
+								firstName: 'John',
+								lastName: 'Doe',
+								email: 'john@example.com'
+							},
+							createdAt: '2026-05-15T08:00:00.000Z',
+							updatedAt: '2026-05-15T08:00:00.000Z'
+						}
+					],
+					totalCount: 1
+				},
+				timestamp: '2026-05-15T08:00:00.000Z',
+			}
+		}
+	})
+	@SwaggerApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Issue or Project not found.' })
+	@SwaggerApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Caller is not a member of this workspace.' })
+	@SwaggerApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Missing or invalid authentication token.' })
+	async getIssueComments(
+		@UserId() callerId: string,
+		@Param('projectId') projectId: string,
+		@Param('issueId') issueId: string
+	): Promise<ApiResponse<IssueCommentListResponseDto>> {
+		this.loggerService.log(`List all comments of Issue Called By ${callerId}`, this.context);
+		const result = await this.issueService.getIssueComments(callerId, projectId, issueId);
+		return ApiResponse.success(result, 'Issue comments retrieved successfully', HttpStatus.OK);
 	}
 }

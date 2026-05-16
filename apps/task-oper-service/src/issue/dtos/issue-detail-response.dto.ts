@@ -43,9 +43,6 @@ export class IssueDetailResponseDto extends IssueResponseDto {
   @ApiProperty({ type: () => [SubTaskDto] })
   subTasks: SubTaskDto[];
 
-  @ApiProperty({ type: () => [IssueCommentDto] })
-  comments: IssueCommentDto[];
-
   constructor(partial: Partial<IssueDetailResponseDto>) {
     super(partial);
     Object.assign(this, partial);
