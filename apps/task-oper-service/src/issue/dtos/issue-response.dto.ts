@@ -11,6 +11,9 @@ export class SimpleUserDto {
   @ApiProperty()
   lastName: string;
 
+  @ApiProperty()
+  email: string;
+
   @ApiPropertyOptional()
   avatar?: string;
 }

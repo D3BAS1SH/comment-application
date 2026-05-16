@@ -3,7 +3,7 @@ import { IssueActivityResponseDto } from './issue-activity-response.dto.js';
 
 export class IssueActivityListResponseDto {
   @ApiProperty({ type: [IssueActivityResponseDto] })
-  data: IssueActivityResponseDto[];
+  activities: IssueActivityResponseDto[];
 
   @ApiProperty()
   total: number;
