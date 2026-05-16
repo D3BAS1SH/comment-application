@@ -163,6 +163,7 @@ export class EpicService {
         `${this.context} - Get Epics`
       );
       if (error instanceof HttpException) throw error;
+      if (error instanceof PrismaClientKnownRequestError) throw error;
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
@@ -217,6 +218,7 @@ export class EpicService {
         `${this.context} - Get Epic`
       );
       if (error instanceof HttpException) throw error;
+      if (error instanceof PrismaClientKnownRequestError) throw error;
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
@@ -265,6 +267,7 @@ export class EpicService {
         `${this.context} - Get Issues In Epic`
       );
       if (error instanceof HttpException) throw error;
+      if (error instanceof PrismaClientKnownRequestError) throw error;
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
@@ -359,6 +362,7 @@ export class EpicService {
           `An epic named "${updateEpicObject.title}" already exists in this project`
         );
       }
+      if (error instanceof PrismaClientKnownRequestError) throw error;
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
@@ -424,6 +428,7 @@ export class EpicService {
         `${this.context} - Delete Epic`
       );
       if (error instanceof HttpException) throw error;
+      if (error instanceof PrismaClientKnownRequestError) throw error;
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
