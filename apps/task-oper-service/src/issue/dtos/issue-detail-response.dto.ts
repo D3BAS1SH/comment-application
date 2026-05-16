@@ -22,9 +22,29 @@ export class SubTaskDto {
   assignee?: SimpleUserDto | null;
 }
 
+export class IssueCommentDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  body: string;
+
+  @ApiProperty({ type: () => SimpleUserDto })
+  author: SimpleUserDto;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+}
+
 export class IssueDetailResponseDto extends IssueResponseDto {
   @ApiProperty({ type: () => [SubTaskDto] })
   subTasks: SubTaskDto[];
+
+  @ApiProperty({ type: () => [IssueCommentDto] })
+  comments: IssueCommentDto[];
 
   constructor(partial: Partial<IssueDetailResponseDto>) {
     super(partial);

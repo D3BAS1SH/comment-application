@@ -83,6 +83,13 @@ export class IssueService {
 				priority: st.priority,
 				status: st.status,
 				assignee: st.assignee
+			})) || [],
+			comments: issue.comments?.map((c: any) => ({
+				id: c.id,
+				body: c.body,
+				author: c.author,
+				createdAt: c.createdAt,
+				updatedAt: c.updatedAt
 			})) || []
 		});
 	}
@@ -114,6 +121,12 @@ export class IssueService {
 						status: { select: { id: true, name: true, color: true } },
 						assignee: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } }
 					}
+				},
+				comments: {
+					include: {
+						author: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } }
+					},
+					orderBy: { createdAt: 'desc' }
 				}
 			}
 		});
