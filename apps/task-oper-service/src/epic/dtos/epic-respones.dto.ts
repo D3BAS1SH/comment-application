@@ -14,16 +14,16 @@ export class EpicResponseDto {
   title: string;
 
   @ApiPropertyOptional({ description: 'The description of the epic' })
-  description?: string;
+  description?: string | null;
 
   @ApiPropertyOptional({ description: 'The hex color code for the epic' })
-  color?: string;
+  color?: string | null;
 
   @ApiPropertyOptional({ description: 'The start date of the epic' })
-  startDate?: Date;
+  startDate?: Date | null;
 
   @ApiPropertyOptional({ description: 'The end date of the epic' })
-  endDate?: Date;
+  endDate?: Date | null;
 
   @ApiProperty({ description: 'The creation timestamp' })
   createdAt: Date;

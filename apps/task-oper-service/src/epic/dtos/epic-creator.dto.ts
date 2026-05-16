@@ -25,7 +25,7 @@ export class EpicCreatorDto {
   @ApiPropertyOptional({ description: 'Avatar URL of the creator' })
   @IsString()
   @IsOptional()
-  avatar?: string;
+  avatar?: string | null;
 
   constructor(partial: Partial<EpicCreatorDto>) {
     Object.assign(this, partial);
