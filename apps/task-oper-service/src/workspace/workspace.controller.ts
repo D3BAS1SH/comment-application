@@ -26,6 +26,11 @@ import { UpdateMemberDto } from './dto/UpdateMemberDto.dto.js';
 import { TransferOwnershipDto } from './dto/TransferOwnershipDto.dto.js';
 import { AddMemberDto } from './dto/addMember.dto.js';
 import { ApiResponse } from '../common/dto/api-response.dto.js';
+import { CreateWorkspaceResponse } from './dto/create-workspace.response.dto.js';
+import { WorkspaceDetails } from './dto/workspace-detail.dto.js';
+import { GetAllMembersResponse } from './dto/get-all-members.dto.js';
+import { GetMembershipResponse } from './dto/GetMyMembershipResponse.dto.js';
+import { CheckSlugDto } from './dto/check-slug.dto.js';
 
 @ApiTags('Workspaces')
 @Controller('workspaces')
@@ -75,7 +80,7 @@ export class WorkspaceController {
   })
   async getAllWorkspaces(
     @UserId() userId: string
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<CreateWorkspaceResponse[]>> {
     this.loggerService.log(
       `Getting all workspaces for user: ${userId}`,
       this.context
@@ -114,10 +119,10 @@ export class WorkspaceController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Slug query parameter is missing or invalid.',
   })
-  async checkSlug(@Query() slug: string): Promise<ApiResponse<unknown>> {
-    this.loggerService.log(`Checking slug: ${slug}`, this.context);
-    const data = await this.workspaceService.checkSlug(slug);
-    return ApiResponse.success(data, 'Slug checked successfully');
+  async checkSlug(@Query() checkSlugDto: CheckSlugDto): Promise<ApiResponse<{ available: boolean }>> {
+    this.loggerService.log(`Checking slug: ${checkSlugDto.slug}`, this.context);
+    const data = await this.workspaceService.checkSlug(checkSlugDto.slug);
+    return ApiResponse.success({ available: !data }, 'Slug checked successfully');
   }
 
   @Get('/:slug')
@@ -166,7 +171,7 @@ export class WorkspaceController {
   async getWorkspaceBySlug(
     @UserId() ownerId: string,
     @Param('slug') slug: string
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<WorkspaceDetails>> {
     this.loggerService.log(`Getting workspace by slug: ${slug}`, this.context);
     const data = await this.workspaceService.getWorkspaceBySlug(ownerId, slug);
     return ApiResponse.success(data, 'Workspace retrieved successfully');
@@ -213,7 +218,7 @@ export class WorkspaceController {
   async createWorkspace(
     @UserId() userId: string,
     @Body() createWorkspace: CreateWorkspaceDto
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<CreateWorkspaceResponse>> {
     this.loggerService.log(
       `Creating workspace for user: ${userId}`,
       this.context
@@ -274,7 +279,7 @@ export class WorkspaceController {
   async updateWorkspace(
     @UserId() userId: string,
     @Body() updateWorkspace: UpdateWorkspaceDto
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<CreateWorkspaceResponse>> {
     this.loggerService.log(
       `Updating workspace for user: ${userId}`,
       this.context
@@ -340,7 +345,7 @@ export class WorkspaceController {
   async getAllMembers(
     @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<GetAllMembersResponse>> {
     this.loggerService.log(
       `Getting all members for workspace: ${workspaceId}`,
       this.context
@@ -389,7 +394,7 @@ export class WorkspaceController {
   async getMyMembership(
     @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<GetMembershipResponse>> {
     this.loggerService.log(
       `Getting my membership for workspace: ${workspaceId}`,
       this.context
@@ -454,7 +459,7 @@ export class WorkspaceController {
     @UserId() userId: string,
     @Param('workspaceId') workspaceId: string,
     @Body() addMemberDto: AddMemberDto
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<GetMembershipResponse>> {
     this.loggerService.log(
       `Adding member to workspace: ${workspaceId}`,
       this.context
@@ -526,7 +531,7 @@ export class WorkspaceController {
     @Param('workspaceId') workspaceId: string,
     @Param('memberId') memberId: string,
     @Body() updateMemberDto: UpdateMemberDto
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<GetMembershipResponse>> {
     this.loggerService.log(
       `Updating member in workspace: ${workspaceId}`,
       this.context
@@ -646,7 +651,7 @@ export class WorkspaceController {
     @UserId() userId: string,
     @Param('workspaceId') workspaceId: string,
     @Body() transferOwnership: TransferOwnershipDto
-  ): Promise<ApiResponse<unknown>> {
+  ): Promise<ApiResponse<GetMembershipResponse>> {
     this.loggerService.log(
       `Transfering ownership in workspace: ${workspaceId}`,
       this.context
