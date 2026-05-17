@@ -15,13 +15,13 @@ import {
   ApiResponse as SwaggerApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { StatusService } from './status.service.js';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateStatusDto } from './dtos/create-status.dto.js';
 import { UpdateStatusDto } from './dtos/update-status.dto.js';
 import { ReorderStatusesDto } from './dtos/reorder-statuses.dto.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 import { StatusResponseDto } from './dtos/status-response.dto.js';
 
 @ApiTags('Statuses')

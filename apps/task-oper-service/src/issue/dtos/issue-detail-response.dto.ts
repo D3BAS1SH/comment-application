@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IssueResponseDto, SimpleUserDto, SimpleStatusDto } from './issue-response.dto.js';
-import { IssuePriority } from 'src/prisma/generated/enums.js';
+import { IssuePriority } from '../../prisma/generated/enums.js';
 
 export class SubTaskDto {
   @ApiProperty()

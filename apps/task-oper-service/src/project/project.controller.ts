@@ -15,13 +15,13 @@ import {
   ApiResponse as SwaggerApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { CreateProjectDto } from './dtos/create-project.dto.js';
 import { UpdateProjectDto } from './dtos/update-project.dto.js';
 import { UpdateProjectLeadDto } from './dtos/update-project-lead.dto.js';
 import { ProjectService } from './project.service.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 import { ProjectDetailDto } from './dtos/project-detail.dto.js';
 import { ProjectListItemDto } from './dtos/project-list-item.dto.js';
 

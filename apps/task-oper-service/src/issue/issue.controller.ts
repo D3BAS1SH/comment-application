@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { IssueService } from './issue.service.js';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateIssueDto } from './dtos/create-issue.dto.js';
 import { UpdateIssueDto } from './dtos/update-issue.dto.js';
 import { ReorderIssueDto } from './dtos/reorder-issue.dto.js';
 import { MoveSprintDto } from './dtos/move-sprint.dto.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
-import { IssuePriority } from 'src/prisma/generated/enums.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
+import { IssuePriority } from '../prisma/generated/enums.js';
 import { IssueResponseDto } from './dtos/issue-response.dto.js';
 import { IssueDetailResponseDto, SubTaskDto, IssueCommentDto } from './dtos/issue-detail-response.dto.js';
 import { IssueListResponseDto } from './dtos/issue-list-response.dto.js';

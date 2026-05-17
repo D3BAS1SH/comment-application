@@ -1,6 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
+import { RedisService } from './redis.service.js';
 
 @Global()
 @Module({})
@@ -20,8 +21,9 @@ export class RedisModule {
           },
           inject: [ConfigService],
         },
+        RedisService,
       ],
-      exports: ['REDIS_CLIENT'],
+      exports: ['REDIS_CLIENT', RedisService],
     };
   }
 }

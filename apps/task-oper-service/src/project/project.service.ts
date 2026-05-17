@@ -6,11 +6,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateProjectDto } from './dtos/create-project.dto.js';
 import { ProjectDetailDto } from './dtos/project-detail.dto.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
 import { ProjectListItemDto } from './dtos/project-list-item.dto.js';
 import { UpdateProjectDto } from './dtos/update-project.dto.js';
 import { UpdateProjectLeadDto } from './dtos/update-project-lead.dto.js';

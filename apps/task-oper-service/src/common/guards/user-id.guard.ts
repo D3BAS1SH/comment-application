@@ -6,8 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { RedisService } from 'src/redis/redis.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+import { RedisService } from '../../redis/redis.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 
 @Injectable()
 export class UserIdGuard implements CanActivate {

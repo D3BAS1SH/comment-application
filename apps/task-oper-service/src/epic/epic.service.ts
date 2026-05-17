@@ -1,11 +1,11 @@
 import { ConflictException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateEpicDto } from './dtos/create-epic.dto.js';
 import { UpdateEpicDto } from './dtos/update-epic.dto.js';
 import { EpicResponseDto } from './dtos/epic-respones.dto.js';
 import { EpicListResponseDto } from './dtos/epic-list-response.dto.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
 
 @Injectable()
 export class EpicService {

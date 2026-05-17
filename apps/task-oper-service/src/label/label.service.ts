@@ -6,12 +6,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateLabelDto } from './dtos/create-label.dto.js';
 import { UpdateLabelDto } from './dtos/update-label.dto.js';
 import { LabelResponseDto } from './dtos/label-response.dto.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
 
 @Injectable()
 export class LabelService {

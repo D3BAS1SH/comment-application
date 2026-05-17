@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from 'src/prisma/generated/client.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
-import { ActivityType } from 'src/prisma/generated/enums.js';
+import { Prisma } from '../prisma/generated/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ActivityType } from '../prisma/generated/enums.js';
 import { IssueActivityListResponseDto } from './dtos/issue-activity-list-response.dto.js';
 import { IssueActivityResponseDto } from './dtos/issue-activity-response.dto.js';
 

@@ -15,14 +15,14 @@ import {
   ApiResponse as SwaggerApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { SprintService } from './sprint.service.js';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateSprintDto } from './dtos/create-sprint.dto.js';
 import { UpdateSprintDto } from './dtos/update-sprint.dto.js';
 import { StartSprintDto } from './dtos/start-sprint.dto.js';
 import { CompleteSprintDto } from './dtos/complete-sprint.dto.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 import { SprintResponseDto } from './dtos/sprint-response.dto.js';
 import { SprintListResponseDto } from './dtos/sprint-list-response.dto.js';
 

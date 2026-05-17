@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { IssuePriority } from 'src/prisma/generated/enums.js';
+import { IssuePriority } from '../../prisma/generated/enums.js';
 
 export class CreateIssueDto {
   @ApiProperty({ description: 'The title of the issue' })

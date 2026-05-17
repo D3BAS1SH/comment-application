@@ -6,13 +6,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateStatusDto } from './dtos/create-status.dto.js';
 import { UpdateStatusDto } from './dtos/update-status.dto.js';
 import { ReorderStatusesDto } from './dtos/reorder-statuses.dto.js';
 import { StatusResponseDto } from './dtos/status-response.dto.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
 
 @Injectable()
 export class StatusService {

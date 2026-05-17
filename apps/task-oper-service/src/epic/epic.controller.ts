@@ -15,14 +15,14 @@ import {
   ApiResponse as SwaggerApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateEpicDto } from './dtos/create-epic.dto.js';
 import { UpdateEpicDto } from './dtos/update-epic.dto.js';
 import { EpicService } from './epic.service.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 import { EpicResponseDto } from './dtos/epic-respones.dto.js';
 import { EpicListResponseDto } from './dtos/epic-list-response.dto.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 
 @ApiTags('Epics')
 @Controller('projects/:projectId/epics')

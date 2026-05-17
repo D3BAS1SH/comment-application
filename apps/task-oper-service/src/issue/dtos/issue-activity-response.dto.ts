@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ActivityType } from 'src/prisma/generated/enums.js';
+import { ActivityType } from '../../prisma/generated/enums.js';
 import { SimpleUserDto } from './issue-response.dto.js';
 
 export class IssueActivityResponseDto {

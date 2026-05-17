@@ -15,12 +15,12 @@ import {
   ApiResponse as SwaggerApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { LabelService } from './label.service.js';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateLabelDto } from './dtos/create-label.dto.js';
 import { UpdateLabelDto } from './dtos/update-label.dto.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 import { LabelResponseDto } from './dtos/label-response.dto.js';
 
 @ApiTags('Labels')

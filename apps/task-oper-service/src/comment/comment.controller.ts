@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { CreateCommentDto } from './dtos/create-comment.dto.js';
 import { UpdateCommentDto } from './dtos/update-comment.dto.js';
 import { CommentService } from './comment.service.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 
 @Controller('issues/:issueId/comments')
 export class CommentController {

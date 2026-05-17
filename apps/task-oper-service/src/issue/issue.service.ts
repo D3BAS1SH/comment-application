@@ -1,9 +1,9 @@
 import { BadRequestException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { LoggerService } from 'src/common/logger/logger.service.js';
-import { PrismaService } from 'src/prisma/prisma.service.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
-import { Prisma } from 'src/prisma/generated/client.js';
-import { ActivityType, IssuePriority } from 'src/prisma/generated/enums.js';
+import { LoggerService } from '../common/logger/logger.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
+import { Prisma } from '../prisma/generated/client.js';
+import { ActivityType, IssuePriority } from '../prisma/generated/enums.js';
 import { IssueActivityService } from './issue-activity.service.js';
 import { CreateIssueDto } from './dtos/create-issue.dto.js';
 import { UpdateIssueDto } from './dtos/update-issue.dto.js';

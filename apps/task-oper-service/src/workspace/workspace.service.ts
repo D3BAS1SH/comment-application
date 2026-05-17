@@ -6,12 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto.js';
 import { CreateWorkspaceResponse } from './dto/create-workspace.response.dto.js';
 import { WorkspaceDetails } from './dto/workspace-detail.dto.js';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto.js';
-import { PrismaClientKnownRequestError } from 'src/prisma/generated/internal/prismaNamespace.js';
+import { PrismaClientKnownRequestError } from '../prisma/generated/internal/prismaNamespace.js';
 import { GetAllMembersResponse } from './dto/get-all-members.dto.js';
 import { GetMembershipResponse } from './dto/GetMyMembershipResponse.dto.js';
 import { AddMemberDto } from './dto/addMember.dto.js';

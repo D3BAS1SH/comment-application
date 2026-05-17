@@ -18,14 +18,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { WorkspaceService } from './workspace.service.js';
-import { LoggerService } from 'src/common/logger/logger.service.js';
+import { LoggerService } from '../common/logger/logger.service.js';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto.js';
-import { UserId } from 'src/common/decorators/UserId.decorator.js';
+import { UserId } from '../common/decorators/UserId.decorator.js';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto.js';
 import { UpdateMemberDto } from './dto/UpdateMemberDto.dto.js';
 import { TransferOwnershipDto } from './dto/TransferOwnershipDto.dto.js';
 import { AddMemberDto } from './dto/addMember.dto.js';
-import { ApiResponse } from 'src/common/dto/api-response.dto.js';
+import { ApiResponse } from '../common/dto/api-response.dto.js';
 
 @ApiTags('Workspaces')
 @Controller('workspaces')

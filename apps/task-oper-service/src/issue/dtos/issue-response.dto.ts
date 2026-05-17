@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IssuePriority } from 'src/prisma/generated/enums.js';
+import { IssuePriority } from '../../prisma/generated/enums.js';
 
 export class SimpleUserDto {
   @ApiProperty()
