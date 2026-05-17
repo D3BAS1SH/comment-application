@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './features/userSlice';
+import workspaceReducer from './features/workspaceSlice';
 
 import {
   persistStore,
@@ -58,6 +59,7 @@ const persistConfig = {
 // Combine your reducers, and wrap with persistReducer
 const rootReducer = {
   user: userReducer, // slice name is 'user' in userSlice.ts
+  workspace: workspaceReducer,
   // add more slices as needed, e.g. post: postReducer
 };
 

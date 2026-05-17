@@ -1,5 +1,5 @@
 import { authClient } from '../http/clients';
-import { handleAxiosError, ServiceError } from '@/utils/service-error';
+import { handleAxiosError } from '@/utils/service-error';
 import {
   UserLogin,
   UserRegister,
@@ -17,9 +17,7 @@ export interface RefreshTokenResult {
   refreshToken: string;
 }
 
-export type ServiceResult<T> =
-  | { data: T; error: null }
-  | { data: null; error: ServiceError };
+import { ServiceResult } from '@/utils/service-result';
 
 export class AuthService {
   /**
