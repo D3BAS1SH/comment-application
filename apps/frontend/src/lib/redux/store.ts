@@ -2,6 +2,8 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './features/userSlice';
 import workspaceReducer from './features/workspaceSlice';
 import projectReducer from './features/projectSlice';
+import statusReducer from './features/statusSlice';
+import labelReducer from './features/labelSlice';
 
 import {
   persistStore,
@@ -62,6 +64,8 @@ const rootReducer = {
   user: userReducer, // slice name is 'user' in userSlice.ts
   workspace: workspaceReducer,
   project: projectReducer,
+  status: statusReducer,
+  label: labelReducer,
   // add more slices as needed, e.g. post: postReducer
 };
 
