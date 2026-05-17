@@ -21,7 +21,7 @@ import { LabelModule } from './label/label.module.js';
 import { EpicModule } from './epic/epic.module.js';
 import { SprintModule } from './sprint/sprint.module.js';
 import { IssueModule } from './issue/issue.module.js';
-import { CommentModule } from './comment/comment.module';
+import { CommentModule } from './comment/comment.module.js';
 
 @Module({
   imports: [
