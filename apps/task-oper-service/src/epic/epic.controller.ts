@@ -96,8 +96,16 @@ export class EpicController {
     @Body() createEpicObject: CreateEpicDto
   ): Promise<ApiResponse<EpicResponseDto>> {
     this.loggerService.log(`Create Epic by caller: ${callerId}`, this.context);
-    const createdEpic = await this.epicService.createEpic(callerId, projectId, createEpicObject);
-    return ApiResponse.success(createdEpic, 'Epic Created successfully', HttpStatus.CREATED);
+    const createdEpic = await this.epicService.createEpic(
+      callerId,
+      projectId,
+      createEpicObject
+    );
+    return ApiResponse.success(
+      createdEpic,
+      'Epic Created successfully',
+      HttpStatus.CREATED
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -301,7 +309,11 @@ export class EpicController {
       `Get Issues Of Epic by caller: ${callerId}`,
       this.context
     );
-    const issues = await this.epicService.getIssuesInEpic(callerId, projectId, epicId);
+    const issues = await this.epicService.getIssuesInEpic(
+      callerId,
+      projectId,
+      epicId
+    );
     return ApiResponse.success(issues, 'Issues retrieved successfully');
   }
 
@@ -373,7 +385,12 @@ export class EpicController {
     @Body() updateEpicObject: UpdateEpicDto
   ): Promise<ApiResponse<EpicResponseDto>> {
     this.loggerService.log(`Update Epic by caller: ${callerId}`, this.context);
-    const updatedEpic = await this.epicService.updateEpic(callerId, projectId, epicId, updateEpicObject);
+    const updatedEpic = await this.epicService.updateEpic(
+      callerId,
+      projectId,
+      epicId,
+      updateEpicObject
+    );
     return ApiResponse.success(updatedEpic, 'Epic updated successfully');
   }
 

@@ -1,4 +1,11 @@
-import { ConflictException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { LoggerService } from '../common/logger/logger.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateEpicDto } from './dtos/create-epic.dto.js';
@@ -9,7 +16,6 @@ import { PrismaClientKnownRequestError } from '../prisma/generated/internal/pris
 
 @Injectable()
 export class EpicService {
-
   private readonly context: string = EpicService.name;
 
   constructor(
@@ -23,17 +29,16 @@ export class EpicService {
     createEpicObject: CreateEpicDto
   ): Promise<EpicResponseDto> {
     try {
-
       const callerProjectMember = await this.prismaService.project.findFirst({
         where: {
           id: projectId,
           workspace: {
             workspaceMembers: {
               some: {
-                userId: callerId
-              }
-            }
-          }
+                userId: callerId,
+              },
+            },
+          },
         },
         select: {
           id: true,
@@ -41,20 +46,22 @@ export class EpicService {
             select: {
               workspaceMembers: {
                 where: {
-                  userId: callerId
+                  userId: callerId,
                 },
                 select: {
-                  role: true
-                }
-              }
-            }
+                  role: true,
+                },
+              },
+            },
           },
-          leadId: true
-        }
+          leadId: true,
+        },
       });
 
-      if(!callerProjectMember) {
-        throw new ForbiddenException('You are not member of this workspace or project');
+      if (!callerProjectMember) {
+        throw new ForbiddenException(
+          'You are not member of this workspace or project'
+        );
       }
 
       const userRole = callerProjectMember.workspace.workspaceMembers[0].role;
@@ -62,7 +69,9 @@ export class EpicService {
       const isOwner = userRole === 'OWNER';
 
       if (!isLead && !isOwner) {
-        throw new ForbiddenException('Only Project Lead or Owner can create Epics');
+        throw new ForbiddenException(
+          'Only Project Lead or Owner can create Epics'
+        );
       }
 
       const createdEpic = await this.prismaService.epic.create({
@@ -73,7 +82,7 @@ export class EpicService {
           description: createEpicObject.description,
           startDate: createEpicObject.startDate,
           endDate: createEpicObject.endDate,
-          createdBy: callerId
+          createdBy: callerId,
         },
         include: {
           creator: {
@@ -82,18 +91,19 @@ export class EpicService {
               firstName: true,
               lastName: true,
               email: true,
-              avatar: true
-            }
-          }
-        }
+              avatar: true,
+            },
+          },
+        },
       });
 
-      if(!createdEpic) {
-        throw new InternalServerErrorException('Something went wrong at creating Epic');
+      if (!createdEpic) {
+        throw new InternalServerErrorException(
+          'Something went wrong at creating Epic'
+        );
       }
 
       return new EpicResponseDto(createdEpic);
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
@@ -121,19 +131,22 @@ export class EpicService {
   ): Promise<EpicListResponseDto> {
     try {
       // Verify workspace membership
-      const workspaceMember = await this.prismaService.workspaceMember.findFirst({
-        where: {
-          userId: callerId,
-          workspace: {
-            projects: {
-              some: { id: projectId }
-            }
-          }
-        }
-      });
+      const workspaceMember =
+        await this.prismaService.workspaceMember.findFirst({
+          where: {
+            userId: callerId,
+            workspace: {
+              projects: {
+                some: { id: projectId },
+              },
+            },
+          },
+        });
 
       if (!workspaceMember) {
-        throw new ForbiddenException('You are not a member of this workspace or project');
+        throw new ForbiddenException(
+          'You are not a member of this workspace or project'
+        );
       }
 
       const epics = await this.prismaService.epic.findMany({
@@ -145,18 +158,17 @@ export class EpicService {
               firstName: true,
               lastName: true,
               email: true,
-              avatar: true
-            }
-          }
+              avatar: true,
+            },
+          },
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
 
       return new EpicListResponseDto({
         data: epics,
-        total: epics.length
+        total: epics.length,
       });
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
@@ -176,19 +188,22 @@ export class EpicService {
     epicId: string
   ): Promise<EpicResponseDto> {
     try {
-      const workspaceMember = await this.prismaService.workspaceMember.findFirst({
-        where: {
-          userId: callerId,
-          workspace: {
-            projects: {
-              some: { id: projectId }
-            }
-          }
-        }
-      });
+      const workspaceMember =
+        await this.prismaService.workspaceMember.findFirst({
+          where: {
+            userId: callerId,
+            workspace: {
+              projects: {
+                some: { id: projectId },
+              },
+            },
+          },
+        });
 
       if (!workspaceMember) {
-        throw new ForbiddenException('You are not a member of this workspace or project');
+        throw new ForbiddenException(
+          'You are not a member of this workspace or project'
+        );
       }
 
       const epic = await this.prismaService.epic.findFirst({
@@ -200,18 +215,19 @@ export class EpicService {
               firstName: true,
               lastName: true,
               email: true,
-              avatar: true
-            }
-          }
-        }
+              avatar: true,
+            },
+          },
+        },
       });
 
       if (!epic) {
-        throw new NotFoundException(`Epic with id "${epicId}" not found in this project`);
+        throw new NotFoundException(
+          `Epic with id "${epicId}" not found in this project`
+        );
       }
 
       return new EpicResponseDto(epic);
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
@@ -225,42 +241,42 @@ export class EpicService {
     }
   }
 
-  async getIssuesInEpic(
-    callerId: string,
-    projectId: string,
-    epicId: string
-  ) {
+  async getIssuesInEpic(callerId: string, projectId: string, epicId: string) {
     try {
-      const workspaceMember = await this.prismaService.workspaceMember.findFirst({
-        where: {
-          userId: callerId,
-          workspace: {
-            projects: {
-              some: { id: projectId }
-            }
-          }
-        }
-      });
+      const workspaceMember =
+        await this.prismaService.workspaceMember.findFirst({
+          where: {
+            userId: callerId,
+            workspace: {
+              projects: {
+                some: { id: projectId },
+              },
+            },
+          },
+        });
 
       if (!workspaceMember) {
-        throw new ForbiddenException('You are not a member of this workspace or project');
+        throw new ForbiddenException(
+          'You are not a member of this workspace or project'
+        );
       }
 
       const epic = await this.prismaService.epic.findFirst({
-        where: { id: epicId, projectId: projectId }
+        where: { id: epicId, projectId: projectId },
       });
 
       if (!epic) {
-        throw new NotFoundException(`Epic with id "${epicId}" not found in this project`);
+        throw new NotFoundException(
+          `Epic with id "${epicId}" not found in this project`
+        );
       }
 
       const issues = await this.prismaService.issue.findMany({
         where: { epicId: epicId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
 
       return issues;
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
@@ -286,9 +302,9 @@ export class EpicService {
           id: projectId,
           workspace: {
             workspaceMembers: {
-              some: { userId: callerId }
-            }
-          }
+              some: { userId: callerId },
+            },
+          },
         },
         select: {
           id: true,
@@ -297,15 +313,17 @@ export class EpicService {
             select: {
               workspaceMembers: {
                 where: { userId: callerId },
-                select: { role: true }
-              }
-            }
-          }
-        }
+                select: { role: true },
+              },
+            },
+          },
+        },
       });
 
       if (!callerProjectMember) {
-        throw new ForbiddenException('You are not a member of this workspace or project');
+        throw new ForbiddenException(
+          'You are not a member of this workspace or project'
+        );
       }
 
       const userRole = callerProjectMember.workspace.workspaceMembers[0].role;
@@ -313,25 +331,39 @@ export class EpicService {
       const isOwner = userRole === 'OWNER';
 
       if (!isLead && !isOwner) {
-        throw new ForbiddenException('Only Project Lead or Owner can update Epics');
+        throw new ForbiddenException(
+          'Only Project Lead or Owner can update Epics'
+        );
       }
 
       const epic = await this.prismaService.epic.findFirst({
-        where: { id: epicId, projectId: projectId }
+        where: { id: epicId, projectId: projectId },
       });
 
       if (!epic) {
-        throw new NotFoundException(`Epic with id "${epicId}" not found in this project`);
+        throw new NotFoundException(
+          `Epic with id "${epicId}" not found in this project`
+        );
       }
 
       const updatedEpic = await this.prismaService.epic.update({
         where: { id: epicId },
         data: {
-          ...(updateEpicObject.title !== undefined && { title: updateEpicObject.title }),
-          ...(updateEpicObject.description !== undefined && { description: updateEpicObject.description }),
-          ...(updateEpicObject.color !== undefined && { color: updateEpicObject.color }),
-          ...(updateEpicObject.startDate !== undefined && { startDate: updateEpicObject.startDate }),
-          ...(updateEpicObject.endDate !== undefined && { endDate: updateEpicObject.endDate })
+          ...(updateEpicObject.title !== undefined && {
+            title: updateEpicObject.title,
+          }),
+          ...(updateEpicObject.description !== undefined && {
+            description: updateEpicObject.description,
+          }),
+          ...(updateEpicObject.color !== undefined && {
+            color: updateEpicObject.color,
+          }),
+          ...(updateEpicObject.startDate !== undefined && {
+            startDate: updateEpicObject.startDate,
+          }),
+          ...(updateEpicObject.endDate !== undefined && {
+            endDate: updateEpicObject.endDate,
+          }),
         },
         include: {
           creator: {
@@ -340,14 +372,13 @@ export class EpicService {
               firstName: true,
               lastName: true,
               email: true,
-              avatar: true
-            }
-          }
-        }
+              avatar: true,
+            },
+          },
+        },
       });
 
       return new EpicResponseDto(updatedEpic);
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',
@@ -380,9 +411,9 @@ export class EpicService {
           id: projectId,
           workspace: {
             workspaceMembers: {
-              some: { userId: callerId }
-            }
-          }
+              some: { userId: callerId },
+            },
+          },
         },
         select: {
           id: true,
@@ -391,15 +422,17 @@ export class EpicService {
             select: {
               workspaceMembers: {
                 where: { userId: callerId },
-                select: { role: true }
-              }
-            }
-          }
-        }
+                select: { role: true },
+              },
+            },
+          },
+        },
       });
 
       if (!callerProjectMember) {
-        throw new ForbiddenException('You are not a member of this workspace or project');
+        throw new ForbiddenException(
+          'You are not a member of this workspace or project'
+        );
       }
 
       const userRole = callerProjectMember.workspace.workspaceMembers[0].role;
@@ -407,21 +440,24 @@ export class EpicService {
       const isOwner = userRole === 'OWNER';
 
       if (!isLead && !isOwner) {
-        throw new ForbiddenException('Only Project Lead or Owner can delete Epics');
+        throw new ForbiddenException(
+          'Only Project Lead or Owner can delete Epics'
+        );
       }
 
       const epic = await this.prismaService.epic.findFirst({
-        where: { id: epicId, projectId: projectId }
+        where: { id: epicId, projectId: projectId },
       });
 
       if (!epic) {
-        throw new NotFoundException(`Epic with id "${epicId}" not found in this project`);
+        throw new NotFoundException(
+          `Epic with id "${epicId}" not found in this project`
+        );
       }
 
       await this.prismaService.epic.delete({
-        where: { id: epicId }
+        where: { id: epicId },
       });
-
     } catch (error: unknown) {
       this.loggerService.error(
         error instanceof Error ? error.message : 'Internal Server Error',

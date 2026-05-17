@@ -5,6 +5,6 @@ import { IssueActivityService } from './issue-activity.service.js';
 
 @Module({
   providers: [IssueService, IssueActivityService],
-  controllers: [IssueController]
+  controllers: [IssueController],
 })
 export class IssueModule {}

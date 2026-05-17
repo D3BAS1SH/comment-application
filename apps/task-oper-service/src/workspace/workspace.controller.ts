@@ -119,10 +119,15 @@ export class WorkspaceController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Slug query parameter is missing or invalid.',
   })
-  async checkSlug(@Query() checkSlugDto: CheckSlugDto): Promise<ApiResponse<{ available: boolean }>> {
+  async checkSlug(
+    @Query() checkSlugDto: CheckSlugDto
+  ): Promise<ApiResponse<{ available: boolean }>> {
     this.loggerService.log(`Checking slug: ${checkSlugDto.slug}`, this.context);
     const data = await this.workspaceService.checkSlug(checkSlugDto.slug);
-    return ApiResponse.success({ available: !data }, 'Slug checked successfully');
+    return ApiResponse.success(
+      { available: !data },
+      'Slug checked successfully'
+    );
   }
 
   @Get('/:slug')

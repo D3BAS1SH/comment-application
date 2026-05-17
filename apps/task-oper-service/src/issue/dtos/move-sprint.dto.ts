@@ -3,7 +3,8 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class MoveSprintDto {
   @ApiPropertyOptional({
-    description: 'The ID of the sprint to move the issue to. Null to move to backlog.',
+    description:
+      'The ID of the sprint to move the issue to. Null to move to backlog.',
     example: 'sprint-123',
     nullable: true,
   })

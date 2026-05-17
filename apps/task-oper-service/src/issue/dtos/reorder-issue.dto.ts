@@ -7,7 +7,9 @@ export class ReorderIssueDto {
   @IsNotEmpty()
   statusId: string;
 
-  @ApiProperty({ description: 'The new position of the issue in the status list' })
+  @ApiProperty({
+    description: 'The new position of the issue in the status list',
+  })
   @IsNumber()
   @IsNotEmpty()
   position: number;

@@ -1,13 +1,13 @@
-import { 
-  Body, 
-  Controller, 
-  Delete, 
-  Get, 
-  HttpCode, 
-  HttpStatus, 
-  Param, 
-  Patch, 
-  Post 
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -31,16 +31,16 @@ import { SprintListResponseDto } from './dtos/sprint-list-response.dto.js';
 export class SprintController {
   private readonly context: string = SprintController.name;
 
-	constructor(
-		private readonly loggerService: LoggerService,
-		private readonly sprintService: SprintService
-	){}
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly sprintService: SprintService
+  ) {}
 
   // ---------------------------------------------------------------------------
   // POST /projects/:projectId/sprints
   // ---------------------------------------------------------------------------
 
-	@Post()
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new sprint',
@@ -87,21 +87,32 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async createSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Body() createSprintObject: CreateSprintDto
-	): Promise<ApiResponse<SprintResponseDto>>{
-		this.loggerService.log(`Create Sprint by caller: ${callerId}`, this.context);
-		const createdSprint = await this.sprintService.createSprint(callerId,projectId,createSprintObject);
-		return ApiResponse.success(createdSprint,'Sprint created successfully', HttpStatus.CREATED);
-	}
+  async createSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Body() createSprintObject: CreateSprintDto
+  ): Promise<ApiResponse<SprintResponseDto>> {
+    this.loggerService.log(
+      `Create Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const createdSprint = await this.sprintService.createSprint(
+      callerId,
+      projectId,
+      createSprintObject
+    );
+    return ApiResponse.success(
+      createdSprint,
+      'Sprint created successfully',
+      HttpStatus.CREATED
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // GET /projects/:projectId/sprints
   // ---------------------------------------------------------------------------
 
-	@Get()
+  @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all sprints in a project',
@@ -153,20 +164,23 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async getAllSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-	): Promise<ApiResponse<SprintListResponseDto>> {
-		this.loggerService.log(`Get All Sprint by caller: ${callerId}`, this.context);
-		const sprints = await this.sprintService.getAllSprints(callerId, projectId);
-		return ApiResponse.success(sprints, 'Sprints fetched successfully');
-	}
+  async getAllSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string
+  ): Promise<ApiResponse<SprintListResponseDto>> {
+    this.loggerService.log(
+      `Get All Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const sprints = await this.sprintService.getAllSprints(callerId, projectId);
+    return ApiResponse.success(sprints, 'Sprints fetched successfully');
+  }
 
   // ---------------------------------------------------------------------------
   // GET /projects/:projectId/sprints/:sprintId
   // ---------------------------------------------------------------------------
 
-	@Get(':sprintId')
+  @Get(':sprintId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a specific sprint',
@@ -218,21 +232,28 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async getSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string
-	): Promise<ApiResponse<SprintResponseDto>> {
-		this.loggerService.log(`Get Specific Sprint by caller: ${callerId}`, this.context);
-		const sprint = await this.sprintService.getSprint(callerId, projectId, sprintId);
-		return ApiResponse.success(sprint, 'Sprint fetched successfully');
-	}
+  async getSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string
+  ): Promise<ApiResponse<SprintResponseDto>> {
+    this.loggerService.log(
+      `Get Specific Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const sprint = await this.sprintService.getSprint(
+      callerId,
+      projectId,
+      sprintId
+    );
+    return ApiResponse.success(sprint, 'Sprint fetched successfully');
+  }
 
   // ---------------------------------------------------------------------------
   // PATCH /projects/:projectId/sprints/:sprintId
   // ---------------------------------------------------------------------------
 
-	@Patch(':sprintId')
+  @Patch(':sprintId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a sprint',
@@ -284,22 +305,30 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async updateSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string,
-		@Body() updateSprintObject: UpdateSprintDto
-	): Promise<ApiResponse<SprintResponseDto>> {
-		this.loggerService.log(`Update Sprint by caller: ${callerId}`, this.context);
-		const updatedSprint = await this.sprintService.updateSprint(callerId, projectId, sprintId, updateSprintObject);
-		return ApiResponse.success(updatedSprint, 'Sprint updated successfully');
-	}
+  async updateSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string,
+    @Body() updateSprintObject: UpdateSprintDto
+  ): Promise<ApiResponse<SprintResponseDto>> {
+    this.loggerService.log(
+      `Update Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const updatedSprint = await this.sprintService.updateSprint(
+      callerId,
+      projectId,
+      sprintId,
+      updateSprintObject
+    );
+    return ApiResponse.success(updatedSprint, 'Sprint updated successfully');
+  }
 
   // ---------------------------------------------------------------------------
   // POST /projects/:projectId/sprints/:sprintId/start
   // ---------------------------------------------------------------------------
 
-	@Post(':sprintId/start')
+  @Post(':sprintId/start')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Start a sprint',
@@ -341,7 +370,8 @@ export class SprintController {
   })
   @SwaggerApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'Another sprint is already active or this sprint is not planned.',
+    description:
+      'Another sprint is already active or this sprint is not planned.',
   })
   @SwaggerApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -355,22 +385,27 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async startSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string,
-		@Body() startSprintObject: StartSprintDto
-	): Promise<ApiResponse<SprintResponseDto>> {
-		this.loggerService.log(`Start Sprint by caller: ${callerId}`, this.context);
-		const sprint = await this.sprintService.startSprint(callerId, projectId, sprintId, startSprintObject);
-		return ApiResponse.success(sprint, 'Sprint started successfully');
-	}
+  async startSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string,
+    @Body() startSprintObject: StartSprintDto
+  ): Promise<ApiResponse<SprintResponseDto>> {
+    this.loggerService.log(`Start Sprint by caller: ${callerId}`, this.context);
+    const sprint = await this.sprintService.startSprint(
+      callerId,
+      projectId,
+      sprintId,
+      startSprintObject
+    );
+    return ApiResponse.success(sprint, 'Sprint started successfully');
+  }
 
   // ---------------------------------------------------------------------------
   // POST /projects/:projectId/sprints/:sprintId/complete
   // ---------------------------------------------------------------------------
 
-	@Post(':sprintId/complete')
+  @Post(':sprintId/complete')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Complete a sprint',
@@ -426,22 +461,30 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async completeSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string,
-		@Body() completeSprintObject: CompleteSprintDto
-	): Promise<ApiResponse<SprintResponseDto>> {
-		this.loggerService.log(`Complete Sprint by caller: ${callerId}`, this.context);
-		const sprint = await this.sprintService.completeSprint(callerId, projectId, sprintId, completeSprintObject);
-		return ApiResponse.success(sprint, 'Sprint completed successfully');
-	}
+  async completeSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string,
+    @Body() completeSprintObject: CompleteSprintDto
+  ): Promise<ApiResponse<SprintResponseDto>> {
+    this.loggerService.log(
+      `Complete Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const sprint = await this.sprintService.completeSprint(
+      callerId,
+      projectId,
+      sprintId,
+      completeSprintObject
+    );
+    return ApiResponse.success(sprint, 'Sprint completed successfully');
+  }
 
   // ---------------------------------------------------------------------------
   // DELETE /projects/:projectId/sprints/:sprintId
   // ---------------------------------------------------------------------------
 
-	@Delete(':sprintId')
+  @Delete(':sprintId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete a sprint',
@@ -483,21 +526,28 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async deleteSprint(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string
-	): Promise<ApiResponse<null>> {
-		this.loggerService.log(`Delete Sprint by caller: ${callerId}`, this.context);
-		await this.sprintService.deleteSprint(callerId, projectId, sprintId);
-		return ApiResponse.success(null, 'Sprint deleted successfully', HttpStatus.NO_CONTENT);
-	}
+  async deleteSprint(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string
+  ): Promise<ApiResponse<null>> {
+    this.loggerService.log(
+      `Delete Sprint by caller: ${callerId}`,
+      this.context
+    );
+    await this.sprintService.deleteSprint(callerId, projectId, sprintId);
+    return ApiResponse.success(
+      null,
+      'Sprint deleted successfully',
+      HttpStatus.NO_CONTENT
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // GET /projects/:projectId/sprints/:sprintId/issues
   // ---------------------------------------------------------------------------
 
-	@Get(':sprintId/issues')
+  @Get(':sprintId/issues')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all issues in a sprint',
@@ -546,13 +596,20 @@ export class SprintController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Missing or invalid authentication token.',
   })
-	async getSprintIssues(
-		@UserId() callerId: string,
-		@Param('projectId') projectId: string,
-		@Param('sprintId') sprintId: string
-	): Promise<ApiResponse<any>> {
-		this.loggerService.log(`Get Issues Of Sprint by caller: ${callerId}`, this.context);
-		const issues = await this.sprintService.getSprintIssues(callerId, projectId, sprintId);
-		return ApiResponse.success(issues, 'Sprint issues fetched successfully');
-	}
+  async getSprintIssues(
+    @UserId() callerId: string,
+    @Param('projectId') projectId: string,
+    @Param('sprintId') sprintId: string
+  ): Promise<ApiResponse<any>> {
+    this.loggerService.log(
+      `Get Issues Of Sprint by caller: ${callerId}`,
+      this.context
+    );
+    const issues = await this.sprintService.getSprintIssues(
+      callerId,
+      projectId,
+      sprintId
+    );
+    return ApiResponse.success(issues, 'Sprint issues fetched successfully');
+  }
 }

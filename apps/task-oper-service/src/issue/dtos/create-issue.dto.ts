@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { IssuePriority } from '../../prisma/generated/enums.js';
 
 export class CreateIssueDto {
@@ -13,7 +20,10 @@ export class CreateIssueDto {
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({ enum: IssuePriority, description: 'The priority of the issue' })
+  @ApiPropertyOptional({
+    enum: IssuePriority,
+    description: 'The priority of the issue',
+  })
   @IsEnum(IssuePriority)
   @IsOptional()
   priority?: IssuePriority;
@@ -48,7 +58,10 @@ export class CreateIssueDto {
   @IsOptional()
   dueDate?: Date;
 
-  @ApiPropertyOptional({ description: 'The labels attached to the issue', type: [String] })
+  @ApiPropertyOptional({
+    description: 'The labels attached to the issue',
+    type: [String],
+  })
   @IsArray()
   @IsString({ each: true })
   @IsOptional()

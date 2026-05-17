@@ -58,7 +58,7 @@ export class IssueActivityService {
               lastName: activity.actor.lastName,
               avatar: activity.actor.avatar ?? undefined,
             },
-          }),
+          })
       ),
       total,
     });

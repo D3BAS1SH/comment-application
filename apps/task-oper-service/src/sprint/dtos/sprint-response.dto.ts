@@ -13,7 +13,10 @@ export class SprintResponseDto {
   @ApiPropertyOptional({ description: 'The goal of the sprint' })
   goal?: string | null;
 
-  @ApiProperty({ description: 'The status of the sprint', enum: ['PLANNED', 'ACTIVE', 'COMPLETED'] })
+  @ApiProperty({
+    description: 'The status of the sprint',
+    enum: ['PLANNED', 'ACTIVE', 'COMPLETED'],
+  })
   status: string;
 
   @ApiPropertyOptional({ description: 'The start date of the sprint' })
