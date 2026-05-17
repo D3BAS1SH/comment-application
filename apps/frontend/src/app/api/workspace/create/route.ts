@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { WorkspaceService } from '@/server/services/workspace.service';
+import { WorkspaceService } from '@/server/services/task-oper-service/workspace.service';
 import { CreateWorkspaceDto } from '@/features/workspace/types/workspace.interface';
 
 function getUserId(request: NextRequest): string | null {

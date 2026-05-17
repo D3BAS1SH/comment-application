@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { WorkspaceService } from '@/server/services/task-oper-service/workspace.service';
+import { ProjectService } from '@/server/services/task-oper-service/project.service';
+import { UpdateProjectLeadDto } from '@/features/projects/types/project.interface';
 
 function getUserId(request: NextRequest): string | null {
   return request.headers.get('x-user-id');
 }
 
-export async function GET(
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: { workspaceId: string; projectId: string } }
 ) {
   try {
     const userId = getUserId(request);
@@ -18,8 +19,14 @@ export async function GET(
       );
     }
 
-    const { slug } = params;
-    const result = await WorkspaceService.getWorkspaceBySlug(userId, slug);
+    const { workspaceId, projectId } = params;
+    const body: UpdateProjectLeadDto = await request.json();
+    const result = await ProjectService.updateProjectLead(
+      userId,
+      workspaceId,
+      projectId,
+      body
+    );
 
     if (result.error) {
       return NextResponse.json(

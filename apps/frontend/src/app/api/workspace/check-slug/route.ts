@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { WorkspaceService } from '@/server/services/workspace.service';
+import { WorkspaceService } from '@/server/services/task-oper-service/workspace.service';
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,4 +1,4 @@
-import { workspaceClient } from '../http/clients';
+import { workspaceClient } from '../../http/clients';
 import { handleAxiosError } from '@/utils/service-error';
 import { ServiceResult } from '@/utils/service-result';
 import { ApiResponse } from '@/types/api-response.interface';

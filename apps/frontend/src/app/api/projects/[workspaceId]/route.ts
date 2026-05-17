@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { WorkspaceService } from '@/server/services/task-oper-service/workspace.service';
-import { AddMemberDto } from '@/features/workspace/types/workspace.interface';
+import { ProjectService } from '@/server/services/task-oper-service/project.service';
+import { CreateProjectDto } from '@/features/projects/types/project.interface';
 
 function getUserId(request: NextRequest): string | null {
   return request.headers.get('x-user-id');
@@ -20,7 +20,7 @@ export async function GET(
     }
 
     const { workspaceId } = params;
-    const result = await WorkspaceService.getAllMembers(userId, workspaceId);
+    const result = await ProjectService.getAllProjects(userId, workspaceId);
 
     if (result.error) {
       return NextResponse.json(
@@ -52,8 +52,12 @@ export async function POST(
     }
 
     const { workspaceId } = params;
-    const body: AddMemberDto = await request.json();
-    const result = await WorkspaceService.addMember(userId, workspaceId, body);
+    const body: CreateProjectDto = await request.json();
+    const result = await ProjectService.createProject(
+      userId,
+      workspaceId,
+      body
+    );
 
     if (result.error) {
       return NextResponse.json(
