@@ -6,6 +6,7 @@ import statusReducer from './features/statusSlice';
 import labelReducer from './features/labelSlice';
 import epicReducer from './features/epicSlice';
 import sprintReducer from './features/sprintSlice';
+import issueReducer from './features/issueSlice';
 
 import {
   persistStore,
@@ -70,6 +71,7 @@ const rootReducer = {
   label: labelReducer,
   epic: epicReducer,
   sprint: sprintReducer,
+  issue: issueReducer,
 };
 
 const persistedReducer = persistReducer(
