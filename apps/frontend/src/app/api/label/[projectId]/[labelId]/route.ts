@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string; labelId: string } }
+  { params }: { params: Promise<{ projectId: string; labelId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const { projectId, labelId } = params;
+    const { projectId, labelId } = await params;
     const body: UpdateLabelDto = await request.json();
     const result = await LabelService.updateLabel(
       userId,
@@ -46,7 +46,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { projectId: string; labelId: string } }
+  { params }: { params: Promise<{ projectId: string; labelId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -57,7 +57,7 @@ export async function DELETE(
       );
     }
 
-    const { projectId, labelId } = params;
+    const { projectId, labelId } = await params;
     const result = await LabelService.deleteLabel(userId, projectId, labelId);
 
     if (result.error) {

@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string; sprintId: string } }
+  { params }: { params: Promise<{ projectId: string; sprintId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,10 +19,11 @@ export async function GET(
       );
     }
 
+    const { projectId, sprintId } = await params;
     const result = await SprintService.getSprintById(
       userId,
-      params.projectId,
-      params.sprintId
+      projectId,
+      sprintId
     );
 
     if (result.error) {
@@ -43,7 +44,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string; sprintId: string } }
+  { params }: { params: Promise<{ projectId: string; sprintId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -54,11 +55,12 @@ export async function PATCH(
       );
     }
 
+    const { projectId, sprintId } = await params;
     const body: UpdateSprintDto = await request.json();
     const result = await SprintService.updateSprint(
       userId,
-      params.projectId,
-      params.sprintId,
+      projectId,
+      sprintId,
       body
     );
 
@@ -80,7 +82,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { projectId: string; sprintId: string } }
+  { params }: { params: Promise<{ projectId: string; sprintId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -91,10 +93,11 @@ export async function DELETE(
       );
     }
 
+    const { projectId, sprintId } = await params;
     const result = await SprintService.deleteSprint(
       userId,
-      params.projectId,
-      params.sprintId
+      projectId,
+      sprintId
     );
 
     if (result.error) {

@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { projectId } = params;
+    const { projectId } = await params;
     const result = await LabelService.getAllLabels(userId, projectId);
 
     if (result.error) {
@@ -40,7 +40,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -51,7 +51,7 @@ export async function POST(
       );
     }
 
-    const { projectId } = params;
+    const { projectId } = await params;
     const body: CreateLabelDto = await request.json();
     const result = await LabelService.createLabel(userId, projectId, body);
 

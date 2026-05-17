@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string; issueId: string } }
+  { params }: { params: Promise<{ projectId: string; issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,11 +19,12 @@ export async function PATCH(
       );
     }
 
+    const { projectId, issueId } = await params;
     const body: ReorderIssueDto = await request.json();
     const result = await IssueService.reorderIssue(
       userId,
-      params.projectId,
-      params.issueId,
+      projectId,
+      issueId,
       body
     );
 

@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; memberId: string } }
+  { params }: { params: Promise<{ workspaceId: string; memberId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const { workspaceId, memberId } = params;
+    const { workspaceId, memberId } = await params;
     const body: UpdateMemberDto = await request.json();
     const result = await WorkspaceService.updateMember(
       userId,
@@ -46,7 +46,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; memberId: string } }
+  { params }: { params: Promise<{ workspaceId: string; memberId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -57,7 +57,7 @@ export async function DELETE(
       );
     }
 
-    const { workspaceId, memberId } = params;
+    const { workspaceId, memberId } = await params;
     const result = await WorkspaceService.removeMember(
       userId,
       workspaceId,

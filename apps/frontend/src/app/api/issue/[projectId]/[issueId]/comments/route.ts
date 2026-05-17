@@ -7,7 +7,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string; issueId: string } }
+  { params }: { params: Promise<{ projectId: string; issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -18,11 +18,8 @@ export async function GET(
       );
     }
 
-    const result = await IssueService.getComments(
-      userId,
-      params.projectId,
-      params.issueId
-    );
+    const { projectId, issueId } = await params;
+    const result = await IssueService.getComments(userId, projectId, issueId);
 
     if (result.error) {
       return NextResponse.json(

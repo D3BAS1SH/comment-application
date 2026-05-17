@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { issueId: string; commentId: string } }
+  { params }: { params: Promise<{ issueId: string; commentId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,11 +19,12 @@ export async function PATCH(
       );
     }
 
+    const { issueId, commentId } = await params;
     const body: UpdateCommentDto = await request.json();
     const result = await CommentService.updateComment(
       userId,
-      params.issueId,
-      params.commentId,
+      issueId,
+      commentId,
       body
     );
 
@@ -45,7 +46,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { issueId: string; commentId: string } }
+  { params }: { params: Promise<{ issueId: string; commentId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -56,10 +57,11 @@ export async function DELETE(
       );
     }
 
+    const { issueId, commentId } = await params;
     const result = await CommentService.deleteComment(
       userId,
-      params.issueId,
-      params.commentId
+      issueId,
+      commentId
     );
 
     if (result.error) {

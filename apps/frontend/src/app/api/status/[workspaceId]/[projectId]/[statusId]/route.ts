@@ -10,7 +10,13 @@ export async function PATCH(
   request: NextRequest,
   {
     params,
-  }: { params: { workspaceId: string; projectId: string; statusId: string } }
+  }: {
+    params: Promise<{
+      workspaceId: string;
+      projectId: string;
+      statusId: string;
+    }>;
+  }
 ) {
   try {
     const userId = getUserId(request);
@@ -21,7 +27,7 @@ export async function PATCH(
       );
     }
 
-    const { workspaceId, projectId, statusId } = params;
+    const { workspaceId, projectId, statusId } = await params;
     const body: UpdateStatusDto = await request.json();
     const result = await StatusService.updateStatus(
       userId,
@@ -51,7 +57,13 @@ export async function DELETE(
   request: NextRequest,
   {
     params,
-  }: { params: { workspaceId: string; projectId: string; statusId: string } }
+  }: {
+    params: Promise<{
+      workspaceId: string;
+      projectId: string;
+      statusId: string;
+    }>;
+  }
 ) {
   try {
     const userId = getUserId(request);
@@ -62,7 +74,7 @@ export async function DELETE(
       );
     }
 
-    const { workspaceId, projectId, statusId } = params;
+    const { workspaceId, projectId, statusId } = await params;
     const result = await StatusService.deleteStatus(
       userId,
       workspaceId,

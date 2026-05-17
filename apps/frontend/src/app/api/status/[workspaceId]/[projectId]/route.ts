@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const result = await StatusService.getAllStatuses(
       userId,
       workspaceId,
@@ -44,7 +44,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -55,7 +55,7 @@ export async function POST(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const body: CreateStatusDto = await request.json();
     const result = await StatusService.createStatus(
       userId,

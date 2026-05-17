@@ -9,7 +9,9 @@ export async function POST(
   request: NextRequest,
   {
     params,
-  }: { params: { projectId: string; issueId: string; labelId: string } }
+  }: {
+    params: Promise<{ projectId: string; issueId: string; labelId: string }>;
+  }
 ) {
   try {
     const userId = getUserId(request);
@@ -20,11 +22,12 @@ export async function POST(
       );
     }
 
+    const { projectId, issueId, labelId } = await params;
     const result = await IssueService.attachLabel(
       userId,
-      params.projectId,
-      params.issueId,
-      params.labelId
+      projectId,
+      issueId,
+      labelId
     );
 
     if (result.error) {
@@ -47,7 +50,9 @@ export async function DELETE(
   request: NextRequest,
   {
     params,
-  }: { params: { projectId: string; issueId: string; labelId: string } }
+  }: {
+    params: Promise<{ projectId: string; issueId: string; labelId: string }>;
+  }
 ) {
   try {
     const userId = getUserId(request);
@@ -58,11 +63,12 @@ export async function DELETE(
       );
     }
 
+    const { projectId, issueId, labelId } = await params;
     const result = await IssueService.detachLabel(
       userId,
-      params.projectId,
-      params.issueId,
-      params.labelId
+      projectId,
+      issueId,
+      labelId
     );
 
     if (result.error) {

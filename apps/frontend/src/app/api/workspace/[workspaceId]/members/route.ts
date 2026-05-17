@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { workspaceId: string } }
+  { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { workspaceId } = params;
+    const { workspaceId } = await params;
     const result = await WorkspaceService.getAllMembers(userId, workspaceId);
 
     if (result.error) {
@@ -40,7 +40,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { workspaceId: string } }
+  { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -51,7 +51,7 @@ export async function POST(
       );
     }
 
-    const { workspaceId } = params;
+    const { workspaceId } = await params;
     const body: AddMemberDto = await request.json();
     const result = await WorkspaceService.addMember(userId, workspaceId, body);
 

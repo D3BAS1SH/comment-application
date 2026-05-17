@@ -12,7 +12,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -23,6 +23,7 @@ export async function GET(
       );
     }
 
+    const { projectId } = await params;
     const { searchParams } = new URL(request.url);
     const filters: IssueFiltersDto = {};
     const sprintId = searchParams.get('sprintId');
@@ -37,11 +38,7 @@ export async function GET(
     if (statusId) filters.statusId = statusId;
     if (priority) filters.priority = priority as IssuePriority;
 
-    const result = await IssueService.getAllIssues(
-      userId,
-      params.projectId,
-      filters
-    );
+    const result = await IssueService.getAllIssues(userId, projectId, filters);
 
     if (result.error) {
       return NextResponse.json(
@@ -61,7 +58,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -72,12 +69,9 @@ export async function POST(
       );
     }
 
+    const { projectId } = await params;
     const body: CreateIssueDto = await request.json();
-    const result = await IssueService.createIssue(
-      userId,
-      params.projectId,
-      body
-    );
+    const result = await IssueService.createIssue(userId, projectId, body);
 
     if (result.error) {
       return NextResponse.json(

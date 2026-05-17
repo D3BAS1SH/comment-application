@@ -13,7 +13,9 @@ export async function POST(
   request: NextRequest,
   {
     params,
-  }: { params: { projectId: string; sprintId: string; action: string } }
+  }: {
+    params: Promise<{ projectId: string; sprintId: string; action: string }>;
+  }
 ) {
   try {
     const userId = getUserId(request);
@@ -24,7 +26,7 @@ export async function POST(
       );
     }
 
-    const { projectId, sprintId, action } = params;
+    const { projectId, sprintId, action } = await params;
 
     if (action === 'start') {
       const body: StartSprintDto = await request.json();

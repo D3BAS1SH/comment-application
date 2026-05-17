@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { issueId: string } }
+  { params }: { params: Promise<{ issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,8 @@ export async function GET(
       );
     }
 
-    const result = await CommentService.getComments(userId, params.issueId);
+    const { issueId } = await params;
+    const result = await CommentService.getComments(userId, issueId);
 
     if (result.error) {
       return NextResponse.json(
@@ -39,7 +40,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { issueId: string } }
+  { params }: { params: Promise<{ issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -50,12 +51,9 @@ export async function POST(
       );
     }
 
+    const { issueId } = await params;
     const body: CreateCommentDto = await request.json();
-    const result = await CommentService.createComment(
-      userId,
-      params.issueId,
-      body
-    );
+    const result = await CommentService.createComment(userId, issueId, body);
 
     if (result.error) {
       return NextResponse.json(

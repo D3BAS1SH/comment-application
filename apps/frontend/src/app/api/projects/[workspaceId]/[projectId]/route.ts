@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const result = await ProjectService.getProjectById(
       userId,
       workspaceId,
@@ -44,7 +44,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -55,7 +55,7 @@ export async function PATCH(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const body: UpdateProjectDto = await request.json();
     const result = await ProjectService.updateProjectInfo(
       userId,
@@ -82,7 +82,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -93,7 +93,7 @@ export async function DELETE(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const result = await ProjectService.deleteProject(
       userId,
       workspaceId,

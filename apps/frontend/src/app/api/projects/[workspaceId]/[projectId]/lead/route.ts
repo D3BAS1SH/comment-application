@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { workspaceId: string; projectId: string } }
+  { params }: { params: Promise<{ workspaceId: string; projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const { workspaceId, projectId } = params;
+    const { workspaceId, projectId } = await params;
     const body: UpdateProjectLeadDto = await request.json();
     const result = await ProjectService.updateProjectLead(
       userId,

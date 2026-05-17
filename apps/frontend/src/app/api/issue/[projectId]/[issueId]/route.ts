@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string; issueId: string } }
+  { params }: { params: Promise<{ projectId: string; issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,11 +19,8 @@ export async function GET(
       );
     }
 
-    const result = await IssueService.getIssueById(
-      userId,
-      params.projectId,
-      params.issueId
-    );
+    const { projectId, issueId } = await params;
+    const result = await IssueService.getIssueById(userId, projectId, issueId);
 
     if (result.error) {
       return NextResponse.json(
@@ -43,7 +40,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string; issueId: string } }
+  { params }: { params: Promise<{ projectId: string; issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -54,11 +51,12 @@ export async function PATCH(
       );
     }
 
+    const { projectId, issueId } = await params;
     const body: UpdateIssueDto = await request.json();
     const result = await IssueService.updateIssue(
       userId,
-      params.projectId,
-      params.issueId,
+      projectId,
+      issueId,
       body
     );
 
@@ -80,7 +78,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { projectId: string; issueId: string } }
+  { params }: { params: Promise<{ projectId: string; issueId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -91,11 +89,8 @@ export async function DELETE(
       );
     }
 
-    const result = await IssueService.deleteIssue(
-      userId,
-      params.projectId,
-      params.issueId
-    );
+    const { projectId, issueId } = await params;
+    const result = await IssueService.deleteIssue(userId, projectId, issueId);
 
     if (result.error) {
       return NextResponse.json(

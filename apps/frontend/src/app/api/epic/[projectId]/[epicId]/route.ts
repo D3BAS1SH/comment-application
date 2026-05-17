@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string; epicId: string } }
+  { params }: { params: Promise<{ projectId: string; epicId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,11 +19,8 @@ export async function GET(
       );
     }
 
-    const result = await EpicService.getEpicById(
-      userId,
-      params.projectId,
-      params.epicId
-    );
+    const { projectId, epicId } = await params;
+    const result = await EpicService.getEpicById(userId, projectId, epicId);
 
     if (result.error) {
       return NextResponse.json(
@@ -43,7 +40,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string; epicId: string } }
+  { params }: { params: Promise<{ projectId: string; epicId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -54,11 +51,12 @@ export async function PATCH(
       );
     }
 
+    const { projectId, epicId } = await params;
     const body: UpdateEpicDto = await request.json();
     const result = await EpicService.updateEpic(
       userId,
-      params.projectId,
-      params.epicId,
+      projectId,
+      epicId,
       body
     );
 
@@ -80,7 +78,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { projectId: string; epicId: string } }
+  { params }: { params: Promise<{ projectId: string; epicId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -91,11 +89,8 @@ export async function DELETE(
       );
     }
 
-    const result = await EpicService.deleteEpic(
-      userId,
-      params.projectId,
-      params.epicId
-    );
+    const { projectId, epicId } = await params;
+    const result = await EpicService.deleteEpic(userId, projectId, epicId);
 
     if (result.error) {
       return NextResponse.json(

@@ -8,7 +8,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -19,7 +19,8 @@ export async function GET(
       );
     }
 
-    const result = await SprintService.getAllSprints(userId, params.projectId);
+    const { projectId } = await params;
+    const result = await SprintService.getAllSprints(userId, projectId);
 
     if (result.error) {
       return NextResponse.json(
@@ -39,7 +40,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -50,12 +51,9 @@ export async function POST(
       );
     }
 
+    const { projectId } = await params;
     const body: CreateSprintDto = await request.json();
-    const result = await SprintService.createSprint(
-      userId,
-      params.projectId,
-      body
-    );
+    const result = await SprintService.createSprint(userId, projectId, body);
 
     if (result.error) {
       return NextResponse.json(

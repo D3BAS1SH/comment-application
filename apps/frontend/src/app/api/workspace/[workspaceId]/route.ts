@@ -7,7 +7,7 @@ function getUserId(request: NextRequest): string | null {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
     const userId = getUserId(request);
@@ -18,8 +18,11 @@ export async function GET(
       );
     }
 
-    const { slug } = params;
-    const result = await WorkspaceService.getWorkspaceBySlug(userId, slug);
+    const { workspaceId } = await params;
+    const result = await WorkspaceService.getWorkspaceBySlug(
+      userId,
+      workspaceId
+    );
 
     if (result.error) {
       return NextResponse.json(
