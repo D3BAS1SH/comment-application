@@ -1,12 +1,12 @@
 services:
   auth-service:
-    image: d3ba110/auth-service:1.7
+    image: d3ba110/auth-service:1.8
     restart: unless-stopped
     container_name: auth-service
     env_file:
       - ./.dev.auth_service
-    expose:
-      - "3033"
+    ports:
+      - "3033:3033"
     networks:
       - app_network
     healthcheck:
