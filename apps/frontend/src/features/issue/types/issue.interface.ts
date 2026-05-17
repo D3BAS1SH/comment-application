@@ -110,6 +110,14 @@ export interface IssueSubtaskListDto {
 
 // ---- Request DTOs ----
 
+export interface CreateCommentDto {
+  body: string;
+}
+
+export interface UpdateCommentDto {
+  body?: string;
+}
+
 export interface CreateIssueDto {
   title: string;
   statusId: string;

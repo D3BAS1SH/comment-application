@@ -6,6 +6,7 @@ import { useWorkspace } from '@/features/workspace/hooks/use-workspace';
 import { useProject } from '@/features/projects/hooks/use-project';
 import { useStatus } from '@/features/status/hooks/use-status';
 import { useIssue } from '@/features/issue/hooks/use-issue';
+import { CommentModal } from '@/features/issue/components/comment-modal';
 import { TerminalWindow } from '@/components/ui/terminal-window';
 import { StatusDto } from '@/features/status/types/status.interface';
 import {
@@ -33,6 +34,8 @@ interface KanbanColumnProps {
   status: StatusDto;
   issues: IssueResponseDto[];
   onCreateIssue: (statusId: string, title: string) => void;
+  onOpenComments: (issue: IssueResponseDto) => void;
+  onViewActivity: (issueId: string) => void;
   creating: boolean;
 }
 
@@ -40,6 +43,8 @@ function KanbanColumn({
   status,
   issues,
   onCreateIssue,
+  onOpenComments,
+  onViewActivity,
   creating,
 }: KanbanColumnProps) {
   const [showForm, setShowForm] = useState(false);
@@ -82,12 +87,15 @@ function KanbanColumn({
         {issues.map((issue) => (
           <div
             key={issue.id}
-            className="border border-green-900 bg-black/60 p-2 hover:border-green-600 transition-colors cursor-pointer"
+            className="border border-green-900 bg-black/60 p-2 hover:border-green-600 transition-colors"
           >
             <div className="flex items-start justify-between gap-1 mb-1">
-              <span className="text-green-400 text-xs font-mono font-bold line-clamp-2">
+              <button
+                onClick={() => onViewActivity(issue.id)}
+                className="text-green-400 text-xs font-mono font-bold line-clamp-2 text-left hover:text-green-300 transition-colors"
+              >
                 {issue.title}
-              </span>
+              </button>
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <span
@@ -117,6 +125,15 @@ function KanbanColumn({
                 @{issue.assignee.firstName} {issue.assignee.lastName}
               </div>
             )}
+            {/* Comment button */}
+            <div className="mt-2 flex justify-end">
+              <button
+                onClick={() => onOpenComments(issue)}
+                className="text-[10px] font-mono text-gray-600 hover:text-cyan-400 uppercase transition-colors border border-transparent hover:border-cyan-900 px-1.5 py-0.5"
+              >
+                💬 comments
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -187,6 +204,8 @@ export default function ProjectDashboardPage({
   } = useIssue();
 
   const [creating, setCreating] = useState(false);
+  const [selectedIssueForComment, setSelectedIssueForComment] =
+    useState<IssueResponseDto | null>(null);
 
   useEffect(() => {
     if (!currentWorkspace || currentWorkspace.slug !== params.slug) {
@@ -234,6 +253,19 @@ export default function ProjectDashboardPage({
         .filter((i) => i.statusId === statusId)
         .sort((a, b) => a.position - b.position),
     [issues]
+  );
+
+  const handleOpenComments = useCallback((issue: IssueResponseDto) => {
+    setSelectedIssueForComment(issue);
+  }, []);
+
+  const handleViewActivity = useCallback(
+    (issueId: string) => {
+      router.push(
+        `/workspaces/${params.slug}/projects/${params.projectId}/issues/${issueId}/activity`
+      );
+    },
+    [router, params.slug, params.projectId]
   );
 
   const sortedStatuses = [...statuses].sort((a, b) => a.position - b.position);
@@ -328,6 +360,8 @@ export default function ProjectDashboardPage({
                   status={status}
                   issues={getIssuesForStatus(status.id)}
                   onCreateIssue={handleCreateIssue}
+                  onOpenComments={handleOpenComments}
+                  onViewActivity={handleViewActivity}
                   creating={creating}
                 />
               ))}
@@ -361,6 +395,15 @@ export default function ProjectDashboardPage({
           </div>
         </div>
       </TerminalWindow>
+
+      {/* Comment Modal */}
+      {selectedIssueForComment && (
+        <CommentModal
+          issueId={selectedIssueForComment.id}
+          issueTitle={selectedIssueForComment.title}
+          onClose={() => setSelectedIssueForComment(null)}
+        />
+      )}
     </div>
   );
 }
