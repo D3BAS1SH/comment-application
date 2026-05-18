@@ -1,14 +1,15 @@
 import { WorkspaceDashboard } from '@/features/workspace/components/workspace-dashboard';
 import React from 'react';
 
-export default function WorkspaceSlugPage({
+export default async function WorkspaceSlugPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   return (
     <div className="container mx-auto p-4 max-w-5xl">
-      <WorkspaceDashboard slug={params.slug} />
+      <WorkspaceDashboard slug={slug} />
     </div>
   );
 }
