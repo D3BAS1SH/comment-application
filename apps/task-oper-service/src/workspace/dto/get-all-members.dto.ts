@@ -5,8 +5,11 @@ export class GetAllMembersResponse {
   ownerId: string;
   slug: string;
   workspaceMembers: {
+    role: string;
     user: {
+      id: string;
       firstName: string;
+      lastName: string;
       email: string;
     };
   }[];
@@ -22,8 +25,11 @@ export class GetAllMembersResponse {
     ownerId: string,
     slug: string,
     workspaceMembers: {
+      role: string;
       user: {
+        id: string;
         firstName: string;
+        lastName: string;
         email: string;
       };
     }[],
@@ -37,14 +43,15 @@ export class GetAllMembersResponse {
     this.createdAt = createdAt;
     this.ownerId = ownerId;
     this.slug = slug;
-    this.workspaceMembers = workspaceMembers.map((member) => {
-      return {
-        user: {
-          firstName: member.user.firstName,
-          email: member.user.email,
-        },
-      };
-    });
+    this.workspaceMembers = workspaceMembers.map((member) => ({
+      role: member.role,
+      user: {
+        id: member.user.id,
+        firstName: member.user.firstName,
+        lastName: member.user.lastName,
+        email: member.user.email,
+      },
+    }));
     this.owner = {
       firstName: owner.firstName,
       email: owner.email,

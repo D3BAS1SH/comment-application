@@ -44,12 +44,24 @@ export class WorkspaceService {
         throw new BadRequestException('User Id is required');
       }
 
-      const reposne = await this.prismaService.workspace.create({
-        data: {
-          name: createWorkspace.name,
-          slug: createWorkspace.slug,
-          ownerId: userId,
-        },
+      const reposne = await this.prismaService.$transaction(async (tx) => {
+        const workspace = await tx.workspace.create({
+          data: {
+            name: createWorkspace.name,
+            slug: createWorkspace.slug,
+            ownerId: userId,
+          },
+        });
+
+        await tx.workspaceMember.create({
+          data: {
+            workspaceId: workspace.id,
+            userId: userId,
+            role: 'OWNER',
+          },
+        });
+
+        return workspace;
       });
 
       this.loggerService.log(
@@ -385,7 +397,6 @@ export class WorkspaceService {
       const workspace = await this.prismaService.workspace.findUniqueOrThrow({
         where: {
           id: workspaceId,
-          ownerId: userId,
         },
         select: {
           id: true,
@@ -395,9 +406,12 @@ export class WorkspaceService {
           slug: true,
           workspaceMembers: {
             select: {
+              role: true,
               user: {
                 select: {
+                  id: true,
                   firstName: true,
+                  lastName: true,
                   email: true,
                 },
               },
@@ -411,6 +425,16 @@ export class WorkspaceService {
           },
         },
       });
+
+      const hasAccess =
+        workspace.ownerId === userId ||
+        workspace.workspaceMembers.some((m) => m.user.id === userId);
+
+      if (!hasAccess) {
+        throw new ForbiddenException(
+          'You do not have access to this workspace'
+        );
+      }
 
       return new GetAllMembersResponse(
         workspace.id,
@@ -657,7 +681,7 @@ export class WorkspaceService {
         throw new BadRequestException('Member Id is required');
       }
 
-      const isOwnerMember =
+      const caller =
         await this.prismaService.workspaceMember.findUniqueOrThrow({
           where: {
             workspaceId_userId: {
@@ -670,16 +694,33 @@ export class WorkspaceService {
           },
         });
 
-      if (isOwnerMember.role === 'OWNER' || isOwnerMember.role === 'ADMIN') {
-        throw new BadRequestException(
-          'Can not remove user with higher privilege'
+      if (caller.role !== 'OWNER' && caller.role !== 'ADMIN') {
+        throw new ForbiddenException(
+          'You do not have permission to remove members'
         );
+      }
+
+      const target =
+        await this.prismaService.workspaceMember.findUniqueOrThrow({
+          where: {
+            workspaceId_userId: {
+              workspaceId,
+              userId: memberId,
+            },
+          },
+          select: {
+            role: true,
+          },
+        });
+
+      if (target.role === 'OWNER') {
+        throw new BadRequestException('Cannot remove the workspace owner');
       }
 
       await this.prismaService.workspaceMember.delete({
         where: {
           workspaceId_userId: {
-            userId,
+            userId: memberId,
             workspaceId,
           },
         },
@@ -725,9 +766,12 @@ export class WorkspaceService {
       }
 
       const callerUser =
-        await this.prismaService.workspaceMember.findFirstOrThrow({
+        await this.prismaService.workspaceMember.findUniqueOrThrow({
           where: {
-            userId: callerId,
+            workspaceId_userId: {
+              workspaceId: workspaceId,
+              userId: callerId,
+            },
           },
           select: {
             role: true,
@@ -742,7 +786,7 @@ export class WorkspaceService {
 
       if (transferOwnerShipTo.fromRole === 'OWNER') {
         throw new ForbiddenException(
-          'User is already an Owner you can not transfer to someone with Owner access'
+          'Target user is already an Owner – cannot transfer to them'
         );
       }
 
@@ -755,7 +799,7 @@ export class WorkspaceService {
           role: 'OWNER',
         },
         data: {
-          role: 'MEMBER',
+          role: transferOwnerShipTo.toRole,
         },
       });
 
@@ -771,7 +815,6 @@ export class WorkspaceService {
             workspaceId: workspaceId,
             userId: transferOwnerShipTo.toUserId,
           },
-          role: 'MEMBER',
         },
         data: {
           role: 'OWNER',
