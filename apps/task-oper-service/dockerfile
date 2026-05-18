@@ -69,6 +69,9 @@ RUN cd apps/task-oper-service && DATABASE_URL="postgresql://x:x@localhost/x" pnp
 # Build the application using Turbo
 RUN pnpm turbo build --filter=task-oper-service
 
+# Verify build output exists (fail fast if missing)
+RUN test -f apps/task-oper-service/dist/src/main.js || (echo "ERROR: dist/src/main.js not found after build!" && ls -la apps/task-oper-service/dist/ && exit 1)
+
 # ============================================
 # RUNNER STAGE - Production runtime (minimal)
 # ============================================
@@ -97,8 +100,8 @@ COPY --from=builder --chown=nestjs:nodejs /app/apps/task-oper-service/dist ./dis
 COPY --from=builder --chown=nestjs:nodejs /app/apps/task-oper-service/package.json ./package.json
 # COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
 
-# Copy Prisma Binaries from Builder
-COPY --from=builder --chown=nestjs:nodejs /app/apps/task-oper-service/src/prisma/generated ./dist/prisma/generated
+# Copy Prisma Binaries from Builder (ESM build outputs to dist/src/)
+COPY --from=builder --chown=nestjs:nodejs /app/apps/task-oper-service/src/prisma/generated ./dist/src/prisma/generated
 
 RUN mkdir -p logs && chown nestjs:nodejs logs
 
@@ -113,4 +116,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:${TASK_PORT:-3040}/api/v1/health || exit 1
 
 # Start the application
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
