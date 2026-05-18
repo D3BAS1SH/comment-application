@@ -52,6 +52,11 @@
       "dependsOn": ["^build"],
       "env": ["NEXT_PUBLIC_API_URL"],
       "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "task-oper-service#build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "env": ["DATABASE_URL"],
+      "outputs": ["dist/**"]
     }
   }
 }
