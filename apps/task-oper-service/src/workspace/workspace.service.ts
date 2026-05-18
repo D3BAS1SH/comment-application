@@ -504,13 +504,32 @@ export class WorkspaceService {
         error instanceof Error ? error.message : 'Internal Server Error',
         `${this.context} - getMyMembership`
       );
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(
-            'Workspace not found or you do not have permission to update it'
+
+      // Lazy backfill: workspace pre-dates the owner-member seed.
+      // If no record exists and the user is the workspace owner, create it now.
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        const workspace = await this.prismaService.workspace.findUnique({
+          where: { id: workspaceId, ownerId: userId },
+          select: { ownerId: true, owner: { select: { email: true } } },
+        });
+
+        if (workspace) {
+          await this.prismaService.workspaceMember.create({
+            data: { workspaceId, userId, role: 'OWNER' },
+          });
+          this.loggerService.log(
+            `Backfilled OWNER member record for workspace ${workspaceId}`,
+            `${this.context} - getMyMembership`
           );
+          return new GetMembershipResponse(userId, 'OWNER', workspace.owner.email);
         }
+
+        throw new NotFoundException('You are not a member of this workspace');
       }
+
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'Internal Server Error'
       );
