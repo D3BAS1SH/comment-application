@@ -1,61 +1,61 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { FintechCard, FintechCardHeader } from '@/components/ui/fintech-card';
-import { FintechInput } from '@/features/auth/components/auth-input';
+import { useState } from 'react';
 import { Search, Clock } from 'lucide-react';
 
 export default function SearchPage() {
+  const [query, setQuery] = useState('');
   const skeletonItems = Array.from({ length: 5 });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      key="search-page"
-    >
-      <h1 className="text-3xl font-bold tracking-tighter mb-8">Search</h1>
-
-      <FintechCard variant="glass" className="mb-8">
-        <FintechCardHeader>
-          <FintechInput
-            variant="minimal"
-            placeholder="Search transactions, recipients, or services..."
-            icon={<Search size={18} />}
-            disabled
-          />
-        </FintechCardHeader>
-      </FintechCard>
-
-      {/* Coming Soon Skeleton */}
-      <div className="space-y-4 max-w-2xl">
-        <FintechCard variant="glass">
-          <div className="p-6 space-y-4">
-            <div className="flex items-center gap-3 mb-6">
-              <Clock size={24} className="text-cyan-400" />
-              <div>
-                <p className="text-white font-semibold text-lg">
-                  Feature Coming Soon
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Search functionality will be available shortly
-                </p>
-              </div>
-            </div>
-
-            {skeletonItems.map((_, index) => (
-              <div
-                key={index}
-                className="p-4 bg-white/5 rounded-lg space-y-2 animate-pulse"
-              >
-                <div className="h-4 bg-white/10 rounded w-3/4"></div>
-                <div className="h-3 bg-white/10 rounded w-1/2"></div>
-              </div>
-            ))}
-          </div>
-        </FintechCard>
+    <div className="space-y-6 font-mono">
+      <div className="border-l-4 border-green-400 pl-4 py-1">
+        <h1 className="text-xl font-bold tracking-widest uppercase text-white">
+          Search
+        </h1>
+        <p className="text-gray-600 text-xs mt-1">query module</p>
       </div>
-    </motion.div>
+
+      {/* Search input */}
+      <div className="border border-green-800 bg-black flex items-center gap-3 px-4 py-3 focus-within:border-green-500 transition-colors">
+        <Search size={16} className="text-green-600 flex-shrink-0" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="search transactions, recipients, services..."
+          disabled
+          className="flex-1 bg-transparent text-green-300 text-sm placeholder-gray-700 focus:outline-none font-mono disabled:cursor-not-allowed"
+        />
+        <span className="text-[10px] text-gray-700 uppercase tracking-widest">
+          disabled
+        </span>
+      </div>
+
+      {/* Coming soon + skeleton */}
+      <div className="space-y-3 max-w-2xl">
+        <div className="flex items-center gap-3 border border-green-900 bg-black/40 px-4 py-4">
+          <Clock size={16} className="text-green-600 flex-shrink-0" />
+          <div>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-widest">
+              Feature Coming Soon
+            </p>
+            <p className="text-gray-600 text-[10px] mt-0.5">
+              Search functionality will be available shortly
+            </p>
+          </div>
+        </div>
+
+        {skeletonItems.map((_, i) => (
+          <div
+            key={i}
+            className="border border-green-900/40 bg-black/30 p-4 space-y-1.5 animate-pulse"
+          >
+            <div className="h-3 bg-green-900/30 rounded w-3/4" />
+            <div className="h-2.5 bg-green-900/20 rounded w-1/2" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

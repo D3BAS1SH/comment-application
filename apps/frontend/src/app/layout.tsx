@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import StoreProvider from './StoreProvider';
-import { TerminalCommandInput } from '@/components/ui/terminal-command-input';
+import { TerminalCommandInputClient } from '@/components/ui/terminal-command-input-client';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <StoreProvider>
           {children}
-          <TerminalCommandInput />
+          <TerminalCommandInputClient />
         </StoreProvider>
         <Toaster richColors position="top-center" expand />
       </body>

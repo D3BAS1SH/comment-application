@@ -2,7 +2,6 @@
 
 import type React from 'react';
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/features/workspace/components/sidebar';
 import { Menu, X } from 'lucide-react';
@@ -17,10 +16,10 @@ export default function HomeLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const overlayVisible = isMobile && isSidebarOpen;
   const pathname = usePathname();
 
-  // Reset mobile sidebar when route changes - using derived state pattern
-  // to avoid linting issues with setState in useEffect
+  // Close mobile sidebar on route change
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
@@ -56,6 +55,7 @@ export default function HomeLayout({
   return (
     <div className="min-h-screen bg-black text-white font-mono selection:bg-green-900 selection:text-green-400">
       <Scanline />
+
       {/* Mobile Toggle Button */}
       {isMobile && (
         <button
@@ -72,52 +72,55 @@ export default function HomeLayout({
         {/* Sidebar */}
         <Sidebar isCollapsed={isCollapsed} />
 
-        {/* Mobile Sidebar Overlay */}
-        <AnimatePresence>
-          {isMobile && isSidebarOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsSidebarOpen(false)}
-                className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
-              />
-              <motion.div
-                initial={{ x: -280 }}
-                animate={{ x: 0 }}
-                exit={{ x: -280 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed inset-y-0 left-0 z-40 w-64 md:hidden"
-              >
-                <div className="h-full border-r border-green-400/20 bg-black shadow-2xl">
-                  {/* Reuse Sidebar component logic but force expanded for mobile */}
-                  <Sidebar isCollapsed={false} />
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        {/* Mobile Sidebar Overlay — CSS transitions instead of framer-motion */}
+        {isMobile && (
+          <>
+            <div
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-200"
+              style={{
+                opacity: overlayVisible ? 1 : 0,
+                pointerEvents: overlayVisible ? 'auto' : 'none',
+              }}
+            />
+            <div
+              className="fixed inset-y-0 left-0 z-40 w-64 md:hidden transition-transform duration-300 ease-in-out"
+              style={{
+                transform: isSidebarOpen
+                  ? 'translateX(0)'
+                  : 'translateX(-280px)',
+              }}
+            >
+              <div className="h-full border-r border-green-400/20 bg-black shadow-2xl">
+                <Sidebar isCollapsed={false} />
+              </div>
+            </div>
+          </>
+        )}
 
-        {/* Main Content */}
-        <motion.main
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+        {/* Main Content — CSS opacity transition instead of motion.main */}
+        <main
           className={cn(
-            'flex-1 transition-all duration-300',
+            'flex-1 transition-all duration-300 animate-fadeIn',
             !isMobile && !isCollapsed ? 'pl-64' : !isMobile ? 'pl-20' : 'pl-0'
           )}
+          style={{ animation: 'layoutFadeIn 0.3s ease forwards' }}
         >
+          <style>{`
+            @keyframes layoutFadeIn {
+              from { opacity: 0; }
+              to   { opacity: 1; }
+            }
+          `}</style>
           <div className="min-h-screen p-6 md:p-8">{children}</div>
-        </motion.main>
+        </main>
       </div>
 
-      {/* Desktop Collapse Toggle Overlay (Hidden Button) */}
+      {/* Desktop Collapse Toggle */}
       {!isMobile && (
         <button
           onClick={toggleSidebar}
-          className="fixed left-[calc(var(--sidebar-width)-12px)] top-20 z-50 hidden md:flex h-6 w-6 items-center justify-center rounded-full border border-green-400/20 bg-black text-gray-400 hover:text-green-400 hover:border-green-400/50 transition-all"
+          className="fixed top-20 z-50 hidden md:flex h-6 w-6 items-center justify-center rounded-full border border-green-400/20 bg-black text-gray-400 hover:text-green-400 hover:border-green-400/50 transition-all"
           style={{
             left: isCollapsed ? '68px' : '244px',
             transition: 'left 0.3s ease-in-out',

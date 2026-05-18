@@ -1,56 +1,48 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import {
-  FintechCard,
-  FintechCardContent,
-  FintechCardHeader,
-  FintechCardTitle,
-} from '@/components/ui/fintech-card';
 import { User, Mail, Phone } from 'lucide-react';
+
+const fields = [
+  { label: 'Name', value: 'John Doe', icon: <User size={16} /> },
+  { label: 'Email', value: 'john@example.com', icon: <Mail size={16} /> },
+  { label: 'Phone', value: '+1 (555) 123-4567', icon: <Phone size={16} /> },
+];
 
 export default function ProfilePage() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      key="profile-page"
-    >
-      <h1 className="text-3xl font-bold tracking-tighter mb-8">Profile</h1>
+    <div className="space-y-6 font-mono">
+      <div className="border-l-4 border-green-400 pl-4 py-1">
+        <h1 className="text-xl font-bold tracking-widest uppercase text-white">
+          Profile
+        </h1>
+        <p className="text-gray-600 text-xs mt-1">account information</p>
+      </div>
 
-      <FintechCard variant="glass" className="max-w-2xl">
-        <FintechCardHeader>
-          <FintechCardTitle>Account Information</FintechCardTitle>
-        </FintechCardHeader>
-        <FintechCardContent>
-          <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
-              <User size={24} className="text-cyan-400" />
+      <div className="border border-green-900 bg-black/40 max-w-2xl">
+        <div className="px-4 py-3 border-b border-green-900">
+          <p className="text-green-400 text-xs font-bold uppercase tracking-widest">
+            {/* account info */}
+          </p>
+        </div>
+        <div className="divide-y divide-green-900/50">
+          {fields.map(({ label, value, icon }) => (
+            <div
+              key={label}
+              className="flex items-center gap-4 px-4 py-4 hover:bg-green-900/10 transition-colors"
+            >
+              <span className="text-green-600 flex-shrink-0">{icon}</span>
               <div>
-                <p className="text-gray-400 text-sm">Name</p>
-                <p className="text-white font-medium">John Doe</p>
+                <p className="text-gray-600 text-[10px] uppercase tracking-widest">
+                  {label}
+                </p>
+                <p className="text-green-300 text-sm font-bold mt-0.5">
+                  {value}
+                </p>
               </div>
             </div>
-
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
-              <Mail size={24} className="text-cyan-400" />
-              <div>
-                <p className="text-gray-400 text-sm">Email</p>
-                <p className="text-white font-medium">john@example.com</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
-              <Phone size={24} className="text-cyan-400" />
-              <div>
-                <p className="text-gray-400 text-sm">Phone</p>
-                <p className="text-white font-medium">+1 (555) 123-4567</p>
-              </div>
-            </div>
-          </div>
-        </FintechCardContent>
-      </FintechCard>
-    </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

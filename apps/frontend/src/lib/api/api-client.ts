@@ -3,7 +3,7 @@ import axios, {
   AxiosInstance,
   InternalAxiosRequestConfig,
 } from 'axios';
-import store from '../redux/store';
+import storeRef from '../redux/storeRef';
 import { logoutUser, tokenRefreshed } from '../redux/features/userSlice';
 
 /**
@@ -88,7 +88,7 @@ apiClient.interceptors.response.use(
         const { accessToken } = response.data;
 
         // Update Redux store so UI/Hooks are in sync
-        store.dispatch(tokenRefreshed(accessToken));
+        storeRef.current?.dispatch(tokenRefreshed(accessToken));
 
         processQueue(null, accessToken);
         return apiClient(originalRequest);
@@ -101,7 +101,7 @@ apiClient.interceptors.response.use(
         // 2. Handle Refresh Token Expiration or Session Death
         if (refreshErrorCode === 'SESSION_EXPIRED' || status === 401) {
           processQueue(refreshError, null);
-          store.dispatch(logoutUser());
+          storeRef.current?.dispatch(logoutUser());
           if (typeof window !== 'undefined') {
             window.location.href = '/login?session_expired=true';
           }
@@ -114,7 +114,7 @@ apiClient.interceptors.response.use(
 
     // 3. Handle Hard Session Expiry (If detected on a normal request)
     if (status === 401 && errorCode === 'SESSION_EXPIRED') {
-      store.dispatch(logoutUser());
+      storeRef.current?.dispatch(logoutUser());
       if (typeof window !== 'undefined') {
         window.location.href = '/login?session_expired=true';
       }

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
   Navigation,
   Menu,
@@ -8,7 +7,6 @@ import {
   Search,
   MessageCircle,
   FileText,
-  Palette,
   User,
   Settings,
   X,
@@ -16,7 +14,6 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { FintechButton } from '@/components/ui/fintech-button';
 
 interface AppNavbarProps {
   onMenuToggle: () => void;
@@ -28,7 +25,7 @@ const mobileMenuItems = [
   { name: 'Search', href: '/home/search', icon: <Search size={18} /> },
   { name: 'Chat', href: '/home/chat', icon: <MessageCircle size={18} /> },
   { name: 'Post', href: '/home/post', icon: <FileText size={18} /> },
-  { name: 'Canvas', href: '/home/canvas', icon: <Palette size={18} /> },
+  // { name: 'Canvas', href: '/home/canvas', icon: <Palette size={18} /> },
   { name: 'Profile', href: '/home/profile', icon: <User size={18} /> },
   { name: 'Settings', href: '/home/settings', icon: <Settings size={18} /> },
 ];
@@ -48,18 +45,12 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
 
   return (
     <>
-      <motion.header
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl"
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl transition-opacity duration-300">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             {/* Menu button - Visible on all screen widths */}
             {showBrand && (
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => {
                   if (window.innerWidth < 768) {
                     handleMenuToggle();
@@ -67,11 +58,11 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
                     handleDesktopToggle();
                   }
                 }}
-                className="text-gray-400 hover:text-cyan-400 transition-colors flex"
+                className="text-gray-400 hover:text-cyan-400 transition-colors flex hover:scale-110 active:scale-95"
                 title="Toggle Menu"
               >
                 {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
-              </motion.button>
+              </button>
             )}
 
             <Link className="flex items-center space-x-2 font-bold" href="/">
@@ -82,21 +73,16 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
 
           <div className="flex items-center gap-4">
             {showBrand && (
-              <FintechButton className="text-black hover:text-cyan-400 transition-colors text-sm">
+              <button className="text-[10px] font-mono uppercase tracking-widest text-gray-500 border border-gray-700 hover:border-red-500 hover:text-red-400 px-3 py-1.5 transition-colors">
                 Sign Out
-              </FintechButton>
+              </button>
             )}
           </div>
         </div>
 
         {/* Mobile Menu - Icon Only Navigation */}
         {showBrand && showMobileMenu && window.innerWidth < 768 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur-xl"
-          >
+          <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur-xl overflow-hidden transition-all duration-200">
             <div className="flex flex-wrap gap-2 p-4">
               {mobileMenuItems.map((item) => {
                 const isActive =
@@ -108,9 +94,7 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
                     href={item.href}
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <div
                       className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                         isActive
                           ? 'bg-gradient-to-r from-cyan-400/20 to-violet-500/20 text-cyan-400'
@@ -119,14 +103,14 @@ export function AppNavbar({ onMenuToggle, showBrand = true }: AppNavbarProps) {
                       title={item.name}
                     >
                       {item.icon}
-                    </motion.div>
+                    </div>
                   </Link>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         )}
-      </motion.header>
+      </header>
     </>
   );
 }

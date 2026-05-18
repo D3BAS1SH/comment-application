@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { forwardRef } from 'react';
-import { FintechCard } from '@/components/ui/fintech-card';
 
 interface FintechFormProps extends Omit<HTMLMotionProps<'form'>, 'ref'> {
   title?: string;
@@ -61,9 +60,9 @@ const FintechForm = forwardRef<HTMLFormElement, FintechFormProps>(
 
     if (variant === 'card') {
       return (
-        <FintechCard variant="glass" className="max-w-md mx-auto p-8">
+        <div className="max-w-md mx-auto p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
           {formContent}
-        </FintechCard>
+        </div>
       );
     }
 

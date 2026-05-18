@@ -8,6 +8,7 @@ import epicReducer from './features/epicSlice';
 import sprintReducer from './features/sprintSlice';
 import issueReducer from './features/issueSlice';
 import commentReducer from './features/commentSlice';
+import { injectStore } from './storeRef';
 
 import {
   persistStore,
@@ -92,6 +93,9 @@ const store = configureStore({
       },
     }),
 });
+
+// Inject the store reference so api-client can reach it without a static import
+injectStore(store);
 
 // For backwards compatibility with existing code
 export const makeStore = () => store;
