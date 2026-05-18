@@ -524,7 +524,11 @@ export class WorkspaceService {
             `Backfilled OWNER member record for workspace ${workspaceId}`,
             `${this.context} - getMyMembership`
           );
-          return new GetMembershipResponse(userId, 'OWNER', workspace.owner.email);
+          return new GetMembershipResponse(
+            userId,
+            'OWNER',
+            workspace.owner.email
+          );
         }
 
         throw new NotFoundException('You are not a member of this workspace');
@@ -700,8 +704,8 @@ export class WorkspaceService {
         throw new BadRequestException('Member Id is required');
       }
 
-      const caller =
-        await this.prismaService.workspaceMember.findUniqueOrThrow({
+      const caller = await this.prismaService.workspaceMember.findUniqueOrThrow(
+        {
           where: {
             workspaceId_userId: {
               workspaceId,
@@ -711,7 +715,8 @@ export class WorkspaceService {
           select: {
             role: true,
           },
-        });
+        }
+      );
 
       if (caller.role !== 'OWNER' && caller.role !== 'ADMIN') {
         throw new ForbiddenException(
@@ -719,8 +724,8 @@ export class WorkspaceService {
         );
       }
 
-      const target =
-        await this.prismaService.workspaceMember.findUniqueOrThrow({
+      const target = await this.prismaService.workspaceMember.findUniqueOrThrow(
+        {
           where: {
             workspaceId_userId: {
               workspaceId,
@@ -730,7 +735,8 @@ export class WorkspaceService {
           select: {
             role: true,
           },
-        });
+        }
+      );
 
       if (target.role === 'OWNER') {
         throw new BadRequestException('Cannot remove the workspace owner');
