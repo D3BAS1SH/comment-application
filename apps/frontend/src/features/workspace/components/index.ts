@@ -1,2 +1,11 @@
 export { AppNavbar } from './app-navbar';
 export { Sidebar } from './sidebar';
+export { WorkspaceAddMember } from './workspace-add-member';
+export { WorkspaceUpdateMember } from './workspace-update-member';
+export { WorkspaceRemoveMember } from './workspace-remove-member';
+export { WorkspaceTransferOwnership } from './workspace-transfer-ownership';
+export { WorkspaceMembers } from './workspace-members';
+export { WorkspaceDashboard } from './workspace-dashboard';
+export { WorkspaceProjectsPanel } from './workspace-projects-panel';
+export { WorkspaceForm } from './workspace-form';
+export { WorkspaceList } from './workspace-list';

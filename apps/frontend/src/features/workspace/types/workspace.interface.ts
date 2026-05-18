@@ -26,6 +26,7 @@ export interface CreateWorkspaceDto {
 }
 
 export interface UpdateWorkspaceDto {
+  id: string;
   name?: string;
   slug?: string;
 }
@@ -49,7 +50,9 @@ export interface UpdateMemberDto {
 
 export interface TransferOwnershipDto {
   toUserId: string;
-  fromRole: 'OWNER';
+  /** Current role of the target user — must not be OWNER */
+  fromRole: 'ADMIN' | 'MEMBER' | 'VIEWER';
+  /** Role the caller (current owner) receives after the transfer */
   toRole: 'ADMIN' | 'MEMBER';
 }
 
@@ -64,14 +67,13 @@ export interface GetAllMembersResponse {
     email: string;
   };
   workspaceMembers: Array<{
+    role: string;
     user: {
       id: string;
       firstName: string;
-      lastName?: string;
+      lastName: string;
       email: string;
     };
-    role: string;
-    joinedAt: string;
   }>;
 }
 

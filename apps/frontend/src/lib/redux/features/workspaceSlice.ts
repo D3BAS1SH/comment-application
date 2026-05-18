@@ -4,6 +4,7 @@ import {
   WorkspaceDetails,
   CreateWorkspaceResponse,
   CreateWorkspaceDto,
+  UpdateWorkspaceDto,
 } from '@/features/workspace/types/workspace.interface';
 
 interface WorkspaceState {
@@ -50,6 +51,23 @@ export const createWorkspace = createAsyncThunk(
         );
       }
       return rejectWithValue('Failed to create workspace');
+    }
+  }
+);
+
+export const updateWorkspace = createAsyncThunk(
+  'workspace/update',
+  async (data: UpdateWorkspaceDto, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch('/api/workspace/update', data);
+      return response.data as CreateWorkspaceResponse;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(
+          error.response?.data?.message || 'Failed to update workspace'
+        );
+      }
+      return rejectWithValue('Failed to update workspace');
     }
   }
 );
@@ -110,6 +128,30 @@ const workspaceSlice = createSlice({
       state.workspaces.push(action.payload);
     });
     builder.addCase(createWorkspace.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Update workspace
+    builder.addCase(updateWorkspace.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(updateWorkspace.fulfilled, (state, action) => {
+      state.loading = false;
+      const updated = action.payload;
+      state.workspaces = state.workspaces.map((ws) =>
+        ws.id === updated.id ? updated : ws
+      );
+      if (state.currentWorkspace?.id === updated.id) {
+        state.currentWorkspace = {
+          ...state.currentWorkspace,
+          name: updated.name,
+          slug: updated.slug,
+        };
+      }
+    });
+    builder.addCase(updateWorkspace.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

@@ -1,110 +1,89 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TerminalWindow } from '@/components/ui/terminal-window';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TerminalFormInput } from '@/features/auth/components/terminal-form-input';
 import {
   GetAllMembersResponse,
   GetMembershipResponse,
 } from '../types/workspace.interface';
+import { WorkspaceAddMember } from './workspace-add-member';
+import { WorkspaceUpdateMember } from './workspace-update-member';
+import { WorkspaceRemoveMember } from './workspace-remove-member';
+import { WorkspaceTransferOwnership } from './workspace-transfer-ownership';
 import axios from 'axios';
 
 interface Props {
   workspaceId: string;
 }
 
+type MemberList = GetAllMembersResponse['workspaceMembers'];
+
 export const WorkspaceMembers: React.FC<Props> = ({ workspaceId }) => {
-  const [members, setMembers] = useState<
-    GetAllMembersResponse['workspaceMembers']
-  >([]);
+  const [members, setMembers] = useState<MemberList>([]);
   const [myMembership, setMyMembership] =
     useState<GetMembershipResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'MEMBER' | 'ADMIN' | 'VIEWER'>(
-    'MEMBER'
-  );
-  const [inviting, setInviting] = useState(false);
+  const fetchMembers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
-        const [membersRes, meRes] = await Promise.all([
-          axios.get(`/api/workspace/${workspaceId}/members`),
-          axios.get(`/api/workspace/${workspaceId}/members/me`),
-        ]);
-        setMembers(membersRes.data.workspaceMembers);
-        setMyMembership(meRes.data);
-      } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || 'Failed to load members');
-        } else {
-          setError('Failed to load members');
-        }
-      } finally {
-        setLoading(false);
+      const [membersResult, meResult] = await Promise.allSettled([
+        axios.get(`/api/workspace/${workspaceId}/members`),
+        axios.get(`/api/workspace/${workspaceId}/members/me`),
+      ]);
+
+      if (membersResult.status === 'fulfilled') {
+        setMembers(membersResult.value.data.workspaceMembers ?? []);
+      } else {
+        const err = membersResult.reason;
+        setError(
+          axios.isAxiosError(err)
+            ? err.response?.data?.message || 'Failed to load members'
+            : 'Failed to load members'
+        );
       }
-    };
-    fetchMembers();
+
+      if (meResult.status === 'fulfilled') {
+        setMyMembership(meResult.value.data);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [workspaceId]);
 
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail) return;
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
-    try {
-      setInviting(true);
-      setError(null);
-      await axios.post(`/api/workspace/${workspaceId}/members`, {
-        email: inviteEmail,
-        role: inviteRole,
-      });
-      // Optionally re-fetch members or optimistic update
-      window.location.reload();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Failed to invite user');
-      } else {
-        setError('Failed to invite user');
-      }
-      setInviting(false);
-    }
+  const handleRoleUpdated = (memberId: string, newRole: string) => {
+    setMembers((prev) =>
+      prev.map((m) => (m.user.id === memberId ? { ...m, role: newRole } : m))
+    );
   };
 
-  const handleRemove = async (memberId: string) => {
-    if (!window.confirm('Confirm removal?')) return;
-    try {
-      await axios.delete(`/api/workspace/${workspaceId}/members/${memberId}`);
-      setMembers(members.filter((m) => m.user.id !== memberId));
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Failed to remove user');
-      } else {
-        setError('Failed to remove user');
-      }
-    }
+  const handleMemberRemoved = (memberId: string) => {
+    setMembers((prev) => prev.filter((m) => m.user.id !== memberId));
   };
 
-  const canManage =
-    myMembership?.role === 'ADMIN' || myMembership?.role === 'OWNER';
+  const isOwner = myMembership?.role === 'OWNER';
+  const canManage = isOwner || myMembership?.role === 'ADMIN';
 
   return (
     <TerminalWindow title="Workspace Members">
       <div className="terminal-theme text-green-400 p-4 space-y-6">
-        <div>
-          <p>{`> GET /members`}</p>
-        </div>
+        <p className="text-xs text-gray-500">{`> GET /members`}</p>
 
         {error && (
-          <div className="text-red-500 border border-red-500 p-2">
+          <div className="text-red-500 border border-red-500 p-2 text-sm">
             [ERROR] {error}
           </div>
         )}
 
+        {/* ── Members table ──────────────────────────────────── */}
         {loading ? (
           <div className="space-y-2">
             <Skeleton className="h-4 w-full bg-green-900/30" />
@@ -112,16 +91,26 @@ export const WorkspaceMembers: React.FC<Props> = ({ workspaceId }) => {
           </div>
         ) : (
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-green-800">
                   <th className="p-2">USER</th>
                   <th className="p-2">EMAIL</th>
                   <th className="p-2">ROLE</th>
-                  {canManage && <th className="p-2">ACTION</th>}
+                  {canManage && <th className="p-2">ACTIONS</th>}
                 </tr>
               </thead>
               <tbody>
+                {members.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={canManage ? 4 : 3}
+                      className="p-2 text-gray-500 text-xs"
+                    >
+                      No members yet.
+                    </td>
+                  </tr>
+                )}
                 {members.map((m) => (
                   <tr
                     key={m.user.id}
@@ -130,29 +119,40 @@ export const WorkspaceMembers: React.FC<Props> = ({ workspaceId }) => {
                     <td className="p-2">
                       {m.user.firstName} {m.user.lastName}
                     </td>
-                    <td className="p-2 text-sm">{m.user.email}</td>
+                    <td className="p-2 text-gray-400">{m.user.email}</td>
                     <td className="p-2">
-                      <span
-                        className={`px-2 py-1 text-xs border ${
-                          m.role === 'OWNER'
-                            ? 'border-yellow-500 text-yellow-500'
-                            : m.role === 'ADMIN'
-                              ? 'border-blue-500 text-blue-500'
-                              : 'border-green-500'
-                        }`}
-                      >
-                        {m.role}
-                      </span>
+                      {canManage && m.role !== 'OWNER' ? (
+                        <WorkspaceUpdateMember
+                          workspaceId={workspaceId}
+                          memberId={m.user.id}
+                          currentRole={m.role}
+                          onSuccess={(newRole) =>
+                            handleRoleUpdated(m.user.id, newRole)
+                          }
+                        />
+                      ) : (
+                        <span
+                          className={`px-2 py-0.5 text-xs border ${
+                            m.role === 'OWNER'
+                              ? 'border-yellow-500 text-yellow-500'
+                              : m.role === 'ADMIN'
+                                ? 'border-blue-500 text-blue-500'
+                                : 'border-green-700 text-green-500'
+                          }`}
+                        >
+                          {m.role}
+                        </span>
+                      )}
                     </td>
                     {canManage && (
                       <td className="p-2">
                         {m.role !== 'OWNER' && (
-                          <button
-                            onClick={() => handleRemove(m.user.id)}
-                            className="text-xs text-red-500 hover:bg-red-500 hover:text-black border border-red-500 px-2 py-1"
-                          >
-                            REMOVE
-                          </button>
+                          <WorkspaceRemoveMember
+                            workspaceId={workspaceId}
+                            memberId={m.user.id}
+                            memberName={`${m.user.firstName} ${m.user.lastName}`}
+                            onSuccess={() => handleMemberRemoved(m.user.id)}
+                          />
                         )}
                       </td>
                     )}
@@ -163,56 +163,21 @@ export const WorkspaceMembers: React.FC<Props> = ({ workspaceId }) => {
           </div>
         )}
 
+        {/* ── Add member (OWNER / ADMIN) ─────────────────────── */}
         {canManage && (
-          <div className="mt-8 pt-4 border-t border-green-900">
-            <p className="mb-4">{`> POST /members`}</p>
-            <form onSubmit={handleInvite} className="flex gap-4 items-end">
-              <div className="flex-1">
-                <TerminalFormInput
-                  id="invite-email"
-                  name="email"
-                  label="EMAIL_ADDRESS"
-                  type="email"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="user@example.com"
-                  disabled={inviting}
-                />
-              </div>
-              <div className="w-32">
-                <label className="block text-xs mb-1 uppercase tracking-wider text-green-500">
-                  ROLE
-                </label>
-                <select
-                  value={inviteRole}
-                  onChange={(e) =>
-                    setInviteRole(
-                      e.target.value as 'MEMBER' | 'ADMIN' | 'VIEWER'
-                    )
-                  }
-                  className="w-full bg-transparent border-b border-green-500 focus:outline-none focus:border-green-400 py-1 text-green-400"
-                  disabled={inviting}
-                >
-                  <option value="MEMBER" className="bg-black">
-                    MEMBER
-                  </option>
-                  <option value="ADMIN" className="bg-black">
-                    ADMIN
-                  </option>
-                  <option value="VIEWER" className="bg-black">
-                    VIEWER
-                  </option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                disabled={inviting || !inviteEmail}
-                className="py-1 px-4 border border-green-500 text-green-500 hover:bg-green-500 hover:text-black transition-colors h-[31px]"
-              >
-                {inviting ? '...' : 'INVITE'}
-              </button>
-            </form>
-          </div>
+          <WorkspaceAddMember
+            workspaceId={workspaceId}
+            onSuccess={fetchMembers}
+          />
+        )}
+
+        {/* ── Transfer ownership (OWNER only) ───────────────── */}
+        {isOwner && (
+          <WorkspaceTransferOwnership
+            workspaceId={workspaceId}
+            members={members}
+            onSuccess={fetchMembers}
+          />
         )}
       </div>
     </TerminalWindow>

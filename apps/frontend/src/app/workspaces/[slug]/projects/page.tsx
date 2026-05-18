@@ -23,7 +23,10 @@ export default function WorkspaceProjectsPage({
 
   return (
     <div className="container mx-auto p-4 max-w-5xl">
-      <ProjectList workspaceId={currentWorkspace.id} />
+      <ProjectList
+        workspaceId={currentWorkspace.id}
+        workspaceSlug={currentWorkspace.slug}
+      />
     </div>
   );
 }

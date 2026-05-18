@@ -8,9 +8,13 @@ import { useRouter } from 'next/navigation';
 
 interface ProjectListProps {
   workspaceId: string;
+  workspaceSlug: string;
 }
 
-export const ProjectList: React.FC<ProjectListProps> = ({ workspaceId }) => {
+export const ProjectList: React.FC<ProjectListProps> = ({
+  workspaceId,
+  workspaceSlug,
+}) => {
   const { projects, loading, error, loadProjects } = useProject();
   const router = useRouter();
 
@@ -21,11 +25,11 @@ export const ProjectList: React.FC<ProjectListProps> = ({ workspaceId }) => {
   }, [workspaceId, loadProjects]);
 
   const handleCreate = () => {
-    router.push(`/workspaces/${workspaceId}/projects/create`);
+    router.push(`/workspaces/${workspaceSlug}/projects/create`);
   };
 
   const handleSelect = (projectId: string) => {
-    router.push(`/workspaces/${workspaceId}/projects/${projectId}`);
+    router.push(`/workspaces/${workspaceSlug}/projects/${projectId}`);
   };
 
   return (

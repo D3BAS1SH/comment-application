@@ -5,10 +5,14 @@ import {
   fetchWorkspaces,
   createWorkspace,
   fetchWorkspaceBySlug,
+  updateWorkspace,
   clearWorkspaceError,
   setCurrentWorkspace,
 } from '@/lib/redux/features/workspaceSlice';
-import { CreateWorkspaceDto } from '@/features/workspace/types/workspace.interface';
+import {
+  CreateWorkspaceDto,
+  UpdateWorkspaceDto,
+} from '@/features/workspace/types/workspace.interface';
 
 export const useWorkspace = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +25,11 @@ export const useWorkspace = () => {
 
   const createNewWorkspace = useCallback(
     (data: CreateWorkspaceDto) => dispatch(createWorkspace(data)).unwrap(),
+    [dispatch]
+  );
+
+  const updateExistingWorkspace = useCallback(
+    (data: UpdateWorkspaceDto) => dispatch(updateWorkspace(data)).unwrap(),
     [dispatch]
   );
 
@@ -43,6 +52,7 @@ export const useWorkspace = () => {
     ...workspaceState,
     loadWorkspaces,
     createNewWorkspace,
+    updateExistingWorkspace,
     getWorkspaceBySlug,
     clearError,
     resetCurrentWorkspace,

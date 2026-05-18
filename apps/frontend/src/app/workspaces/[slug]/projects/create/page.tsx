@@ -23,7 +23,10 @@ export default function CreateProjectPage({
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
-      <CreateProjectForm workspaceId={currentWorkspace.id} />
+      <CreateProjectForm
+        workspaceId={currentWorkspace.id}
+        workspaceSlug={currentWorkspace.slug}
+      />
     </div>
   );
 }

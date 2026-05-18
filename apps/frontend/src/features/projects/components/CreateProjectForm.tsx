@@ -8,10 +8,12 @@ import { CreateProjectDto } from '../types/project.interface';
 
 interface CreateProjectFormProps {
   workspaceId: string;
+  workspaceSlug: string;
 }
 
 export const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   workspaceId,
+  workspaceSlug,
 }) => {
   const router = useRouter();
   const { createNewProject, loading, error, clearError } = useProject();
@@ -38,7 +40,7 @@ export const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     try {
       const newProject = await createNewProject(workspaceId, formData);
       if (newProject?.id) {
-        router.push(`/workspaces/${workspaceId}/projects/${newProject.id}`);
+        router.push(`/workspaces/${workspaceSlug}/projects/${newProject.id}`);
       }
     } catch {
       // Error is handled by redux slice and displayed in UI
