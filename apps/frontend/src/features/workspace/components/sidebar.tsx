@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   Navigation,
+  LayoutGrid,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,6 +30,7 @@ const menuItems: SidebarItem[] = [
   { name: 'Chat', href: '/home/chat', icon: <MessageCircle size={20} /> },
   { name: 'Post', href: '/home/post', icon: <FileText size={20} /> },
   // { name: 'Canvas', href: '/home/canvas', icon: <Palette size={20} /> },
+  { name: 'Workspace', href: '/workspaces', icon: <LayoutGrid size={20} /> },
   { name: 'Profile', href: '/home/profile', icon: <User size={20} /> },
   { name: 'Settings', href: '/home/settings', icon: <Settings size={20} /> },
 ];

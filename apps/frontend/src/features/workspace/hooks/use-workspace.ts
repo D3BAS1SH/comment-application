@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -9,26 +10,34 @@ import {
 } from '@/lib/redux/features/workspaceSlice';
 import { CreateWorkspaceDto } from '@/features/workspace/types/workspace.interface';
 
-/**
- * Hook to access and interact with the workspace state.
- */
 export const useWorkspace = () => {
   const dispatch = useDispatch<AppDispatch>();
   const workspaceState = useSelector((state: RootState) => state.workspace);
 
-  const loadWorkspaces = () => dispatch(fetchWorkspaces());
+  const loadWorkspaces = useCallback(
+    () => dispatch(fetchWorkspaces()),
+    [dispatch]
+  );
 
-  const createNewWorkspace = async (data: CreateWorkspaceDto) => {
-    return await dispatch(createWorkspace(data)).unwrap();
-  };
+  const createNewWorkspace = useCallback(
+    (data: CreateWorkspaceDto) => dispatch(createWorkspace(data)).unwrap(),
+    [dispatch]
+  );
 
-  const getWorkspaceBySlug = async (slug: string) => {
-    return await dispatch(fetchWorkspaceBySlug(slug)).unwrap();
-  };
+  const getWorkspaceBySlug = useCallback(
+    (slug: string) => dispatch(fetchWorkspaceBySlug(slug)).unwrap(),
+    [dispatch]
+  );
 
-  const clearError = () => dispatch(clearWorkspaceError());
+  const clearError = useCallback(
+    () => dispatch(clearWorkspaceError()),
+    [dispatch]
+  );
 
-  const resetCurrentWorkspace = () => dispatch(setCurrentWorkspace(null));
+  const resetCurrentWorkspace = useCallback(
+    () => dispatch(setCurrentWorkspace(null)),
+    [dispatch]
+  );
 
   return {
     ...workspaceState,
