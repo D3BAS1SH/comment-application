@@ -6,7 +6,7 @@ import { useEpic } from '@/features/epic/hooks/use-epic';
 import { useSprint } from '@/features/sprint/hooks/use-sprint';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
-import { WorkspaceService } from '@/server/services/task-oper-service/workspace.service';
+import axios from 'axios';
 import {
   IssuePriority,
   CreateIssueDto,
@@ -70,18 +70,22 @@ export function CreateIssueModal({
     loadEpics(projectId);
     loadSprints(projectId);
     if (userId) {
-      WorkspaceService.getAllMembers(userId, workspaceId).then((result) => {
-        if (result.data) {
-          setMembers(
-            result.data.workspaceMembers.map((m) => ({
-              id: m.user.id,
-              firstName: m.user.firstName,
-              lastName: m.user.lastName,
-              email: m.user.email,
-            }))
-          );
-        }
-      });
+      axios
+        .get(`/api/workspace/${workspaceId}/members`)
+        .then((res) => {
+          const data = res.data;
+          if (data?.workspaceMembers) {
+            setMembers(
+              data.workspaceMembers.map((m: { user: Member }) => ({
+                id: m.user.id,
+                firstName: m.user.firstName,
+                lastName: m.user.lastName,
+                email: m.user.email,
+              }))
+            );
+          }
+        })
+        .catch(() => {});
     }
   }, [projectId, workspaceId, userId, loadEpics, loadSprints]);
 

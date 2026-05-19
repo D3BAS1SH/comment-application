@@ -8,6 +8,7 @@ import {
   StartSprintDto,
   CompleteSprintDto,
 } from '@/features/sprint/types/sprint.interface';
+import { RootState } from '@/lib/redux/store';
 
 interface SprintState {
   sprints: SprintDto[];
@@ -27,10 +28,13 @@ const initialState: SprintState = {
 
 export const fetchSprints = createAsyncThunk(
   'sprint/fetchAll',
-  async (projectId: string, { rejectWithValue }) => {
+  async (projectId: string, { rejectWithValue, getState }) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.get<SprintListDto>(
-        `/api/sprint/${projectId}`
+        `/api/sprint/${projectId}`,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -47,11 +51,14 @@ export const fetchSprintById = createAsyncThunk(
   'sprint/fetchById',
   async (
     { projectId, sprintId }: { projectId: string; sprintId: string },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.get<SprintDto>(
-        `/api/sprint/${projectId}/${sprintId}`
+        `/api/sprint/${projectId}/${sprintId}`,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -68,12 +75,15 @@ export const createSprint = createAsyncThunk(
   'sprint/create',
   async (
     { projectId, data }: { projectId: string; data: CreateSprintDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.post<SprintDto>(
         `/api/sprint/${projectId}`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -94,12 +104,15 @@ export const updateSprint = createAsyncThunk(
       sprintId,
       data,
     }: { projectId: string; sprintId: string; data: UpdateSprintDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.patch<SprintDto>(
         `/api/sprint/${projectId}/${sprintId}`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -120,12 +133,15 @@ export const startSprint = createAsyncThunk(
       sprintId,
       data,
     }: { projectId: string; sprintId: string; data: StartSprintDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.post<SprintDto>(
         `/api/sprint/${projectId}/${sprintId}/start`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -146,12 +162,15 @@ export const completeSprint = createAsyncThunk(
       sprintId,
       data,
     }: { projectId: string; sprintId: string; data: CompleteSprintDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.post<SprintDto>(
         `/api/sprint/${projectId}/${sprintId}/complete`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -168,10 +187,14 @@ export const deleteSprint = createAsyncThunk(
   'sprint/delete',
   async (
     { projectId, sprintId }: { projectId: string; sprintId: string },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
-      await axios.delete(`/api/sprint/${projectId}/${sprintId}`);
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
+      await axios.delete(`/api/sprint/${projectId}/${sprintId}`, {
+        headers: { 'x-user-id': userId },
+      });
       return sprintId;
     } catch (error: unknown) {
       return rejectWithValue(
