@@ -6,6 +6,7 @@ import {
   CreateEpicDto,
   UpdateEpicDto,
 } from '@/features/epic/types/epic.interface';
+import { RootState } from '@/lib/redux/store';
 
 interface EpicState {
   epics: EpicDto[];
@@ -25,9 +26,13 @@ const initialState: EpicState = {
 
 export const fetchEpics = createAsyncThunk(
   'epic/fetchAll',
-  async (projectId: string, { rejectWithValue }) => {
+  async (projectId: string, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get<EpicListDto>(`/api/epic/${projectId}`);
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
+      const response = await axios.get<EpicListDto>(`/api/epic/${projectId}`, {
+        headers: { 'x-user-id': userId },
+      });
       return response.data;
     } catch (error: unknown) {
       return rejectWithValue(
@@ -43,11 +48,14 @@ export const fetchEpicById = createAsyncThunk(
   'epic/fetchById',
   async (
     { projectId, epicId }: { projectId: string; epicId: string },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.get<EpicDto>(
-        `/api/epic/${projectId}/${epicId}`
+        `/api/epic/${projectId}/${epicId}`,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -64,12 +72,15 @@ export const createEpic = createAsyncThunk(
   'epic/create',
   async (
     { projectId, data }: { projectId: string; data: CreateEpicDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.post<EpicDto>(
         `/api/epic/${projectId}`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -90,12 +101,15 @@ export const updateEpic = createAsyncThunk(
       epicId,
       data,
     }: { projectId: string; epicId: string; data: UpdateEpicDto },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
       const response = await axios.patch<EpicDto>(
         `/api/epic/${projectId}/${epicId}`,
-        data
+        data,
+        { headers: { 'x-user-id': userId } }
       );
       return response.data;
     } catch (error: unknown) {
@@ -112,10 +126,14 @@ export const deleteEpic = createAsyncThunk(
   'epic/delete',
   async (
     { projectId, epicId }: { projectId: string; epicId: string },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
-      await axios.delete(`/api/epic/${projectId}/${epicId}`);
+      const userId = (getState() as RootState).user.id;
+      if (!userId) return rejectWithValue('Not authenticated');
+      await axios.delete(`/api/epic/${projectId}/${epicId}`, {
+        headers: { 'x-user-id': userId },
+      });
       return epicId;
     } catch (error: unknown) {
       return rejectWithValue(

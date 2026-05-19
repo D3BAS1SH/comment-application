@@ -144,7 +144,7 @@ export interface UpdateIssueDto {
 
 export interface ReorderIssueDto {
   statusId: string;
-  newPosition: number;
+  position: number;
 }
 
 export interface MoveSprintDto {

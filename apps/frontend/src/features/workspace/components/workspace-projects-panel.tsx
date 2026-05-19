@@ -8,8 +8,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useProject } from '@/features/projects/hooks/use-project';
 import { fetchProjects } from '@/lib/redux/features/projectSlice';
 import { AppDispatch } from '@/lib/redux/store';
-import { GetMembershipResponse } from '../types/workspace.interface';
+import {
+  GetMembershipResponse,
+  GetAllMembersResponse,
+} from '../types/workspace.interface';
 import axios from 'axios';
+
+type WorkspaceMember = GetAllMembersResponse['workspaceMembers'][number];
 
 interface Props {
   workspaceId: string;
@@ -28,11 +33,20 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
     error,
     createNewProject,
     updateProjectInfo,
+    changeProjectLead,
     removeProject,
   } = useProject();
 
   const [myMembership, setMyMembership] =
     useState<GetMembershipResponse | null>(null);
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
+
+  // Assign lead state
+  const [assignLeadProjectId, setAssignLeadProjectId] = useState<string | null>(
+    null
+  );
+  const [assignLeadLoading, setAssignLeadLoading] = useState(false);
+  const [assignLeadError, setAssignLeadError] = useState<string | null>(null);
 
   // Inline create state
   const [showCreate, setShowCreate] = useState(false);
@@ -57,6 +71,10 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
     axios
       .get(`/api/workspace/${workspaceId}/members/me`)
       .then((res) => setMyMembership(res.data))
+      .catch(() => {});
+    axios
+      .get(`/api/workspace/${workspaceId}/members`)
+      .then((res) => setMembers(res.data?.workspaceMembers ?? []))
       .catch(() => {});
   }, [workspaceId, dispatch]);
 
@@ -109,6 +127,23 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
       // keep editing on error
     } finally {
       setRenaming(false);
+    }
+  };
+
+  const handleAssignLead = async (projectId: string, leadId: string | null) => {
+    try {
+      setAssignLeadLoading(true);
+      setAssignLeadError(null);
+      await changeProjectLead(workspaceId, projectId, { leadId });
+      setAssignLeadProjectId(null);
+    } catch (err: unknown) {
+      setAssignLeadError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || 'Failed to assign lead'
+          : 'Failed to assign lead'
+      );
+    } finally {
+      setAssignLeadLoading(false);
     }
   };
 
@@ -223,7 +258,46 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
                       {proj.lead ? proj.lead.firstName : '—'}
                     </td>
                     <td className="p-2">
-                      {deletingId === proj.id ? (
+                      {assignLeadProjectId === proj.id ? (
+                        <span className="flex flex-col gap-1">
+                          {assignLeadError && (
+                            <span className="text-xs text-red-500">
+                              {assignLeadError}
+                            </span>
+                          )}
+                          <span className="flex flex-wrap gap-1">
+                            <select
+                              className="bg-black border border-green-700 text-green-400 text-xs font-mono px-1 py-0.5 focus:outline-none focus:border-green-500"
+                              defaultValue=""
+                              disabled={assignLeadLoading}
+                              onChange={(e) =>
+                                handleAssignLead(
+                                  proj.id,
+                                  e.target.value || null
+                                )
+                              }
+                            >
+                              <option value="">— remove lead —</option>
+                              {members.map((m) => (
+                                <option key={m.user.id} value={m.user.id}>
+                                  {m.user.firstName} {m.user.lastName} ({m.role}
+                                  )
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => {
+                                setAssignLeadProjectId(null);
+                                setAssignLeadError(null);
+                              }}
+                              disabled={assignLeadLoading}
+                              className="text-xs text-gray-500 border border-gray-700 px-1 hover:bg-gray-700"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        </span>
+                      ) : deletingId === proj.id ? (
                         <span className="flex items-center gap-1">
                           <span className="text-xs text-yellow-500">
                             Delete?
@@ -244,7 +318,7 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
                           </button>
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 flex-wrap">
                           <button
                             onClick={() =>
                               router.push(
@@ -263,6 +337,17 @@ export const WorkspaceProjectsPanel: React.FC<Props> = ({
                               className="text-xs border border-green-700 text-green-600 px-2 py-0.5 hover:border-green-500 hover:text-green-400 transition-colors"
                             >
                               RENAME
+                            </button>
+                          )}
+                          {canManage && (
+                            <button
+                              onClick={() => {
+                                setAssignLeadProjectId(proj.id);
+                                setAssignLeadError(null);
+                              }}
+                              className="text-xs border border-yellow-800 text-yellow-600 px-2 py-0.5 hover:border-yellow-500 hover:text-yellow-400 transition-colors"
+                            >
+                              LEAD
                             </button>
                           )}
                           {canManage && (

@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(result.data, { status: 200 });
 
     const isProduction = process.env.NODE_ENV === 'production';
+    const accessTokenMaxAge = Number(process.env.ACCESS_TOKEN_MAX_AGE);
 
     response.cookies.set({
       name: 'accessToken',
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
-      maxAge: 15 * 60, // 15 minutes (in seconds)
+      maxAge: accessTokenMaxAge,
       path: '/',
     });
 

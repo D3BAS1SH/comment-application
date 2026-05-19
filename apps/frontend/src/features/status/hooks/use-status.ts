@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -18,8 +19,11 @@ export const useStatus = () => {
   const dispatch = useDispatch<AppDispatch>();
   const statusState = useSelector((state: RootState) => state.status);
 
-  const loadStatuses = (workspaceId: string, projectId: string) =>
-    dispatch(fetchStatuses({ workspaceId, projectId }));
+  const loadStatuses = useCallback(
+    (workspaceId: string, projectId: string) =>
+      dispatch(fetchStatuses({ workspaceId, projectId })),
+    [dispatch]
+  );
 
   const createNewStatus = async (
     workspaceId: string,
@@ -47,7 +51,10 @@ export const useStatus = () => {
     statusId: string
   ) => dispatch(deleteStatus({ workspaceId, projectId, statusId })).unwrap();
 
-  const clearError = () => dispatch(clearStatusError());
+  const clearError = useCallback(
+    () => dispatch(clearStatusError()),
+    [dispatch]
+  );
 
   return {
     ...statusState,

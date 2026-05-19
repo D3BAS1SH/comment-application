@@ -61,15 +61,16 @@ export const registerUser = createAsyncThunk<
 
 // Async thunk for token refresh
 export const refreshAccessToken = createAsyncThunk<
-  string, // Returns the new access token
+  { accessToken: string; refreshToken: string },
   void,
   { rejectValue: string }
 >('user/refreshToken', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.post<{ accessToken: string }>(
-      '/auth/refresh'
-    );
-    return response.data.accessToken;
+    const response = await apiClient.post<{
+      accessToken: string;
+      refreshToken: string;
+    }>('/auth/refresh');
+    return response.data;
   } catch (error) {
     const err = error as NormalizedError;
     return rejectWithValue(err.message || 'Failed to refresh token');
@@ -92,8 +93,12 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    tokenRefreshed(state, action) {
-      state.accessToken = action.payload;
+    tokenRefreshed(
+      state,
+      action: { payload: { accessToken: string; refreshToken: string } }
+    ) {
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
     },
   },
   extraReducers: (builder) => {
@@ -119,7 +124,8 @@ const userSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
-        state.accessToken = action.payload;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
       })
       .addCase(refreshAccessToken.rejected, (state) => {
         state.accessToken = null;

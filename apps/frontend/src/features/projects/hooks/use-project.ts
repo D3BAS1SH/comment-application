@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -23,11 +24,16 @@ export const useProject = () => {
   const dispatch = useDispatch<AppDispatch>();
   const projectState = useSelector((state: RootState) => state.project);
 
-  const loadProjects = (workspaceId: string) =>
-    dispatch(fetchProjects(workspaceId));
+  const loadProjects = useCallback(
+    (workspaceId: string) => dispatch(fetchProjects(workspaceId)),
+    [dispatch]
+  );
 
-  const loadProjectById = (workspaceId: string, projectId: string) =>
-    dispatch(fetchProjectById({ workspaceId, projectId }));
+  const loadProjectById = useCallback(
+    (workspaceId: string, projectId: string) =>
+      dispatch(fetchProjectById({ workspaceId, projectId })),
+    [dispatch]
+  );
 
   const createNewProject = async (
     workspaceId: string,
@@ -60,9 +66,15 @@ export const useProject = () => {
     return await dispatch(deleteProject({ workspaceId, projectId })).unwrap();
   };
 
-  const clearError = () => dispatch(clearProjectError());
+  const clearError = useCallback(
+    () => dispatch(clearProjectError()),
+    [dispatch]
+  );
 
-  const resetCurrentProject = () => dispatch(setCurrentProject(null));
+  const resetCurrentProject = useCallback(
+    () => dispatch(setCurrentProject(null)),
+    [dispatch]
+  );
 
   return {
     ...projectState,

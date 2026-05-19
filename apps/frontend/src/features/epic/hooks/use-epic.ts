@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -18,10 +19,16 @@ export const useEpic = () => {
   const dispatch = useDispatch<AppDispatch>();
   const epicState = useSelector((state: RootState) => state.epic);
 
-  const loadEpics = (projectId: string) => dispatch(fetchEpics(projectId));
+  const loadEpics = useCallback(
+    (projectId: string) => dispatch(fetchEpics(projectId)),
+    [dispatch]
+  );
 
-  const loadEpicById = (projectId: string, epicId: string) =>
-    dispatch(fetchEpicById({ projectId, epicId }));
+  const loadEpicById = useCallback(
+    (projectId: string, epicId: string) =>
+      dispatch(fetchEpicById({ projectId, epicId })),
+    [dispatch]
+  );
 
   const createNewEpic = async (projectId: string, data: CreateEpicDto) =>
     dispatch(createEpic({ projectId, data })).unwrap();
@@ -35,9 +42,12 @@ export const useEpic = () => {
   const removeEpic = async (projectId: string, epicId: string) =>
     dispatch(deleteEpic({ projectId, epicId })).unwrap();
 
-  const clearError = () => dispatch(clearEpicError());
+  const clearError = useCallback(() => dispatch(clearEpicError()), [dispatch]);
 
-  const resetCurrentEpic = () => dispatch(setCurrentEpic(null));
+  const resetCurrentEpic = useCallback(
+    () => dispatch(setCurrentEpic(null)),
+    [dispatch]
+  );
 
   return {
     ...epicState,

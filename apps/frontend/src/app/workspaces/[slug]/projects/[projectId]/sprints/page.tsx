@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace/hooks/use-workspace';
 import { useProject } from '@/features/projects/hooks/use-project';
@@ -108,8 +108,9 @@ function SprintRow({
 export default function SprintsPage({
   params,
 }: {
-  params: { slug: string; projectId: string };
+  params: Promise<{ slug: string; projectId: string }>;
 }) {
+  const { slug, projectId } = use(params);
   const router = useRouter();
   const { currentWorkspace, getWorkspaceBySlug } = useWorkspace();
   const { currentProject, loadProjectById } = useProject();
@@ -137,22 +138,22 @@ export default function SprintsPage({
   });
 
   useEffect(() => {
-    if (!currentWorkspace || currentWorkspace.slug !== params.slug) {
-      getWorkspaceBySlug(params.slug);
+    if (!currentWorkspace || currentWorkspace.slug !== slug) {
+      getWorkspaceBySlug(slug);
     }
-  }, [params.slug, currentWorkspace, getWorkspaceBySlug]);
+  }, [slug, currentWorkspace, getWorkspaceBySlug]);
 
   useEffect(() => {
-    if (currentWorkspace?.id && params.projectId) {
-      loadProjectById(currentWorkspace.id, params.projectId);
+    if (currentWorkspace?.id && projectId) {
+      loadProjectById(currentWorkspace.id, projectId);
     }
-  }, [currentWorkspace?.id, params.projectId, loadProjectById]);
+  }, [currentWorkspace?.id, projectId, loadProjectById]);
 
   useEffect(() => {
-    if (params.projectId) {
-      loadSprints(params.projectId);
+    if (projectId) {
+      loadSprints(projectId);
     }
-  }, [params.projectId, loadSprints]);
+  }, [projectId, loadSprints]);
 
   const handleCreate = useCallback(
     async (e: React.FormEvent) => {
@@ -168,7 +169,7 @@ export default function SprintsPage({
         if (form.goal) payload.goal = form.goal;
         if (form.startDate) payload.startDate = form.startDate;
         if (form.endDate) payload.endDate = form.endDate;
-        await createNewSprint(params.projectId, payload);
+        await createNewSprint(projectId, payload);
         setForm({ name: '', goal: '', startDate: '', endDate: '' });
         setShowForm(false);
       } catch (err: unknown) {
@@ -179,14 +180,14 @@ export default function SprintsPage({
         setSubmitting(false);
       }
     },
-    [form, params.projectId, createNewSprint]
+    [form, projectId, createNewSprint]
   );
 
   const handleStart = useCallback(
     async (sprintId: string) => {
       setActingId(sprintId);
       try {
-        await beginSprint(params.projectId, sprintId, {
+        await beginSprint(projectId, sprintId, {
           startDate: new Date().toISOString(),
           endDate: new Date(
             Date.now() + 14 * 24 * 60 * 60 * 1000
@@ -198,35 +199,35 @@ export default function SprintsPage({
         setActingId(null);
       }
     },
-    [params.projectId, beginSprint]
+    [projectId, beginSprint]
   );
 
   const handleComplete = useCallback(
     async (sprintId: string) => {
       setActingId(sprintId);
       try {
-        await finishSprint(params.projectId, sprintId, {});
+        await finishSprint(projectId, sprintId, {});
       } catch {
         // handled by slice
       } finally {
         setActingId(null);
       }
     },
-    [params.projectId, finishSprint]
+    [projectId, finishSprint]
   );
 
   const handleDelete = useCallback(
     async (sprintId: string) => {
       setActingId(sprintId);
       try {
-        await removeSprint(params.projectId, sprintId);
+        await removeSprint(projectId, sprintId);
       } catch {
         // handled by slice
       } finally {
         setActingId(null);
       }
     },
-    [params.projectId, removeSprint]
+    [projectId, removeSprint]
   );
 
   const activeSprints = sprints.filter((s) => s.status === 'ACTIVE');
@@ -237,29 +238,6 @@ export default function SprintsPage({
     <div className="container mx-auto p-4 max-w-5xl space-y-4">
       <TerminalWindow title={`sprints — ${currentProject?.name ?? '...'}`}>
         <div className="terminal-theme text-green-400">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 mb-4 text-xs font-mono text-gray-500">
-            <button
-              onClick={() => router.push(`/workspaces/${params.slug}/projects`)}
-              className="hover:text-green-400 transition-colors"
-            >
-              projects
-            </button>
-            <span>/</span>
-            <button
-              onClick={() =>
-                router.push(
-                  `/workspaces/${params.slug}/projects/${params.projectId}`
-                )
-              }
-              className="hover:text-green-400 transition-colors"
-            >
-              {currentProject?.name ?? params.projectId}
-            </button>
-            <span>/</span>
-            <span className="text-green-500">sprints</span>
-          </div>
-
           {/* Header */}
           <div className="flex justify-between items-center mb-6 border-b border-green-900 pb-4">
             <div>

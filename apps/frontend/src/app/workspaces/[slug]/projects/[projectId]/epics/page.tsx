@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace/hooks/use-workspace';
 import { useProject } from '@/features/projects/hooks/use-project';
@@ -66,8 +66,9 @@ function EpicRow({
 export default function EpicsPage({
   params,
 }: {
-  params: { slug: string; projectId: string };
+  params: Promise<{ slug: string; projectId: string }>;
 }) {
+  const { slug, projectId } = use(params);
   const router = useRouter();
   const { currentWorkspace, getWorkspaceBySlug } = useWorkspace();
   const { currentProject, loadProjectById } = useProject();
@@ -94,22 +95,22 @@ export default function EpicsPage({
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!currentWorkspace || currentWorkspace.slug !== params.slug) {
-      getWorkspaceBySlug(params.slug);
+    if (!currentWorkspace || currentWorkspace.slug !== slug) {
+      getWorkspaceBySlug(slug);
     }
-  }, [params.slug, currentWorkspace, getWorkspaceBySlug]);
+  }, [slug, currentWorkspace, getWorkspaceBySlug]);
 
   useEffect(() => {
-    if (currentWorkspace?.id && params.projectId) {
-      loadProjectById(currentWorkspace.id, params.projectId);
+    if (currentWorkspace?.id && projectId) {
+      loadProjectById(currentWorkspace.id, projectId);
     }
-  }, [currentWorkspace?.id, params.projectId, loadProjectById]);
+  }, [currentWorkspace?.id, projectId, loadProjectById]);
 
   useEffect(() => {
-    if (params.projectId) {
-      loadEpics(params.projectId);
+    if (projectId) {
+      loadEpics(projectId);
     }
-  }, [params.projectId, loadEpics]);
+  }, [projectId, loadEpics]);
 
   const handleCreate = useCallback(
     async (e: React.FormEvent) => {
@@ -124,9 +125,11 @@ export default function EpicsPage({
         const payload: CreateEpicDto = { title: form.title.trim() };
         if (form.description) payload.description = form.description;
         if (form.color) payload.color = form.color;
-        if (form.startDate) payload.startDate = form.startDate;
-        if (form.endDate) payload.endDate = form.endDate;
-        await createNewEpic(params.projectId, payload);
+        if (form.startDate)
+          payload.startDate = new Date(form.startDate).toISOString();
+        if (form.endDate)
+          payload.endDate = new Date(form.endDate).toISOString();
+        await createNewEpic(projectId, payload);
         setForm({
           title: '',
           description: '',
@@ -143,50 +146,27 @@ export default function EpicsPage({
         setSubmitting(false);
       }
     },
-    [form, params.projectId, createNewEpic]
+    [form, projectId, createNewEpic]
   );
 
   const handleDelete = useCallback(
     async (epicId: string) => {
       setDeletingId(epicId);
       try {
-        await removeEpic(params.projectId, epicId);
+        await removeEpic(projectId, epicId);
       } catch {
         // handled by slice
       } finally {
         setDeletingId(null);
       }
     },
-    [params.projectId, removeEpic]
+    [projectId, removeEpic]
   );
 
   return (
     <div className="container mx-auto p-4 max-w-5xl space-y-4">
       <TerminalWindow title={`epics — ${currentProject?.name ?? '...'}`}>
         <div className="terminal-theme text-green-400">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 mb-4 text-xs font-mono text-gray-500">
-            <button
-              onClick={() => router.push(`/workspaces/${params.slug}/projects`)}
-              className="hover:text-green-400 transition-colors"
-            >
-              projects
-            </button>
-            <span>/</span>
-            <button
-              onClick={() =>
-                router.push(
-                  `/workspaces/${params.slug}/projects/${params.projectId}`
-                )
-              }
-              className="hover:text-green-400 transition-colors"
-            >
-              {currentProject?.name ?? params.projectId}
-            </button>
-            <span>/</span>
-            <span className="text-green-500">epics</span>
-          </div>
-
           {/* Header */}
           <div className="flex justify-between items-center mb-6 border-b border-green-900 pb-4">
             <h1 className="text-2xl font-bold text-green-500 uppercase tracking-widest">

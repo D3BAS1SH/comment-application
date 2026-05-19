@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -22,10 +23,16 @@ export const useSprint = () => {
   const dispatch = useDispatch<AppDispatch>();
   const sprintState = useSelector((state: RootState) => state.sprint);
 
-  const loadSprints = (projectId: string) => dispatch(fetchSprints(projectId));
+  const loadSprints = useCallback(
+    (projectId: string) => dispatch(fetchSprints(projectId)),
+    [dispatch]
+  );
 
-  const loadSprintById = (projectId: string, sprintId: string) =>
-    dispatch(fetchSprintById({ projectId, sprintId }));
+  const loadSprintById = useCallback(
+    (projectId: string, sprintId: string) =>
+      dispatch(fetchSprintById({ projectId, sprintId })),
+    [dispatch]
+  );
 
   const createNewSprint = async (projectId: string, data: CreateSprintDto) =>
     dispatch(createSprint({ projectId, data })).unwrap();
@@ -51,9 +58,15 @@ export const useSprint = () => {
   const removeSprint = async (projectId: string, sprintId: string) =>
     dispatch(deleteSprint({ projectId, sprintId })).unwrap();
 
-  const clearError = () => dispatch(clearSprintError());
+  const clearError = useCallback(
+    () => dispatch(clearSprintError()),
+    [dispatch]
+  );
 
-  const resetCurrentSprint = () => dispatch(setCurrentSprint(null));
+  const resetCurrentSprint = useCallback(
+    () => dispatch(setCurrentSprint(null)),
+    [dispatch]
+  );
 
   return {
     ...sprintState,

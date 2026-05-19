@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import {
   IssueResponseDto,
@@ -318,6 +318,20 @@ const issueSlice = createSlice({
     clearCurrentIssue: (state) => {
       state.currentIssue = null;
     },
+    moveIssueOptimistic: (
+      state,
+      action: PayloadAction<{
+        issueId: string;
+        statusId: string;
+        position: number;
+      }>
+    ) => {
+      const { issueId, statusId, position } = action.payload;
+      const idx = state.issues.findIndex((i) => i.id === issueId);
+      if (idx !== -1) {
+        state.issues[idx] = { ...state.issues[idx], statusId, position };
+      }
+    },
   },
   extraReducers: (builder) => {
     // Fetch All Issues
@@ -512,6 +526,10 @@ const issueSlice = createSlice({
   },
 });
 
-export const { clearIssueError, setCurrentIssue, clearCurrentIssue } =
-  issueSlice.actions;
+export const {
+  clearIssueError,
+  setCurrentIssue,
+  clearCurrentIssue,
+  moveIssueOptimistic,
+} = issueSlice.actions;
 export default issueSlice.reducer;

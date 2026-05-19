@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace/hooks/use-workspace';
 import { useProject } from '@/features/projects/hooks/use-project';
@@ -230,8 +230,9 @@ function CommentItem({
 export default function IssueActivityPage({
   params,
 }: {
-  params: { slug: string; projectId: string; issueId: string };
+  params: Promise<{ slug: string; projectId: string; issueId: string }>;
 }) {
+  const { slug, projectId, issueId } = use(params);
   const router = useRouter();
   const { currentWorkspace, getWorkspaceBySlug } = useWorkspace();
   const { currentProject, loadProjectById } = useProject();
@@ -258,27 +259,27 @@ export default function IssueActivityPage({
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!currentWorkspace || currentWorkspace.slug !== params.slug) {
-      getWorkspaceBySlug(params.slug);
+    if (!currentWorkspace || currentWorkspace.slug !== slug) {
+      getWorkspaceBySlug(slug);
     }
-  }, [params.slug, currentWorkspace, getWorkspaceBySlug]);
+  }, [slug, currentWorkspace, getWorkspaceBySlug]);
 
   useEffect(() => {
-    if (currentWorkspace?.id && params.projectId) {
-      loadProjectById(currentWorkspace.id, params.projectId);
+    if (currentWorkspace?.id && projectId) {
+      loadProjectById(currentWorkspace.id, projectId);
     }
-  }, [currentWorkspace?.id, params.projectId, loadProjectById]);
+  }, [currentWorkspace?.id, projectId, loadProjectById]);
 
   useEffect(() => {
-    if (params.projectId && params.issueId) {
-      loadIssueById(params.projectId, params.issueId);
+    if (projectId && issueId) {
+      loadIssueById(projectId, issueId);
     }
-  }, [params.projectId, params.issueId, loadIssueById]);
+  }, [projectId, issueId, loadIssueById]);
 
   useEffect(() => {
-    if (params.projectId && params.issueId) {
+    if (projectId && issueId) {
       setActivityLoading(true);
-      loadActivities(params.projectId, params.issueId)
+      loadActivities(projectId, issueId)
         .then((action) => {
           if (action.payload && typeof action.payload === 'object') {
             const payload = action.payload as {
@@ -292,14 +293,14 @@ export default function IssueActivityPage({
         .finally(() => setActivityLoading(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.projectId, params.issueId]);
+  }, [projectId, issueId]);
 
   useEffect(() => {
-    if (params.issueId) {
-      loadComments(params.issueId);
+    if (issueId) {
+      loadComments(issueId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.issueId]);
+  }, [issueId]);
 
   const handlePostComment = useCallback(
     async (e: React.FormEvent) => {
@@ -309,7 +310,7 @@ export default function IssueActivityPage({
       setFormError(null);
       clearError();
       try {
-        await postComment(params.issueId, { body: commentBody.trim() });
+        await postComment(issueId, { body: commentBody.trim() });
         setCommentBody('');
       } catch (err: unknown) {
         setFormError(
@@ -319,56 +320,29 @@ export default function IssueActivityPage({
         setSubmitting(false);
       }
     },
-    [commentBody, params.issueId, postComment, clearError]
+    [commentBody, issueId, postComment, clearError]
   );
 
   const handleEditComment = useCallback(
     async (commentId: string, body: string) => {
-      await updateComment(params.issueId, commentId, { body });
+      await updateComment(issueId, commentId, { body });
     },
-    [params.issueId, updateComment]
+    [issueId, updateComment]
   );
 
   const handleDeleteComment = useCallback(
     async (commentId: string) => {
-      await deleteComment(params.issueId, commentId);
+      await deleteComment(issueId, commentId);
     },
-    [params.issueId, deleteComment]
+    [issueId, deleteComment]
   );
 
-  const issueTitle = currentIssue?.title ?? params.issueId;
+  const issueTitle = currentIssue?.title ?? issueId;
 
   return (
     <div className="container mx-auto p-4 max-w-4xl space-y-4">
       <TerminalWindow title={`activity — ${issueTitle}`}>
         <div className="terminal-theme text-green-400">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 mb-4 text-xs font-mono text-gray-500 flex-wrap">
-            <button
-              onClick={() => router.push(`/workspaces/${params.slug}/projects`)}
-              className="hover:text-green-400 transition-colors"
-            >
-              projects
-            </button>
-            <span>/</span>
-            <button
-              onClick={() =>
-                router.push(
-                  `/workspaces/${params.slug}/projects/${params.projectId}`
-                )
-              }
-              className="hover:text-green-400 transition-colors"
-            >
-              {currentProject?.name ?? params.projectId}
-            </button>
-            <span>/</span>
-            <span className="text-gray-400 truncate max-w-[200px]">
-              {issueTitle}
-            </span>
-            <span>/</span>
-            <span className="text-green-500">activity</span>
-          </div>
-
           {/* Header */}
           <div className="flex justify-between items-start mb-6 border-b border-green-900 pb-4 gap-4">
             <div className="min-w-0">
@@ -382,9 +356,7 @@ export default function IssueActivityPage({
             </div>
             <button
               onClick={() =>
-                router.push(
-                  `/workspaces/${params.slug}/projects/${params.projectId}`
-                )
+                router.push(`/workspaces/${slug}/projects/${projectId}`)
               }
               className="px-3 py-1 border border-green-700 text-green-400 hover:bg-green-900/30 uppercase text-xs font-bold font-mono transition-colors flex-shrink-0"
             >
@@ -448,7 +420,7 @@ export default function IssueActivityPage({
                     key={comment.id}
                     comment={comment}
                     currentUserId={currentUserId}
-                    issueId={params.issueId}
+                    issueId={issueId}
                     onEdit={handleEditComment}
                     onDelete={handleDeleteComment}
                   />

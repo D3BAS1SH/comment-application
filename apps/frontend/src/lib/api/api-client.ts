@@ -85,10 +85,12 @@ apiClient.interceptors.response.use(
 
       try {
         const response = await axios.post('/api/auth/refresh');
-        const { accessToken } = response.data;
+        const { accessToken, refreshToken } = response.data;
 
         // Update Redux store so UI/Hooks are in sync
-        storeRef.current?.dispatch(tokenRefreshed(accessToken));
+        storeRef.current?.dispatch(
+          tokenRefreshed({ accessToken, refreshToken })
+        );
 
         processQueue(null, accessToken);
         return apiClient(originalRequest);

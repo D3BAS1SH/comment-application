@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -17,8 +18,10 @@ export const useComment = () => {
   const dispatch = useDispatch<AppDispatch>();
   const commentState = useSelector((state: RootState) => state.comment);
 
-  const loadComments = (issueId: string) =>
-    dispatch(fetchComments({ issueId }));
+  const loadComments = useCallback(
+    (issueId: string) => dispatch(fetchComments({ issueId })),
+    [dispatch]
+  );
 
   const postComment = async (issueId: string, data: CreateCommentDto) =>
     dispatch(addComment({ issueId, data })).unwrap();
@@ -32,9 +35,15 @@ export const useComment = () => {
   const deleteComment = async (issueId: string, commentId: string) =>
     dispatch(removeComment({ issueId, commentId })).unwrap();
 
-  const clearError = () => dispatch(clearCommentError());
+  const clearError = useCallback(
+    () => dispatch(clearCommentError()),
+    [dispatch]
+  );
 
-  const clearComments = () => dispatch(resetComments());
+  const clearComments = useCallback(
+    () => dispatch(resetComments()),
+    [dispatch]
+  );
 
   return {
     ...commentState,

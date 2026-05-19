@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import {
@@ -16,6 +17,7 @@ import {
   clearIssueError,
   setCurrentIssue,
   clearCurrentIssue,
+  moveIssueOptimistic,
 } from '@/lib/redux/features/issueSlice';
 import {
   CreateIssueDto,
@@ -30,11 +32,17 @@ export const useIssue = () => {
   const dispatch = useDispatch<AppDispatch>();
   const issueState = useSelector((state: RootState) => state.issue);
 
-  const loadIssues = (projectId: string, filters?: IssueFiltersDto) =>
-    dispatch(fetchIssues({ projectId, filters }));
+  const loadIssues = useCallback(
+    (projectId: string, filters?: IssueFiltersDto) =>
+      dispatch(fetchIssues({ projectId, filters })),
+    [dispatch]
+  );
 
-  const loadIssueById = (projectId: string, issueId: string) =>
-    dispatch(fetchIssueById({ projectId, issueId }));
+  const loadIssueById = useCallback(
+    (projectId: string, issueId: string) =>
+      dispatch(fetchIssueById({ projectId, issueId })),
+    [dispatch]
+  );
 
   const createNewIssue = async (projectId: string, data: CreateIssueDto) =>
     dispatch(createIssue({ projectId, data })).unwrap();
@@ -72,21 +80,41 @@ export const useIssue = () => {
     labelId: string
   ) => dispatch(detachLabelFromIssue({ projectId, issueId, labelId })).unwrap();
 
-  const loadActivities = (projectId: string, issueId: string) =>
-    dispatch(fetchIssueActivities({ projectId, issueId }));
+  const loadActivities = useCallback(
+    (projectId: string, issueId: string) =>
+      dispatch(fetchIssueActivities({ projectId, issueId })),
+    [dispatch]
+  );
 
-  const loadSubtasks = (projectId: string, issueId: string) =>
-    dispatch(fetchIssueSubtasks({ projectId, issueId }));
+  const loadSubtasks = useCallback(
+    (projectId: string, issueId: string) =>
+      dispatch(fetchIssueSubtasks({ projectId, issueId })),
+    [dispatch]
+  );
 
-  const loadComments = (projectId: string, issueId: string) =>
-    dispatch(fetchIssueComments({ projectId, issueId }));
+  const loadComments = useCallback(
+    (projectId: string, issueId: string) =>
+      dispatch(fetchIssueComments({ projectId, issueId })),
+    [dispatch]
+  );
 
-  const clearError = () => dispatch(clearIssueError());
+  const clearError = useCallback(() => dispatch(clearIssueError()), [dispatch]);
 
-  const resetCurrentIssue = () => dispatch(clearCurrentIssue());
+  const resetCurrentIssue = useCallback(
+    () => dispatch(clearCurrentIssue()),
+    [dispatch]
+  );
 
-  const selectIssue = (issue: IssueDetailDto | null) =>
-    dispatch(setCurrentIssue(issue));
+  const selectIssue = useCallback(
+    (issue: IssueDetailDto | null) => dispatch(setCurrentIssue(issue)),
+    [dispatch]
+  );
+
+  const moveOptimistic = useCallback(
+    (issueId: string, statusId: string, position: number) =>
+      dispatch(moveIssueOptimistic({ issueId, statusId, position })),
+    [dispatch]
+  );
 
   return {
     ...issueState,
@@ -105,6 +133,7 @@ export const useIssue = () => {
     clearError,
     resetCurrentIssue,
     selectIssue,
+    moveOptimistic,
   };
 };
 
