@@ -30,54 +30,50 @@ export class SprintService {
     projectId: string,
     writeAccessRequired: boolean = false
   ) {
-    const callerProjectMember = await this.prismaService.project.findUnique({
-      where: {
-        id: projectId,
-        workspace: {
-          workspaceMembers: {
-            some: {
-              userId: callerId,
-            },
-          },
-        },
-      },
+    const project = await this.prismaService.project.findUnique({
+      where: { id: projectId },
       select: {
         id: true,
         leadId: true,
         workspace: {
           select: {
+            ownerId: true,
             workspaceMembers: {
-              where: {
-                userId: callerId,
-              },
-              select: {
-                role: true,
-              },
+              where: { userId: callerId },
+              select: { role: true },
             },
           },
         },
       },
     });
 
-    if (!callerProjectMember) {
+    if (!project) {
+      throw new ForbiddenException(
+        'You do not belong to this workspace or project'
+      );
+    }
+
+    const isWorkspaceOwner = project.workspace.ownerId === callerId;
+    const member = project.workspace.workspaceMembers[0];
+
+    if (!isWorkspaceOwner && !member) {
       throw new ForbiddenException(
         'You do not belong to this workspace or project'
       );
     }
 
     if (writeAccessRequired) {
-      const userRole = callerProjectMember.workspace.workspaceMembers[0].role;
-      const isLead = callerId === callerProjectMember.leadId;
-      const isOwner = userRole === 'OWNER';
+      const isLead = callerId === project.leadId;
+      const isMemberOwner = member?.role === 'OWNER';
 
-      if (!isLead && !isOwner) {
+      if (!isLead && !isWorkspaceOwner && !isMemberOwner) {
         throw new ForbiddenException(
           'Only Project Lead or Owner can perform this action'
         );
       }
     }
 
-    return callerProjectMember;
+    return project;
   }
 
   async createSprint(

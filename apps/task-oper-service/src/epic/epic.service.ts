@@ -130,20 +130,25 @@ export class EpicService {
     projectId: string
   ): Promise<EpicListResponseDto> {
     try {
-      // Verify workspace membership
-      const workspaceMember =
-        await this.prismaService.workspaceMember.findFirst({
-          where: {
-            userId: callerId,
-            workspace: {
-              projects: {
-                some: { id: projectId },
+      const project = await this.prismaService.project.findUnique({
+        where: { id: projectId },
+        select: {
+          workspace: {
+            select: {
+              ownerId: true,
+              workspaceMembers: {
+                where: { userId: callerId },
+                select: { role: true },
               },
             },
           },
-        });
+        },
+      });
 
-      if (!workspaceMember) {
+      const isOwner = project?.workspace.ownerId === callerId;
+      const isMember = (project?.workspace.workspaceMembers?.length ?? 0) > 0;
+
+      if (!project || (!isOwner && !isMember)) {
         throw new ForbiddenException(
           'You are not a member of this workspace or project'
         );
@@ -188,19 +193,25 @@ export class EpicService {
     epicId: string
   ): Promise<EpicResponseDto> {
     try {
-      const workspaceMember =
-        await this.prismaService.workspaceMember.findFirst({
-          where: {
-            userId: callerId,
-            workspace: {
-              projects: {
-                some: { id: projectId },
+      const project = await this.prismaService.project.findUnique({
+        where: { id: projectId },
+        select: {
+          workspace: {
+            select: {
+              ownerId: true,
+              workspaceMembers: {
+                where: { userId: callerId },
+                select: { role: true },
               },
             },
           },
-        });
+        },
+      });
 
-      if (!workspaceMember) {
+      const isOwner = project?.workspace.ownerId === callerId;
+      const isMember = (project?.workspace.workspaceMembers?.length ?? 0) > 0;
+
+      if (!project || (!isOwner && !isMember)) {
         throw new ForbiddenException(
           'You are not a member of this workspace or project'
         );
@@ -243,19 +254,25 @@ export class EpicService {
 
   async getIssuesInEpic(callerId: string, projectId: string, epicId: string) {
     try {
-      const workspaceMember =
-        await this.prismaService.workspaceMember.findFirst({
-          where: {
-            userId: callerId,
-            workspace: {
-              projects: {
-                some: { id: projectId },
+      const project = await this.prismaService.project.findUnique({
+        where: { id: projectId },
+        select: {
+          workspace: {
+            select: {
+              ownerId: true,
+              workspaceMembers: {
+                where: { userId: callerId },
+                select: { role: true },
               },
             },
           },
-        });
+        },
+      });
 
-      if (!workspaceMember) {
+      const isOwner = project?.workspace.ownerId === callerId;
+      const isMember = (project?.workspace.workspaceMembers?.length ?? 0) > 0;
+
+      if (!project || (!isOwner && !isMember)) {
         throw new ForbiddenException(
           'You are not a member of this workspace or project'
         );

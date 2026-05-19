@@ -117,16 +117,21 @@ export class ProjectService {
     workspaceId: string
   ): Promise<ProjectListItemDto[]> {
     try {
-      const callerUser = await this.prismaService.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId: workspaceId,
-            userId: callerId,
+      const workspace = await this.prismaService.workspace.findUnique({
+        where: { id: workspaceId },
+        select: {
+          ownerId: true,
+          workspaceMembers: {
+            where: { userId: callerId },
+            select: { role: true },
           },
         },
       });
 
-      if (!callerUser) {
+      const isOwner = workspace?.ownerId === callerId;
+      const isMember = (workspace?.workspaceMembers?.length ?? 0) > 0;
+
+      if (!isOwner && !isMember) {
         throw new ForbiddenException('You are not member of this workspace');
       }
 
@@ -156,17 +161,21 @@ export class ProjectService {
     projectId: string
   ): Promise<ProjectDetailDto> {
     try {
-      const isCallerMember =
-        await this.prismaService.workspaceMember.findUnique({
-          where: {
-            workspaceId_userId: {
-              workspaceId: workspaceId,
-              userId: callerId,
-            },
+      const workspace = await this.prismaService.workspace.findUnique({
+        where: { id: workspaceId },
+        select: {
+          ownerId: true,
+          workspaceMembers: {
+            where: { userId: callerId },
+            select: { role: true },
           },
-        });
+        },
+      });
 
-      if (!isCallerMember) {
+      const isOwner = workspace?.ownerId === callerId;
+      const isMember = (workspace?.workspaceMembers?.length ?? 0) > 0;
+
+      if (!isOwner && !isMember) {
         throw new ForbiddenException('You are not a member of the workspace');
       }
 

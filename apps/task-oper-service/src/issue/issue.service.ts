@@ -60,9 +60,7 @@ export class IssueService {
     });
 
     if (!project) {
-      throw new ForbiddenException(
-        'You do not belong to this workspace or project'
-      );
+      throw new NotFoundException('Project not found');
     }
 
     const isOwner = project.workspace.ownerId === callerId;
@@ -537,6 +535,15 @@ export class IssueService {
           where: { id: issueId },
           data: updateData,
         });
+
+        if (labelIds !== undefined) {
+          await tx.issueLabel.deleteMany({ where: { issueId } });
+          if (labelIds.length > 0) {
+            await tx.issueLabel.createMany({
+              data: labelIds.map((labelId) => ({ issueId, labelId })),
+            });
+          }
+        }
 
         for (const change of changes) {
           await this.activityService.logActivity(
