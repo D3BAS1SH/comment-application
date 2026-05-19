@@ -92,6 +92,11 @@ ENV NODE_ENV=production
 
 # Copy node_modules from builder (includes generated Prisma client)
 COPY --from=prod-deps --chown=nestjs:nodejs /app/node_modules ./node_modules
+# Remove the pnpm workspace symlink (node_modules/task-oper-service → /app/apps/task-oper-service)
+# that pnpm creates for self-referencing workspace members. That path doesn't exist in the
+# runner, and Node.js v22.22+ (require-ESM enabled by default) rejects the broken symlink
+# as ERR_INVALID_PACKAGE_CONFIG when resolving the ESM package root.
+RUN rm -rf node_modules/task-oper-service
 
 # Copy built application from builder stage
 COPY --from=builder --chown=nestjs:nodejs /app/apps/task-oper-service/dist ./dist
