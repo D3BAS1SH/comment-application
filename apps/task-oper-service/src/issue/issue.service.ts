@@ -41,55 +41,49 @@ export class IssueService {
     projectId: string,
     writeAccessRequired: boolean = false
   ) {
-    const callerProjectMember = await this.prismaService.project.findUnique({
-      where: {
-        id: projectId,
-        workspace: {
-          workspaceMembers: {
-            some: {
-              userId: callerId,
-            },
-          },
-        },
-      },
+    const project = await this.prismaService.project.findUnique({
+      where: { id: projectId },
       select: {
         id: true,
         workspaceId: true,
         leadId: true,
         workspace: {
           select: {
+            ownerId: true,
             workspaceMembers: {
-              where: {
-                userId: callerId,
-              },
-              select: {
-                role: true,
-              },
+              where: { userId: callerId },
+              select: { role: true },
             },
           },
         },
       },
     });
 
-    if (!callerProjectMember) {
+    if (!project) {
       throw new ForbiddenException(
         'You do not belong to this workspace or project'
       );
     }
 
-    if (writeAccessRequired) {
-      const userRole = callerProjectMember.workspace.workspaceMembers[0].role;
-      const isLead = callerId === callerProjectMember.leadId;
+    const isOwner = project.workspace.ownerId === callerId;
+    const member = project.workspace.workspaceMembers[0];
 
-      // Viewers cannot perform write operations unless they are explicitly the Project Lead
-      if (userRole === 'VIEWER' && !isLead) {
+    if (!isOwner && !member) {
+      throw new ForbiddenException(
+        'You do not belong to this workspace or project'
+      );
+    }
+
+    if (writeAccessRequired && !isOwner) {
+      const isLead = callerId === project.leadId;
+      if (member?.role === 'VIEWER' && !isLead) {
         throw new ForbiddenException(
           'Viewers do not have permission to modify issues'
         );
       }
     }
 
-    return callerProjectMember;
+    return project;
   }
 
   private formatIssueDetailResponse(issue: any): IssueDetailResponseDto {
