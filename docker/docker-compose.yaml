@@ -33,7 +33,7 @@ services:
         condition: service_healthy
 
   task-service:
-    image: task-service:1.0
+    image: task-service:1.6
     restart: unless-stopped
     container_name: task-service
     env_file:
